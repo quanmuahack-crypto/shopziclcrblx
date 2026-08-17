@@ -114,10 +114,8 @@ create trigger on_auth_user_created
 after insert on auth.users
 for each row execute procedure public.handle_new_user();
 
--- The current shop uses username-auth instead of Supabase Auth on the browser.
--- This RPC is intentionally limited to creating a PENDING deposit only.
--- It cannot approve a deposit or change any balance. Admin approval remains
--- protected by admin_review_deposit().
+-- Current frontend uses username-auth instead of Supabase Auth.
+-- This RPC can ONLY create a pending deposit. It cannot approve or change balance.
 create or replace function public.submit_deposit_request(
   p_user_id uuid,
   p_card_type text,
@@ -156,8 +154,6 @@ $$;
 
 revoke all on function public.submit_deposit_request(uuid,text,bigint,text,text) from public;
 grant execute on function public.submit_deposit_request(uuid,text,bigint,text,text) to anon, authenticated;
-
-authority definer
 
 create or replace function public.admin_adjust_balance(
   p_user_id uuid,
