@@ -45,21 +45,18 @@ function money(n){return Number(n||0).toLocaleString('vi-VN')+' đ'}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 async function usernameAuth(body){const r=await fetch(AUTH_URL,{method:'POST',headers:{apikey:SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||d.error_description||'Đăng nhập thất bại');return d}
 async function loadProfile(){
- if(!accessToken){currentUser=null;currentProfile=null;updateUI();return false}
- try{
-  const r=await fetch(SUPABASE_URL+'/auth/v1/user',{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+accessToken}});
-  if(!r.ok)throw Error('Phiên đăng nhập hết hạn');
-  const au=await r.json();
-  if(!au?.id)throw Error('Phiên không hợp lệ');
-  const rows=await api('profiles?select=*&id=eq.'+encodeURIComponent(au.id)+'&limit=1');
-  const p=rows?.[0];
-  if(!p)throw Error('Không tìm thấy hồ sơ tài khoản');
-  currentProfile=p;currentUser={...p,id:au.id,email:au.email};
-  updateUI();
-  return true;
- }catch(e){
-  accessToken='';localStorage.removeItem('shopzicl_username_token');currentUser=null;currentProfile=null;updateUI();return false;
- }
+  if(!accessToken){currentUser=null;currentProfile=null;updateUI();return false}
+  try{
+    const r=await fetch(AUTH_URL,{method:'POST',headers:{apikey:SUPABASE_KEY,'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'},body:JSON.stringify({action:'me'})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok||!d.user) throw Error(d.error||'Phiên đăng nhập hết hạn');
+    currentProfile=d.user;
+    currentUser=d.user;
+    updateUI();
+    return true;
+  }catch(e){
+    accessToken='';localStorage.removeItem('shopzicl_username_token');currentUser=null;currentProfile=null;updateUI();return false;
+  }
 }
 async function refreshBalance(){
  if(!currentUser||!accessToken)return;
