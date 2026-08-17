@@ -1,5 +1,6 @@
 -- ShopZiCiCRBLX backend for Supabase
 -- Run this file in Supabase SQL Editor.
+-- Deposit RLS compatibility patch v2.
 
 create extension if not exists pgcrypto;
 
@@ -101,7 +102,7 @@ begin
   insert into public.profiles(id, username, email)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data->>'username', split_part(coalesce(new.email,''),'@',1)),
+    coalesce(new.raw_user_meta_data->>'username', split_part(coalesce(new.email,''),'@','1')),
     new.email
   )
   on conflict (id) do nothing;
