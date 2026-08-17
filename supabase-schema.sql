@@ -114,6 +114,51 @@ create trigger on_auth_user_created
 after insert on auth.users
 for each row execute procedure public.handle_new_user();
 
+-- The current shop uses username-auth instead of Supabase Auth on the browser.
+-- This RPC is intentionally limited to creating a PENDING deposit only.
+-- It cannot approve a deposit or change any balance. Admin approval remains
+-- protected by admin_review_deposit().
+create or replace function public.submit_deposit_request(
+  p_user_id uuid,
+  p_card_type text,
+  p_amount bigint,
+  p_serial text,
+  p_card_code text
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_id uuid;
+begin
+  if not exists (select 1 from public.profiles where id = p_user_id) then
+    raise exception 'user_not_found';
+  end if;
+
+  if p_amount <= 0 then
+    raise exception 'invalid_amount';
+  end if;
+
+  if length(trim(coalesce(p_serial,''))) = 0
+     or length(trim(coalesce(p_card_code,''))) = 0 then
+    raise exception 'missing_card_data';
+  end if;
+
+  insert into public.deposits(user_id, card_type, amount, serial, card_code, status)
+  values (p_user_id, trim(p_card_type), p_amount, trim(p_serial), trim(p_card_code), 'pending')
+  returning id into v_id;
+
+  return v_id;
+end;
+$$;
+
+revoke all on function public.submit_deposit_request(uuid,text,bigint,text,text) from public;
+grant execute on function public.submit_deposit_request(uuid,text,bigint,text,text) to anon, authenticated;
+
+authority definer
+
 create or replace function public.admin_adjust_balance(
   p_user_id uuid,
   p_amount bigint,
