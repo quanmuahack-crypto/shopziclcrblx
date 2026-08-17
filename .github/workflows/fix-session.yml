@@ -1,0 +1,32 @@
+name: Fix shop session
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch index session handling
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          new='''async function loadProfile(){\n  if(!accessToken){currentUser=null;currentProfile=null;updateUI();return false}\n  try{\n    const r=await fetch(AUTH_URL,{method:'POST',headers:{apikey:SUPABASE_KEY,'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'},body:JSON.stringify({action:'me'})});\n    const d=await r.json().catch(()=>({}));\n    if(!r.ok||!d.user) throw Error(d.error||'Phiên đăng nhập hết hạn');\n    currentProfile=d.user;\n    currentUser=d.user;\n    updateUI();\n    return true;\n  }catch(e){\n    accessToken='';localStorage.removeItem('shopzicl_username_token');currentUser=null;currentProfile=null;updateUI();return false;\n  }\n}\n'''
+          s2=re.sub(r'async function loadProfile\(\)\{.*?\n\}\n(?=async function refreshBalance)',new,s,count=1,flags=re.S)
+          if s2==s: raise SystemExit('loadProfile block not found')
+          p.write_text(s2,encoding='utf-8')
+          PY
+      - name: Commit patched shop
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'fix: restore username session and balance'
+          git push
