@@ -1,0 +1,33 @@
+name: Fix service buttons 3
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch JS
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          target='JSON.stringify(k)'
+          replacement="String.fromCharCode(39)+esc(k)+String.fromCharCode(39)"
+          if target not in s:
+              raise SystemExit('target not found')
+          s=s.replace(target,replacement)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'fix: service buttons handler'
+          git push
