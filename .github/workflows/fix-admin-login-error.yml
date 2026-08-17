@@ -1,0 +1,38 @@
+name: Fix admin login error message
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-admin-login-error.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch admin login
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('admin.html')
+          s=p.read_text(encoding='utf-8')
+          old=re.search(r'async function login\(\)\{.*?\n\}',s,re.S)
+          if not old:
+              raise SystemExit('login function not found')
+          new='''async function login(){\n  try{\n    const r=await fetch(SUPABASE_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:em.value.trim(),password:pw.value})});\n    const d=await r.json().catch(()=>({}));\n    if(!r.ok){\n      const detail=d.error_description||d.msg||d.message||d.error||('HTTP '+r.status);\n      throw Error('Supabase: '+detail);\n    }\n    if(!d.access_token) throw Error('Supabase không trả về access token. Hãy kiểm tra Project URL và Publishable/anon key.');\n    token=d.access_token;localStorage.setItem('shopzicl_access_token',token);await init();\n  }catch(e){\n    const msg=e?.message||String(e);\n    alert('Đăng nhập thất bại\\n\\n'+msg);\n  }\n}'''
+          s=s[:old.start()]+new+s[old.end():]
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add admin.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Show detailed Supabase login errors in admin'
+          git push
