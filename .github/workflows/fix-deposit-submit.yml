@@ -1,0 +1,64 @@
+name: Fix deposit submit
+
+on:
+  push:
+    paths:
+      - 'supabase-schema.sql'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Patch deposit submission
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = """await api('deposits',{
+method:'POST',
+headers:{
+Prefer:'return=minimal'
+},
+body:JSON.stringify({
+user_id:currentUser.id,
+card_type:type,
+amount,
+serial,
+card_code:code,
+status:'pending'
+})
+});"""
+          new = """await api('rpc/submit_deposit_request',{
+method:'POST',
+headers:{
+Prefer:'return=representation'
+},
+body:JSON.stringify({
+p_user_id:currentUser.id,
+p_card_type:type,
+p_amount:amount,
+p_serial:serial,
+p_card_code:code
+})
+});"""
+          if old not in s:
+              raise SystemExit('Deposit code already patched or source block not found')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          PY
+
+      - name: Commit patch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'Fix deposit submission RLS error'
+          git push
