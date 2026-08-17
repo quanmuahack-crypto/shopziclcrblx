@@ -1,0 +1,80 @@
+name: Harden Shop
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch index safely
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          # Replace service renderer with a DOM-safe implementation.
+          new_render=r'''function renderServices(){
+            const g=document.getElementById('serviceGrid');
+            if(!g)return;
+            g.innerHTML='';
+            Object.keys(catalog).forEach(k=>{
+              const icon=k==='Leviathan'?'🌊':k==='Level'?'📈':k==='Combo Tộc V4'?'⚡':k==='Tộc Draco'?'🐉':k==='Beli & Frag'?'💰':'⚔️';
+              const article=document.createElement('article'); article.className='card';
+              article.innerHTML='<div style="font-size:42px">'+icon+'</div><h3>'+esc(k)+'</h3><span class="status">Sẵn sàng</span>';
+              const btn=document.createElement('button'); btn.className='btn dark full'; btn.textContent='XEM GÓI →'; btn.type='button'; btn.addEventListener('click',()=>openOrder(k));
+              article.appendChild(btn); g.appendChild(article);
+            });
+          }
+          '''
+          s2=re.sub(r'function renderServices\(\)\{.*?\n\}\nasync function renderTop5',new_render+'async function renderTop5',s,count=1,flags=re.S)
+          if s2==s: raise SystemExit('renderServices block not found')
+          s=s2
+          # Make session restore retry-friendly and never destroy a valid local token on transient errors.
+          new_load=r'''async function loadProfile(){
+            if(!accessToken){currentUser=null;currentProfile=null;updateUI();return false}
+            try{
+              const r=await fetch(AUTH_URL,{method:'POST',headers:{apikey:SUPABASE_KEY,'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'},body:JSON.stringify({action:'me'})});
+              const d=await r.json().catch(()=>({}));
+              if(!r.ok||!d.user) throw Error(d.error||'Phiên đăng nhập hết hạn');
+              currentProfile=d.user; currentUser=d.user; updateUI(); return true;
+            }catch(e){
+              if(/invalid_token|expired|hết hạn/i.test(String(e.message||''))){
+                accessToken=''; localStorage.removeItem('shopzicl_username_token'); currentUser=null; currentProfile=null; updateUI();
+              }
+              return false;
+            }
+          }
+          '''
+          s2=re.sub(r'async function loadProfile\(\)\{.*?\n\}\nasync function refreshBalance',new_load+'async function refreshBalance',s,count=1,flags=re.S)
+          if s2==s: raise SystemExit('loadProfile block not found')
+          s=s2
+          # Add a global JS error reporter without changing normal UI behavior.
+          marker='</script>'
+          guard="""window.addEventListener('error',e=>{console.error('ShopZiCiCRBLX:',e.error||e.message)});\nwindow.addEventListener('unhandledrejection',e=>{console.error('ShopZiCiCRBLX promise:',e.reason)});\n"""
+          if guard not in s: s=s.replace(marker,guard+marker,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Validate HTML script syntax
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('index.html').read_text(encoding='utf-8')
+          assert '<html' in s and '</html>' in s
+          scripts=re.findall(r'<script>(.*?)</script>',s,re.S)
+          assert scripts, 'No script found'
+          print('index.html OK; script blocks:',len(scripts))
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'fix: harden service buttons and session handling'
+          git push
