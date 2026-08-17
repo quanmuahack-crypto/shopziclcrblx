@@ -2,7 +2,7 @@ name: Rebuild deposit section
 on:
   push:
     paths:
-      - .github/deposit-rebuild-trigger
+      - deposit-rebuild-trigger.txt
 permissions:
   contents: write
 jobs:
