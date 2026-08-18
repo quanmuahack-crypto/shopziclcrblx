@@ -1,0 +1,33 @@
+name: Embed UGPhone services
+on:
+  push:
+    paths-ignore:
+      - 'index.html'
+permissions:
+  contents: write
+jobs:
+  embed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Embed UGPhone section and script
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          section=r'''<section id="ugphone-services" class="section"><h2>☁️ Dịch vụ UGPHONE</h2><p>Chọn GVIP hoặc SVIP phù hợp nhu cầu treo Roblox.</p><div class="ug-grid-wrap"><h3>💎 UGPHONE GVIP</h3><div class="ug-grid">''' + ''.join([f'<div class="card"><div class="status">💎 GVIP</div><h3>{n}</h3><p>{note}</p><b class="money">{price:,} đ</b><button class="btn dark full" onclick="openOrder(\'UGPHONE GVIP\')">XEM GÓI →</button></div>' for n,price,note in [('GVIP 2 ngày',30000,'Treo 2–3 tab Roblox'),('GVIP 5 ngày',35000,'Treo 2–3 tab Roblox'),('GVIP 7 ngày',40000,'Treo 2–3 tab Roblox'),('GVIP 10 ngày',55000,'Treo 2–3 tab Roblox'),('GVIP 15 ngày',75000,'Treo 2–3 tab Roblox'),('GVIP 30 ngày',150000,'Treo 2–3 tab Roblox')]]) + r'''</div><h3>👑 UGPHONE SVIP</h3><div class="ug-grid">''' + ''.join([f'<div class="card"><div class="status">👑 SVIP</div><h3>{n}</h3><p>{note}</p><b class="money">{price:,} đ</b><button class="btn dark full" onclick="openOrder(\'UGPHONE SVIP\')">XEM GÓI →</button></div>' for n,price,note in [('SVIP 7 ngày',100000,'Treo 6 tab Roblox'),('SVIP 15 ngày',160000,'Treo 6 tab Roblox'),('SVIP 30 ngày',250000,'Treo 6 tab Roblox')]]) + r'''</div></div></section>'''
+          if 'id="ugphone-services"' not in s:
+              s=s.replace('</main>', section+'\n</main>',1)
+          if 'src="ugphone.js"' not in s:
+              s=s.replace('</body>','<script src="ugphone.js"></script>\n</body>',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'feat: add UGPhone GVIP and SVIP services to shop'
+          git push
