@@ -23,10 +23,18 @@
 
   async function fixedTop5(){
     const el=document.getElementById('top5');
-    if(!el||typeof rpc!=='function') return;
+    if(!el) return;
     try{
-      const rows=await rpc('get_top_deposit_ranking',{});
-      const top=(rows||[]).slice(0,5);
+      const url=window.SUPABASE_URL||'https://ufevipuhejvhiufyqqnz.supabase.co';
+      const key=window.SUPABASE_KEY||'sb_publishable_6ShPhvGpN4_02Za2tOTOTg_GF0su_OA';
+      const r=await fetch(url+'/rest/v1/rpc/get_top_deposit_ranking',{
+        method:'POST',
+        headers:{apikey:key,Authorization:'Bearer '+(localStorage.getItem('shopzicl_username_token')||key),'Content-Type':'application/json'},
+        body:'{}'
+      });
+      if(!r.ok) throw Error(await r.text()||r.statusText);
+      const rows=await r.json();
+      const top=(Array.isArray(rows)?rows:[]).slice(0,5);
       if(!top.length){
         el.innerHTML='<div class="empty">Chưa có dữ liệu nạp đã duyệt.</div>';
         return;
@@ -43,19 +51,19 @@
 
   function startTop5Guard(){
     fixedTop5();
-    // Giữ bảng Top 5 đúng dữ liệu ngay cả khi code cũ của shop render lại khu vực #top5.
-    setInterval(fixedTop5,1500);
+    setTimeout(fixedTop5,500);
+    setTimeout(fixedTop5,1500);
+    setTimeout(fixedTop5,3000);
     const el=document.getElementById('top5');
     if(el&&window.MutationObserver){
       let timer=null;
-      const observer=new MutationObserver(()=>{
-        clearTimeout(timer);
-        timer=setTimeout(fixedTop5,80);
-      });
+      const observer=new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(fixedTop5,80)});
       observer.observe(el,{childList:true,subtree:true});
     }
   }
 
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){addVngService();setTimeout(startTop5Guard,150)});
-  else {addVngService();setTimeout(startTop5Guard,150)}
+  function boot(){addVngService();setTimeout(startTop5Guard,150)}
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+  window.addEventListener('focus',()=>setTimeout(fixedTop5,150));
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(fixedTop5,150)});
 })();
