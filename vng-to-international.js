@@ -20,21 +20,21 @@
 
   function addAvatarService(){
     if(typeof catalog==='undefined'||typeof renderServices!=='function') return;
-    catalog['Avatar'] = [
+    catalog['Robux 120H'] = [
       ['(120H) 2.860 Robux (Sau Thuế Nhận - 2.000 Robux)',514000],
       ['(120H) 2.150 Robux (Sau Thuế Nhận - 1.505 Robux)',387000],
-      ['(120H) 1.430 Robux (Sau Thuế Nhận - 1.000 Robux)',0]
+      ['(120H) 1.430 Robux (Sau Thuế Nhận - 1.000 Robux)',257000]
     ];
     renderServices();
     const grid=document.getElementById('serviceGrid');
-    if(!grid||grid.dataset.avatarStyled) return;
+    if(!grid||grid.dataset.robux120hStyled) return;
     const cards=grid.querySelectorAll('.card');
-    const card=[...cards].find(c=>c.textContent.includes('Avatar'));
+    const card=[...cards].find(c=>c.textContent.includes('Robux 120H'));
     if(card){
-      card.insertAdjacentHTML('afterbegin','<div style="display:flex;align-items:center;justify-content:center;margin-bottom:12px"><span style="display:inline-flex;width:62px;height:62px;align-items:center;justify-content:center;border-radius:18px;background:linear-gradient(135deg,#eef2ff,#dbeafe);font-size:32px">🧑‍🎨</span></div>');
-      card.insertAdjacentHTML('beforeend','<div class="msg" style="font-size:12px;margin-top:10px">🎨 Dịch vụ Avatar — hình ảnh/gói Avatar sẽ được cập nhật thêm sau.</div>');
+      card.insertAdjacentHTML('afterbegin','<div style="display:flex;align-items:center;justify-content:center;margin-bottom:12px"><span style="display:inline-flex;width:62px;height:62px;align-items:center;justify-content:center;border-radius:18px;background:linear-gradient(135deg,#fff7d6,#ffe08a);font-size:32px">💰</span></div>');
+      card.insertAdjacentHTML('beforeend','<div class="msg" style="font-size:12px;margin-top:10px">💰 Robux 120H — nhận Robux sau thuế theo từng gói.</div>');
     }
-    grid.dataset.avatarStyled='1';
+    grid.dataset.robux120hStyled='1';
   }
 
   function moneyTop(v){return Number(v||0).toLocaleString('vi-VN')+' đ'}
