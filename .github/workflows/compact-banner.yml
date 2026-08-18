@@ -1,0 +1,36 @@
+name: Compact shop banner
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  compact:
+    if: ${{ !contains(github.event.head_commit.message, 'Compact shop banner to 1/3') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Resize only the shop banner display
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = '<section class="hero" style="padding:0;overflow:hidden;background:#000"><img src="images/shop-banner.svg" alt="Cày thuê Blox Fruits" style="display:block;width:100%;height:auto"></section>'
+          new = '<section class="hero" style="padding:0;overflow:hidden;background:#000;height:216px"><img src="images/shop-banner.svg" alt="Cày thuê Blox Fruits" style="display:block;width:100%;height:216px;object-fit:cover;object-position:center"></section>'
+          if old not in s:
+              raise SystemExit('Target banner markup not found; refusing to change anything else.')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          PY
+      - name: Commit banner change and remove helper
+        run: |
+          rm -f .github/workflows/compact-banner.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .github/workflows/compact-banner.yml
+          git diff --cached --quiet && exit 0
+          git commit -m "Compact shop banner to 1/3"
+          git push
