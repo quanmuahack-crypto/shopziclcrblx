@@ -14,6 +14,11 @@
     const key='Kiếm / Súng / Phụ kiện';
     if(Array.isArray(catalog[key])&&!catalog[key].some(x=>x[0]==='Lấy áo choàng râu đen')){catalog[key].push(['Lấy áo choàng râu đen',90000]);renderServices();}
   }
+  function addMap2Gag2(){
+    if(typeof catalog==='undefined'||typeof renderServices!=='function') return;
+    catalog['Map 2 GAG2']=[['X2000 Super Syrup Watering Can',60000],['X1000 Super Syrup Sprinkler',60000],['X1 Shadow Dragon (Rồng Đen)',18000],['x1000 Seed Atlantic Giant Pumpkin',240000]];
+    renderServices();
+  }
   function moneyTop(v){return Number(v||0).toLocaleString('vi-VN')+' đ'}
   function escTop(v){return String(v??'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[m]))}
   async function fixedTop5(){
@@ -28,14 +33,15 @@
     'Level':'images/level.svg',
     'VNG → Roblox Quốc tế':'images/vng-quoc-te.svg',
     'Robux 120H':'images/robux-120h.svg',
-    'Kiếm / Súng / Phụ kiện':'images/kiem-sung.svg'
+    'Kiếm / Súng / Phụ kiện':'images/kiem-sung.svg',
+    'Map 2 GAG2':'images/map-2-gag2.svg'
   };
   function applyServiceImages(){
     const grid=document.getElementById('serviceGrid');if(!grid)return;
     grid.querySelectorAll('.card').forEach(card=>{const title=card.querySelector('h3');if(!title)return;const src=serviceImages[title.textContent.trim()];if(!src)return;const old=card.querySelector('.service-avatar');if(old){old.src=src;return}const icon=card.querySelector(':scope > div');if(icon){icon.outerHTML='<img class="service-avatar" src="'+src+'" alt="'+title.textContent.trim().replace(/"/g,'&quot;')+'">';}});
   }
   function startTop5Guard(){fixedTop5();setTimeout(fixedTop5,500);setTimeout(fixedTop5,1500);setTimeout(fixedTop5,3000)}
-  function boot(){addVngService();addAvatarService();addBlackbeardCape();applyServiceImages();setTimeout(applyServiceImages,100);setTimeout(applyServiceImages,600);setTimeout(startTop5Guard,150)}
+  function boot(){addVngService();addAvatarService();addBlackbeardCape();addMap2Gag2();applyServiceImages();setTimeout(applyServiceImages,100);setTimeout(applyServiceImages,600);setTimeout(startTop5Guard,150)}
   const style=document.createElement('style');style.textContent='.service-avatar{width:100%;height:190px;object-fit:cover;object-position:center;display:block;border-radius:14px 14px 0 0;margin:0 0 14px;image-rendering:auto;transform:none!important;backface-visibility:visible;filter:none!important;opacity:1!important}.card:has(.service-avatar){padding-top:0;overflow:hidden}.card .service-avatar{will-change:auto}';document.head.appendChild(style);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
   window.addEventListener('focus',()=>{setTimeout(fixedTop5,150);setTimeout(applyServiceImages,50)});
