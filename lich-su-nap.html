@@ -14,7 +14,7 @@
 <script>
 const SUPABASE_URL='https://ufevipuhejvhiufyqqnz.supabase.co';
 const SUPABASE_KEY='sb_publishable_6ShPhGpN4_02Za2tOTOTg_GF0su_OA';
-let token=localStorage.getItem('shopzicl_access_token')||'';
+let token=localStorage.getItem('shopzicl_username_token')||'';
 function money(v){return Number(v||0).toLocaleString('vi-VN')+' đ'}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 async function jsonFetch(url,opt={}){const r=await fetch(url,{...opt,headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+token,...(opt.headers||{})}});const text=await r.text();let data;try{data=text?JSON.parse(text):null}catch{throw Error('Máy chủ trả về dữ liệu không hợp lệ. Vui lòng tải lại trang.')}if(!r.ok)throw Error(data?.message||data?.error_description||'Không thể tải dữ liệu');return data}
