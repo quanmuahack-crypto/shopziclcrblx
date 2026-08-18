@@ -1,0 +1,101 @@
+name: Add UGPhone code products
+
+on:
+  workflow_run:
+    workflows: ["Embed UGPhone services"]
+    types: [completed]
+
+permissions:
+  contents: write
+
+jobs:
+  add-code-products:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Add only the UGPhone CODE section
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          code_section = r'''
+          <div id="ug-code-packages" class="ugphone-packages">
+            <h3>🔐 UGPHONE CODE — HÀNG CODE RIÊNG</h3>
+            <p>Code riêng, không phải hàng share.</p>
+            <div class="ugphone-package-list">
+              <div class="ugphone-package"><strong>UVIP 7 ngày CODE</strong><span>75.000 đ</span><button class="btn dark full" type="button" onclick="openUgPhoneCodeOrder('UVIP 7 ngày CODE',75000)">MUA CODE</button></div>
+              <div class="ugphone-package"><strong>GVIP 7 ngày CODE</strong><span>80.000 đ</span><button class="btn dark full" type="button" onclick="openUgPhoneCodeOrder('GVIP 7 ngày CODE',80000)">MUA CODE</button></div>
+              <div class="ugphone-package"><strong>UVIP 33 ngày CODE</strong><span>270.000 đ</span><button class="btn dark full" type="button" onclick="openUgPhoneCodeOrder('UVIP 33 ngày CODE — 270K',270000)">MUA CODE</button></div>
+              <div class="ugphone-package"><strong>UVIP 33 ngày CODE</strong><span>280.000 đ</span><button class="btn dark full" type="button" onclick="openUgPhoneCodeOrder('UVIP 33 ngày CODE — 280K',280000)">MUA CODE</button></div>
+            </div>
+          </div>
+          <script>
+          function openUgPhoneCodeOrder(packageName,price){
+            if(typeof currentUser==='undefined'||!currentUser){
+              if(typeof openAuth==='function')openAuth();else alert('Vui lòng đăng nhập trước.');
+              return;
+            }
+            window.ugCodeSelected={packageName,price};
+            document.getElementById('ugCodeOrderTitle').textContent='Mua code — '+packageName;
+            document.getElementById('ugCodeOrderPrice').textContent=Number(price).toLocaleString('vi-VN')+' đ';
+            document.getElementById('ugCodeOrderMsg').innerHTML='';
+            document.getElementById('ugCodeOrderModal').classList.add('show');
+          }
+          function closeUgPhoneCodeOrder(){
+            document.getElementById('ugCodeOrderModal').classList.remove('show');
+            window.ugCodeSelected=null;
+          }
+          async function submitUgPhoneCodeOrder(){
+            const msg=document.getElementById('ugCodeOrderMsg');
+            const selected=window.ugCodeSelected;
+            if(!selected)return;
+            const btn=document.getElementById('ugCodeOrderSubmit');
+            btn.disabled=true;
+            try{
+              if(typeof refreshBalance==='function')await refreshBalance();
+              if(Number(currentUser.balance||0)<selected.price){
+                msg.innerHTML='<div class="msg danger">Số dư không đủ. Vui lòng nạp tiền và chờ Admin duyệt.</div>';
+                btn.disabled=false;
+                return;
+              }
+              await api('orders',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:currentUser.id,service_name:'UGPHONE CODE',package_name:selected.packageName,price:selected.price,status:'pending'})});
+              if(typeof refreshBalance==='function')await refreshBalance();
+              closeUgPhoneCodeOrder();
+              alert('✅ Đơn UGPhone Code đã được gửi lên Admin.');
+            }catch(e){
+              msg.innerHTML='<div class="msg danger">Không tạo được đơn: '+esc(e.message)+'</div>';
+              btn.disabled=false;
+            }
+          }
+          </script>
+          '''
+
+          if 'id="ug-code-packages"' not in s:
+              marker = '  <script>\n          function toggleUgPhonePackages'
+              if marker not in s:
+                  raise SystemExit('Không tìm thấy vị trí UGPhone để chèn CODE.')
+              s = s.replace(marker, code_section + '\n' + marker, 1)
+
+          modal = r'''<div id="ugCodeOrderModal" class="modal"><div class="box"><button class="close" onclick="closeUgPhoneCodeOrder()">✕</button><h2 id="ugCodeOrderTitle">Mua UGPhone Code</h2><div class="msg">💰 Giá: <b id="ugCodeOrderPrice">0 đ</b></div><p>🔐 Đây là <b>hàng code riêng</b>, không phải hàng share.</p><div id="ugCodeOrderMsg"></div><button id="ugCodeOrderSubmit" class="btn dark full" type="button" onclick="submitUgPhoneCodeOrder()">XÁC NHẬN MUA</button></div></div>'''
+          if 'id="ugCodeOrderModal"' not in s:
+              s = s.replace('</main>', '</main>\n' + modal, 1)
+
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit only if changed
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'feat: add UGPhone code products'
+          git push
