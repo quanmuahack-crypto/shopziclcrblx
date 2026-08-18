@@ -80,9 +80,7 @@ function openUgPhoneOrder(service,packageName,price){
   window.ugSelected={service,packageName,price};
   document.getElementById('ugOrderTitle').textContent='Đặt đơn — '+packageName;
   document.getElementById('ugOrderPrice').textContent=Number(price).toLocaleString('vi-VN')+' đ';
-  document.getElementById('ugRobloxAccount').value='';
-  document.getElementById('ugRobloxPassword').value='';
-  document.getElementById('ugBackupCode').value='';
+  document.getElementById('ugPhoneId').value='';
   document.getElementById('ugOrderMsg').innerHTML='';
   document.getElementById('ugOrderModal').classList.add('show');
 }
@@ -90,14 +88,12 @@ function closeUgPhoneOrder(){document.getElementById('ugOrderModal').classList.r
 async function submitUgPhoneOrder(){
   const msg=document.getElementById('ugOrderMsg');
   if(!window.ugSelected)return;
-  const account=document.getElementById('ugRobloxAccount').value.trim();
-  const password=document.getElementById('ugRobloxPassword').value;
-  const backup=document.getElementById('ugBackupCode').value.trim();
-  if(!account||!password||!backup){msg.innerHTML='<div class="msg danger">Vui lòng nhập ID, mật khẩu và mã dự phòng.</div>';return}
+  const ugPhoneId=document.getElementById('ugPhoneId').value.trim();
+  if(!ugPhoneId){msg.innerHTML='<div class="msg danger">Vui lòng nhập ID UGPHONE của bạn.</div>';return}
   try{
     if(typeof refreshBalance==='function')await refreshBalance();
     if(Number(currentUser.balance||0)<window.ugSelected.price){msg.innerHTML='<div class="msg danger">Số dư không đủ. Vui lòng nạp tiền và chờ Admin duyệt.</div>';return}
-    await api('orders',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:currentUser.id,service_name:window.ugSelected.service,package_name:window.ugSelected.packageName,price:window.ugSelected.price,status:'pending',game_username:account,game_password:password,extra_data:'Mã dự phòng: '+backup})});
+    await api('orders',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:currentUser.id,service_name:window.ugSelected.service,package_name:window.ugSelected.packageName,price:window.ugSelected.price,status:'pending',game_username:ugPhoneId,game_password:'',extra_data:'ID UGPHONE: '+ugPhoneId})});
     if(typeof refreshBalance==='function')await refreshBalance();
     closeUgPhoneOrder();
     alert('✅ Đơn UGPhone đã được gửi lên Admin.');
@@ -108,7 +104,7 @@ async function submitUgPhoneOrder(){
 </main>
 <div id="authModal" class="modal"><div class="box"><button class="close" onclick="closeAuth()">✕</button><h2 id="authTitle">Đăng nhập</h2><div id="authMsg"></div><div class="field"><label>Tên tài khoản</label><input id="username" autocomplete="username" maxlength="32" placeholder="Nhập tên tài khoản"></div><div class="field"><label>Mật khẩu</label><input id="password" type="password" autocomplete="current-password" placeholder="Ít nhất 6 ký tự"></div><button class="btn dark full" onclick="submitAuth()" id="authSubmit">ĐĂNG NHẬP</button><button class="btn light full" onclick="toggleAuth()" id="toggleAuthBtn">Chưa có tài khoản? Đăng ký</button></div></div>
 <div id="orderModal" class="modal"><div class="box"><button class="close" onclick="closeOrder()">✕</button><h2 id="orderTitle">Đặt đơn</h2><div class="field"><label>Gói dịch vụ</label><select id="package"></select></div><div class="field"><label>Tài khoản Roblox</label><input id="robloxAccount" autocomplete="off"></div><div class="field"><label>Mật khẩu Roblox</label><input id="robloxPassword" type="password" autocomplete="off"></div><div class="msg">⚠️ Chỉ nhập thông tin cần thiết cho đơn.</div><button class="btn dark full" onclick="submitOrder()">ĐẶT ĐƠN</button></div></div>
-<div id="ugOrderModal" class="modal"><div class="box"><button class="close" onclick="closeUgPhoneOrder()">✕</button><h2 id="ugOrderTitle">Đặt đơn UGPhone</h2><div class="msg">💰 Giá gói: <b id="ugOrderPrice">0 đ</b></div><div class="field"><label>ID Roblox</label><input id="ugRobloxAccount" autocomplete="off" placeholder="Nhập ID Roblox"></div><div class="field"><label>Mật khẩu Roblox</label><input id="ugRobloxPassword" type="password" autocomplete="off" placeholder="Nhập mật khẩu Roblox"></div><div class="field"><label>Mã dự phòng</label><input id="ugBackupCode" autocomplete="off" placeholder="Nhập mã dự phòng"></div><div id="ugOrderMsg"></div><button class="btn dark full" type="button" onclick="submitUgPhoneOrder()">ĐẶT ĐƠN</button></div></div>
+<div id="ugOrderModal" class="modal"><div class="box"><button class="close" onclick="closeUgPhoneOrder()">✕</button><h2 id="ugOrderTitle">Đặt đơn UGPhone</h2><div class="msg">💰 Giá gói: <b id="ugOrderPrice">0 đ</b></div><div class="field"><label>ID UGPHONE của bạn:</label><input id="ugPhoneId" autocomplete="off" placeholder="Nhập ID UGPHONE của bạn"></div><div id="ugOrderMsg"></div><button class="btn dark full" type="button" onclick="submitUgPhoneOrder()">ĐẶT ĐƠN</button></div></div>
 <script>
 const SUPABASE_URL='https://ufevipuhejvhiufyqqnz.supabase.co';
 const SUPABASE_KEY='sb_publishable_6ShPhvGpN4_02Za2tOTOTg_GF0su_OA';
