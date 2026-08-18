@@ -17,5 +17,42 @@
     }
     grid.dataset.vngStyled='1';
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',addVngService); else addVngService();
+
+  function moneyTop(v){return Number(v||0).toLocaleString('vi-VN')+' đ'}
+  function escTop(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+
+  async function fixedTop5(){
+    const el=document.getElementById('top5');
+    if(!el||typeof api!=='function') return;
+    try{
+      // Lấy toàn bộ lần nạp đã được duyệt, sau đó cộng dồn theo từng tài khoản.
+      const deposits=await api('deposits?select=user_id,amount&status=eq.approved');
+      const totals={};
+      (deposits||[]).forEach(d=>{
+        const id=d.user_id;
+        if(!id)return;
+        totals[id]=(totals[id]||0)+Number(d.amount||0);
+      });
+      const ids=Object.keys(totals);
+      if(!ids.length){el.innerHTML='<div class="empty">Chưa có dữ liệu nạp đã duyệt.</div>';return}
+
+      const users=await api('profiles?select=id,username&role=eq.customer&id=in.('+ids.join(',')+')');
+      const names=Object.fromEntries((users||[]).map(u=>[u.id,u.username]));
+      const top=ids.map(id=>({id,username:names[id]||'Khách hàng',total:totals[id]}))
+        .filter(x=>x.total>0)
+        .sort((a,b)=>b.total-a.total||String(a.username).localeCompare(String(b.username),'vi'))
+        .slice(0,5);
+
+      el.innerHTML=top.map((x,i)=>{
+        const medal=['🥇','🥈','🥉','🏅','🏅'][i];
+        return '<div class="top-card" style="position:relative;overflow:hidden"><div class="rank">'+medal+' TOP '+(i+1)+'</div><strong style="display:block;margin-top:8px;word-break:break-word">'+escTop(x.username)+'</strong><div style="margin-top:8px;font-size:18px;font-weight:900;color:#1464e8">'+moneyTop(x.total)+'</div><div class="empty" style="font-size:12px">Tổng nạp đã duyệt</div></div>';
+      }).join('')||'<div class="empty">Chưa có dữ liệu nạp đã duyệt.</div>';
+    }catch(e){
+      console.error('fixedTop5:',e);
+      el.innerHTML='<div class="empty">Không thể tải bảng xếp hạng.</div>';
+    }
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){addVngService();setTimeout(fixedTop5,50)}); else {addVngService();setTimeout(fixedTop5,50)}
+  window.addEventListener('focus',()=>setTimeout(fixedTop5,100));
 })();
