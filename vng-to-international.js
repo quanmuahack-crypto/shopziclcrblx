@@ -21,11 +21,11 @@
     try{const url=window.SUPABASE_URL||'https://ufevipuhejvhiufyqqnz.supabase.co',key=window.SUPABASE_KEY||'sb_publishable_6ShPhvGpN4_02Za2tOTOTg_GF0su_OA';const r=await fetch(url+'/rest/v1/rpc/get_top_deposit_ranking',{method:'POST',headers:{apikey:key,Authorization:'Bearer '+(localStorage.getItem('shopzicl_username_token')||key),'Content-Type':'application/json'},body:'{}'});if(!r.ok)throw Error(await r.text()||r.statusText);const rows=await r.json(),top=(Array.isArray(rows)?rows:[]).slice(0,5);el.innerHTML=top.length?top.map((x,i)=>'<div class="top-card"><div class="rank">'+['🥇','🥈','🥉','🏅','🏅'][i]+' TOP '+(i+1)+'</div><strong>'+escTop(x.username||'Khách hàng')+'</strong><div>'+moneyTop(x.total_deposit)+'</div></div>').join(''):'<div class="empty">Chưa có dữ liệu nạp đã duyệt.</div>'}catch(e){el.innerHTML='<div class="empty">Không thể tải bảng xếp hạng.</div>'}
   }
   const serviceImages={
-    'Leviathan':'data:image/webp;base64,UklGRgAAAABXRUJQVlA4ICAAAABwAgCdASoAAAEAAUAmJaQAA3AA/vuUAAA=',
-    'Beli & Frag':'data:image/webp;base64,UklGRgAAAABXRUJQVlA4ICAAAABwAgCdASoAAAEAAUAmJaQAA3AA/vuUAAA=',
-    'Combo Tộc V4':'data:image/webp;base64,UklGRgAAAABXRUJQVlA4ICAAAABwAgCdASoAAAEAAUAmJaQAA3AA/vuUAAA=',
-    'Tộc Draco':'data:image/webp;base64,UklGRgAAAABXRUJQVlA4ICAAAABwAgCdASoAAAEAAUAmJaQAA3AA/vuUAAA=',
-    'Level':'data:image/webp;base64,UklGRgAAAABXRUJQVlA4ICAAAABwAgCdASoAAAEAAUAmJaQAA3AA/vuUAAA='
+    'Leviathan':'images/leviathan.png',
+    'Beli & Frag':'images/beli-frag.png',
+    'Combo Tộc V4':'images/combo-v4.png',
+    'Tộc Draco':'images/toc-draco.png',
+    'Level':'images/level.png'
   };
   function applyServiceImages(){
     const grid=document.getElementById('serviceGrid');if(!grid)return;
