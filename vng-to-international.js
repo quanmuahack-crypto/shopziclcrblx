@@ -34,7 +34,7 @@
   }
   function startTop5Guard(){fixedTop5();setTimeout(fixedTop5,500);setTimeout(fixedTop5,1500);setTimeout(fixedTop5,3000)}
   function boot(){addVngService();addAvatarService();addBlackbeardCape();applyServiceImages();setTimeout(applyServiceImages,100);setTimeout(applyServiceImages,600);setTimeout(startTop5Guard,150)}
-  const style=document.createElement('style');style.textContent='.service-avatar{width:100%;height:auto;aspect-ratio:1.52/1;object-fit:cover;object-position:center;display:block;border-radius:12px;margin:0 0 14px;image-rendering:auto;transform:translateZ(0);backface-visibility:hidden;filter:contrast(1.06) saturate(1.08) brightness(1.02)}.card:has(.service-avatar){padding-top:12px;overflow:hidden}.card .service-avatar{will-change:auto}';document.head.appendChild(style);
+  const style=document.createElement('style');style.textContent='.service-avatar{width:100%;height:auto;aspect-ratio:auto;object-fit:contain;object-position:center;display:block;border-radius:12px;margin:0 0 14px;image-rendering:auto;transform:none;backface-visibility:visible;filter:none}.card:has(.service-avatar){padding-top:0;overflow:visible}.card .service-avatar{will-change:auto}';document.head.appendChild(style);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
   window.addEventListener('focus',()=>{setTimeout(fixedTop5,150);setTimeout(applyServiceImages,50)});
   document.addEventListener('visibilitychange',()=>{if(!document.hidden){setTimeout(fixedTop5,150);setTimeout(applyServiceImages,50)}});
