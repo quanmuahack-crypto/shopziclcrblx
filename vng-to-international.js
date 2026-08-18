@@ -25,8 +25,6 @@
     const el=document.getElementById('top5');
     if(!el||typeof rpc!=='function') return;
     try{
-      // RPC dùng SECURITY DEFINER để bảng xếp hạng đọc được dữ liệu của tất cả khách,
-      // không bị RLS khiến chỉ tài khoản đang đăng nhập nhìn thấy chính mình.
       const rows=await rpc('get_top_deposit_ranking',{});
       const top=(rows||[]).slice(0,5);
       if(!top.length){
@@ -43,6 +41,21 @@
     }
   }
 
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){addVngService();setTimeout(fixedTop5,100)}); else {addVngService();setTimeout(fixedTop5,100)}
-  window.addEventListener('focus',()=>setTimeout(fixedTop5,150));
+  function startTop5Guard(){
+    fixedTop5();
+    // Giữ bảng Top 5 đúng dữ liệu ngay cả khi code cũ của shop render lại khu vực #top5.
+    setInterval(fixedTop5,1500);
+    const el=document.getElementById('top5');
+    if(el&&window.MutationObserver){
+      let timer=null;
+      const observer=new MutationObserver(()=>{
+        clearTimeout(timer);
+        timer=setTimeout(fixedTop5,80);
+      });
+      observer.observe(el,{childList:true,subtree:true});
+    }
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){addVngService();setTimeout(startTop5Guard,150)});
+  else {addVngService();setTimeout(startTop5Guard,150)}
 })();
