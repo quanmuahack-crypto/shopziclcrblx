@@ -7,30 +7,33 @@ permissions:
   contents: write
 jobs:
   add-contact:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Add contact section only
+      - name: Add contact and deposit history navigation
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
-          marker='id="contact-section"'
-          if marker in s:
-              print('Contact section already exists')
-              raise SystemExit(0)
-          section='''<section id="contact-section" class="section"><h2>📞 Liên Hệ</h2><p>Nếu cần hỗ trợ, hãy tham gia Discord của shop.</p><a href="https://discord.gg/VTYgy5qrv" target="_blank" rel="noopener noreferrer" class="btn dark" style="display:inline-block;text-decoration:none">Nhấn vào đây</a></section>'''
-          if '</main>' not in s:
-              raise SystemExit('Không tìm thấy </main>')
-          s=s.replace('</main>',section+'\n</main>',1)
-          p.write_text(s,encoding='utf-8')
+          old='<button onclick="document.getElementById(\'deposit\').scrollIntoView()">💳 Nạp tiền</button>\n<button id="authBtn" class="dark" onclick="openAuth()">Đăng nhập</button>'
+          new='<button onclick="document.getElementById(\'deposit\').scrollIntoView()">💳 Nạp tiền</button>\n<a href="lich-su-nap.html" style="border:0;border-radius:10px;padding:11px 15px;font-weight:900;cursor:pointer;text-decoration:none;background:#eef2f7;color:#172033">📜 Lịch sử nạp</a>\n<button id="authBtn" class="dark" onclick="openAuth()">Đăng nhập</button>'
+          if 'href="lich-su-nap.html"' not in s:
+              if old not in s: raise SystemExit('Không tìm thấy thanh menu cần sửa')
+              s=s.replace(old,new,1)
+              p.write_text(s,encoding='utf-8')
+          q=Path('lich-su-nap.html')
+          if q.exists():
+              h=q.read_text(encoding='utf-8')
+              h=h.replace("localStorage.getItem('shopzicl_access_token')||''","localStorage.getItem('shopzicl_username_token')||''")
+              q.write_text(h,encoding='utf-8')
           PY
-      - name: Commit only index.html
+      - name: Commit only shop files
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html
+          git add index.html lich-su-nap.html
           git diff --cached --quiet && exit 0
-          git commit -m 'feat: add Discord contact section'
+          git commit -m 'feat: add deposit history to shop navigation'
           git push
