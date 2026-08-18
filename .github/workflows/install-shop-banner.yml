@@ -1,0 +1,33 @@
+name: Install shop banner
+on:
+  push:
+    paths:
+      - '.github/workflows/install-shop-banner.yml'
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace old hero with new banner
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          old='<section class="hero"><h1>Cày Game Nhanh — ShopZiCiCRBLX</h1><p>Dịch vụ Blox Fruits: Leviathan, Level, V4, Tộc Draco, Kiếm/Súng, Beli và Frag.</p></section>'
+          new='<section class="hero" style="padding:0;overflow:hidden;background:#000"><img src="images/shop-banner.svg" alt="Cày thuê Blox Fruits" style="display:block;width:100%;height:auto"></section>'
+          if old in s:
+              s=s.replace(old,new,1)
+          else:
+              raise SystemExit('Old banner not found; no changes made.')
+          p.write_text(s)
+          PY
+      - name: Commit banner change
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || git commit -m 'Replace old homepage banner'
+          git push
