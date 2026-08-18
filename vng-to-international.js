@@ -33,7 +33,7 @@
   }
   function startTop5Guard(){fixedTop5();setTimeout(fixedTop5,500);setTimeout(fixedTop5,1500);setTimeout(fixedTop5,3000)}
   function boot(){addVngService();addAvatarService();addBlackbeardCape();applyServiceImages();setTimeout(applyServiceImages,100);setTimeout(startTop5Guard,150)}
-  const style=document.createElement('style');style.textContent='.service-avatar{width:100%;height:155px;object-fit:cover;display:block;border-radius:12px;margin:0 0 14px}.card:has(.service-avatar){padding-top:12px}';document.head.appendChild(style);
+  const style=document.createElement('style');style.textContent='.service-avatar{width:100%;height:auto;aspect-ratio:1.52/1;object-fit:cover;display:block;border-radius:12px;margin:0 0 14px;image-rendering:auto;transform:translateZ(0);backface-visibility:hidden}.card:has(.service-avatar){padding-top:12px}.service-avatar{filter:contrast(1.03) saturate(1.04)}';document.head.appendChild(style);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
   window.addEventListener('focus',()=>{setTimeout(fixedTop5,150);setTimeout(applyServiceImages,50)});
   document.addEventListener('visibilitychange',()=>{if(!document.hidden){setTimeout(fixedTop5,150);setTimeout(applyServiceImages,50)}});
