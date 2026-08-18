@@ -18,8 +18,27 @@
     grid.dataset.vngStyled='1';
   }
 
+  function addAvatarService(){
+    if(typeof catalog==='undefined'||typeof renderServices!=='function') return;
+    catalog['Avatar'] = [
+      ['(120H) 2.860 Robux (Sau Thuế Nhận - 2.000 Robux)',514000],
+      ['(120H) 2.150 Robux (Sau Thuế Nhận - 1.505 Robux)',387000],
+      ['(120H) 1.430 Robux (Sau Thuế Nhận - 1.000 Robux)',0]
+    ];
+    renderServices();
+    const grid=document.getElementById('serviceGrid');
+    if(!grid||grid.dataset.avatarStyled) return;
+    const cards=grid.querySelectorAll('.card');
+    const card=[...cards].find(c=>c.textContent.includes('Avatar'));
+    if(card){
+      card.insertAdjacentHTML('afterbegin','<div style="display:flex;align-items:center;justify-content:center;margin-bottom:12px"><span style="display:inline-flex;width:62px;height:62px;align-items:center;justify-content:center;border-radius:18px;background:linear-gradient(135deg,#eef2ff,#dbeafe);font-size:32px">🧑‍🎨</span></div>');
+      card.insertAdjacentHTML('beforeend','<div class="msg" style="font-size:12px;margin-top:10px">🎨 Dịch vụ Avatar — hình ảnh/gói Avatar sẽ được cập nhật thêm sau.</div>');
+    }
+    grid.dataset.avatarStyled='1';
+  }
+
   function moneyTop(v){return Number(v||0).toLocaleString('vi-VN')+' đ'}
-  function escTop(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+  function escTop(v){return String(v??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[m]))}
 
   async function fixedTop5(){
     const el=document.getElementById('top5');
@@ -62,7 +81,7 @@
     }
   }
 
-  function boot(){addVngService();setTimeout(startTop5Guard,150)}
+  function boot(){addVngService();addAvatarService();setTimeout(startTop5Guard,150)}
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
   window.addEventListener('focus',()=>setTimeout(fixedTop5,150));
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(fixedTop5,150)});
