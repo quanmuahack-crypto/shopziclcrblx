@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ShopZiCiCRBLX — Lịch sử nạp</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#172033}.top{background:#fff;padding:16px 5%;display:flex;align-items:center;gap:12px;box-shadow:0 3px 18px #0001}.logo{font-size:22px;font-weight:900;margin-right:auto}.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:900;cursor:pointer;text-decoration:none}.dark{background:#111827;color:#fff}.wrap{max-width:1050px;margin:auto;padding:28px 18px}.hero,.panel,.stat{background:#fff;border:1px solid #e5e9f0;border-radius:18px;box-shadow:0 5px 20px #0000000d}.hero{padding:25px;margin-bottom:18px}.hero h1{margin:0 0 8px}.hero p{color:#667085}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0}.stat{padding:18px}.stat span{display:block;color:#667085}.stat b{display:block;font-size:24px;margin-top:7px}.panel{padding:20px}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:650px}.table th,.table td{padding:13px 10px;border-bottom:1px solid #edf0f4;text-align:left}.table th{background:#f7f9fc}.ok{color:#087443;font-weight:900}.pending{color:#805b00;font-weight:900}.bad{color:#b42318;font-weight:900}.empty{text-align:center;padding:35px;color:#667085}.login{max-width:460px;margin:80px auto;background:#fff;padding:28px;border-radius:18px;box-shadow:0 10px 40px #0002}.msg{padding:12px;border-radius:10px;background:#ffe8e8;color:#a11;margin:10px 0}@media(max-width:650px){.stats{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="top"><div class="logo">ShopZiCiCRBLX</div><a class="btn dark" href="index.html">← Về shop</a></header>
+<div id="root"></div>
+<script>
+const SUPABASE_URL='https://ufevipuhejvhiufyqqnz.supabase.co';
+const SUPABASE_KEY='sb_publishable_6ShPhGpN4_02Za2tOTOTg_GF0su_OA';
+let token=localStorage.getItem('shopzicl_access_token')||'';
+function money(v){return Number(v||0).toLocaleString('vi-VN')+' đ'}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+async function jsonFetch(url,opt={}){const r=await fetch(url,{...opt,headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+token,...(opt.headers||{})}});const text=await r.text();let data;try{data=text?JSON.parse(text):null}catch{throw Error('Máy chủ trả về dữ liệu không hợp lệ. Vui lòng tải lại trang.')}if(!r.ok)throw Error(data?.message||data?.error_description||'Không thể tải dữ liệu');return data}
+async function init(){
+ if(!token){showLogin('Bạn cần đăng nhập tài khoản shop để xem lịch sử nạp.');return}
+ try{
+  const user=await jsonFetch(SUPABASE_URL+'/auth/v1/user');
+  const deposits=await jsonFetch(SUPABASE_URL+'/rest/v1/deposits?select=id,card_type,amount,status,created_at,rejection_reason&user_id=eq.'+encodeURIComponent(user.id)+'&order=created_at.desc');
+  render(user,deposits||[]);
+ }catch(e){showLogin(e.message)}
+}
+function showLogin(message){document.getElementById('root').innerHTML='<div class="login"><h2>🔐 Cần đăng nhập</h2><div class="msg">'+esc(message)+'</div><p>Hãy đăng nhập tại shop trước, sau đó mở lại trang này.</p><a class="btn dark" href="index.html">Đăng nhập tại Shop</a></div>'}
+function render(user,ds){
+ const approved=ds.filter(d=>d.status==='approved');
+ const pending=ds.filter(d=>d.status==='pending');
+ const total=approved.reduce((s,d)=>s+Number(d.amount||0),0);
+ document.getElementById('root').innerHTML='<main class="wrap"><section class="hero"><h1>💳 Lịch sử nạp tiền</h1><p>Tài khoản: <b>'+esc(user.email||user.id)+'</b></p><p>Chỉ bạn có thể xem lịch sử nạp của chính tài khoản này.</p></section><div class="stats"><div class="stat"><span>💰 Tổng tiền đã nạp</span><b>'+money(total)+'</b></div><div class="stat"><span>✅ Thẻ đã duyệt</span><b>'+approved.length+'</b></div><div class="stat"><span>⏳ Đang chờ</span><b>'+pending.length+'</b></div></div><section class="panel"><h2>📋 Các lần nạp</h2><div class="table-wrap">'+(ds.length?'<table class="table"><thead><tr><th>Thời gian</th><th>Nhà mạng</th><th>Mệnh giá</th><th>Trạng thái</th><th>Ghi chú</th></tr></thead><tbody>'+ds.map(d=>{const cls=d.status==='approved'?'ok':d.status==='pending'?'pending':'bad';const label=d.status==='approved'?'Đã duyệt':d.status==='pending'?'Đang chờ':'Từ chối';return '<tr><td>'+new Date(d.created_at).toLocaleString('vi-VN')+'</td><td>'+esc(d.card_type)+'</td><td><b>'+money(d.amount)+'</b></td><td class="'+cls+'">'+label+'</td><td>'+esc(d.status==='rejected'?(d.rejection_reason||'Thẻ bị từ chối'):(d.status==='approved'?'Đã cộng tiền vào tài khoản':'Đang chờ Admin kiểm tra'))+'</td></tr>'}).join('')+'</tbody></table>':'<div class="empty">Chưa có lịch sử nạp tiền.</div>')+'</div></section></main>';
+}
+init();
+</script>
+</body>
+</html>
