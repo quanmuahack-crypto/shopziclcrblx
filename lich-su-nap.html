@@ -13,26 +13,14 @@
 <div id="root"></div>
 <script>
 const SUPABASE_URL='https://ufevipuhejvhiufyqqnz.supabase.co';
-const SUPABASE_KEY='sb_publishable_6ShPhGpN4_02Za2tOTOTg_GF0su_OA';
+const SUPABASE_KEY='sb_publishable_6ShPhvGpN4_02Za2tOTOTg_GF0su_OA';
 let token=localStorage.getItem('shopzicl_username_token')||'';
 function money(v){return Number(v||0).toLocaleString('vi-VN')+' đ'}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-async function jsonFetch(url,opt={}){const r=await fetch(url,{...opt,headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+token,...(opt.headers||{})}});const text=await r.text();let data;try{data=text?JSON.parse(text):null}catch{throw Error('Máy chủ trả về dữ liệu không hợp lệ. Vui lòng tải lại trang.')}if(!r.ok)throw Error(data?.message||data?.error_description||'Không thể tải dữ liệu');return data}
-async function init(){
- if(!token){showLogin('Bạn cần đăng nhập tài khoản shop để xem lịch sử nạp.');return}
- try{
-  const user=await jsonFetch(SUPABASE_URL+'/auth/v1/user');
-  const deposits=await jsonFetch(SUPABASE_URL+'/rest/v1/deposits?select=id,card_type,amount,status,created_at,rejection_reason&user_id=eq.'+encodeURIComponent(user.id)+'&order=created_at.desc');
-  render(user,deposits||[]);
- }catch(e){showLogin(e.message)}
-}
+async function jsonFetch(url,opt={}){const r=await fetch(url,{...opt,headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+token,'Content-Type':'application/json',...(opt.headers||{})}});const text=await r.text();let data;try{data=text?JSON.parse(text):null}catch{throw Error('Máy chủ trả về dữ liệu không hợp lệ. Vui lòng tải lại trang.')}if(!r.ok)throw Error(data?.message||data?.error_description||'Không thể tải dữ liệu');return data}
+async function init(){if(!token){showLogin('Bạn cần đăng nhập tài khoản shop để xem lịch sử nạp.');return}try{const user=await jsonFetch(SUPABASE_URL+'/auth/v1/user');const deposits=await jsonFetch(SUPABASE_URL+'/rest/v1/deposits?select=id,card_type,amount,status,created_at,rejection_reason&user_id=eq.'+encodeURIComponent(user.id)+'&order=created_at.desc');render(user,deposits||[])}catch(e){showLogin(e.message)}}
 function showLogin(message){document.getElementById('root').innerHTML='<div class="login"><h2>🔐 Cần đăng nhập</h2><div class="msg">'+esc(message)+'</div><p>Hãy đăng nhập tại shop trước, sau đó mở lại trang này.</p><a class="btn dark" href="index.html">Đăng nhập tại Shop</a></div>'}
-function render(user,ds){
- const approved=ds.filter(d=>d.status==='approved');
- const pending=ds.filter(d=>d.status==='pending');
- const total=approved.reduce((s,d)=>s+Number(d.amount||0),0);
- document.getElementById('root').innerHTML='<main class="wrap"><section class="hero"><h1>💳 Lịch sử nạp tiền</h1><p>Tài khoản: <b>'+esc(user.email||user.id)+'</b></p><p>Chỉ bạn có thể xem lịch sử nạp của chính tài khoản này.</p></section><div class="stats"><div class="stat"><span>💰 Tổng tiền đã nạp</span><b>'+money(total)+'</b></div><div class="stat"><span>✅ Thẻ đã duyệt</span><b>'+approved.length+'</b></div><div class="stat"><span>⏳ Đang chờ</span><b>'+pending.length+'</b></div></div><section class="panel"><h2>📋 Các lần nạp</h2><div class="table-wrap">'+(ds.length?'<table class="table"><thead><tr><th>Thời gian</th><th>Nhà mạng</th><th>Mệnh giá</th><th>Trạng thái</th><th>Ghi chú</th></tr></thead><tbody>'+ds.map(d=>{const cls=d.status==='approved'?'ok':d.status==='pending'?'pending':'bad';const label=d.status==='approved'?'Đã duyệt':d.status==='pending'?'Đang chờ':'Từ chối';return '<tr><td>'+new Date(d.created_at).toLocaleString('vi-VN')+'</td><td>'+esc(d.card_type)+'</td><td><b>'+money(d.amount)+'</b></td><td class="'+cls+'">'+label+'</td><td>'+esc(d.status==='rejected'?(d.rejection_reason||'Thẻ bị từ chối'):(d.status==='approved'?'Đã cộng tiền vào tài khoản':'Đang chờ Admin kiểm tra'))+'</td></tr>'}).join('')+'</tbody></table>':'<div class="empty">Chưa có lịch sử nạp tiền.</div>')+'</div></section></main>';
-}
+function render(user,ds){const approved=ds.filter(d=>d.status==='approved'),pending=ds.filter(d=>d.status==='pending'),total=approved.reduce((s,d)=>s+Number(d.amount||0),0);document.getElementById('root').innerHTML='<main class="wrap"><section class="hero"><h1>💳 Lịch sử nạp tiền</h1><p>Tài khoản: <b>'+esc(user.email||user.id)+'</b></p><p>Chỉ bạn có thể xem lịch sử nạp của chính tài khoản này.</p></section><div class="stats"><div class="stat"><span>💰 Tổng tiền đã nạp</span><b>'+money(total)+'</b></div><div class="stat"><span>✅ Thẻ đã duyệt</span><b>'+approved.length+'</b></div><div class="stat"><span>⏳ Đang chờ</span><b>'+pending.length+'</b></div></div><section class="panel"><h2>📋 Các lần nạp</h2><div class="table-wrap">'+(ds.length?'<table class="table"><thead><tr><th>Thời gian</th><th>Nhà mạng</th><th>Mệnh giá</th><th>Trạng thái</th><th>Ghi chú</th></tr></thead><tbody>'+ds.map(d=>{const cls=d.status==='approved'?'ok':d.status==='pending'?'pending':'bad',label=d.status==='approved'?'Đã duyệt':d.status==='pending'?'Đang chờ':'Từ chối';return '<tr><td>'+new Date(d.created_at).toLocaleString('vi-VN')+'</td><td>'+esc(d.card_type)+'</td><td><b>'+money(d.amount)+'</b></td><td class="'+cls+'">'+label+'</td><td>'+esc(d.status==='rejected'?(d.rejection_reason||'Thẻ bị từ chối'):(d.status==='approved'?'Đã cộng tiền vào tài khoản':'Đang chờ Admin kiểm tra'))+'</td></tr>'}).join('')+'</tbody></table>':'<div class="empty">Chưa có lịch sử nạp tiền.</div>')+'</div></section></main>'}
 init();
 </script>
 </body>
