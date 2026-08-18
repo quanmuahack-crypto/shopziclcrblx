@@ -37,6 +37,17 @@
     grid.dataset.robux120hStyled='1';
   }
 
+  function addBlackbeardCape(){
+    if(typeof catalog==='undefined'||typeof renderServices!=='function') return;
+    const key='Kiếm / Súng / Phụ kiện';
+    if(!Array.isArray(catalog[key])) return;
+    const packageName='Lấy áo choàng râu đen';
+    if(!catalog[key].some(x=>x[0]===packageName)){
+      catalog[key].push([packageName,90000]);
+      renderServices();
+    }
+  }
+
   function moneyTop(v){return Number(v||0).toLocaleString('vi-VN')+' đ'}
   function escTop(v){return String(v??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[m]))}
 
@@ -81,7 +92,7 @@
     }
   }
 
-  function boot(){addVngService();addAvatarService();setTimeout(startTop5Guard,150)}
+  function boot(){addVngService();addAvatarService();addBlackbeardCape();setTimeout(startTop5Guard,150)}
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
   window.addEventListener('focus',()=>setTimeout(fixedTop5,150));
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(fixedTop5,150)});
