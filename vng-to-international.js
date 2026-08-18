@@ -26,7 +26,9 @@
     'Combo Tộc V4':'images/combo-v4.svg',
     'Tộc Draco':'images/toc-draco.svg',
     'Level':'images/level.svg',
-    'VNG → Roblox Quốc tế':'images/vng-quoc-te.svg'
+    'VNG → Roblox Quốc tế':'images/vng-quoc-te.svg',
+    'Robux 120H':'images/robux-120h.svg',
+    'Kiếm / Súng / Phụ kiện':'images/kiem-sung.svg'
   };
   function applyServiceImages(){
     const grid=document.getElementById('serviceGrid');if(!grid)return;
