@@ -26,7 +26,7 @@ function updateServiceIcons(){
 }
 function buildGamepass(){
  var services=document.getElementById('services');if(!services)return;
- var old=document.getElementById('gamepass-blox-fruits-service');if(old)old.remove();
+ document.querySelectorAll('#gamepass-blox-fruits-service').forEach(function(el){el.remove();});
  var s=document.createElement('section');s.id='gamepass-blox-fruits-service';s.className='section';
  s.innerHTML='<style>#gamepass-blox-fruits-service .gphead{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid #e5e9f0;border-radius:16px;padding:18px}#gamepass-blox-fruits-service .gplist{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}#gamepass-blox-fruits-service .gplist.show{display:grid}#gamepass-blox-fruits-service .gpitem{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e5e9f0;border-radius:14px;padding:14px}.gpinfo{flex:1}.gpinfo strong{display:block}.gpinfo small{color:#667085}#gamepass-blox-fruits-service .gpprice{font-weight:900;white-space:nowrap}@media(max-width:700px){#gamepass-blox-fruits-service .gplist.show{grid-template-columns:1fr}#gamepass-blox-fruits-service .gpitem{flex-wrap:wrap}#gamepass-blox-fruits-service .gpitem button{width:100%}}</style><h2>🎟️ GAMEPASS BLOX FRUITS</h2><div class="gphead"><div style="font-size:42px">🎟️</div><div style="flex:1"><h3 style="margin:0 0 5px">GAMEPASS BLOX FRUITS</h3><p style="margin:0;color:#667085">Bấm xem bảng giá để mở các gamepass.</p></div><button id="gpToggle" class="btn dark" type="button">XEM BẢNG GIÁ →</button></div><div id="gpList" class="gplist"></div>';
  services.appendChild(s);var list=s.querySelector('#gpList');
