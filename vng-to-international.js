@@ -1,5 +1,5 @@
 (function(){'use strict';
-function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+function esc(v){return String(v??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[m]));}
 function money(n){return Number(n||0).toLocaleString('vi-VN')+' đ';}
 function addCatalog(){
  if(typeof catalog==='undefined')return;
@@ -13,6 +13,42 @@ function icons(){const map={'VNG → Roblox Quốc tế':'🎮','Robux 120H':'�
 function gamepass(){const services=document.getElementById('services');if(!services||document.getElementById('restored-gamepass'))return;const s=document.createElement('section');s.id='restored-gamepass';s.className='section';s.innerHTML='<h2>🎟️ GAMEPASS BLOX FRUITS</h2><div class="card"><div style="font-size:42px">🎟️</div><h3>GAMEPASS BLOX FRUITS</h3><p>Bấm XEM BẢNG GIÁ để mở danh sách.</p><button class="btn dark full" id="gp-open">XEM BẢNG GIÁ →</button><div id="gp-list" style="display:none;margin-top:15px"></div></div></section>';services.appendChild(s);const data=[['Fruit Notifier',2700,405000],['Dark Blade',1200,180000],['Mythical Scrolls',500,75000],['2× Money',450,67500],['2× Mastery',450,67500],['+1 Fruit Storage',400,60000],['2× Boss Drops',350,52500],['Fast Boats',350,52500]];const list=s.querySelector('#gp-list');data.forEach(x=>{const d=document.createElement('div');d.className='card';d.style.marginTop='10px';d.innerHTML='<b>'+esc(x[0])+'</b><div>'+x[1].toLocaleString('vi-VN')+' Robux — <strong>'+money(x[2])+'</strong></div><button class="btn dark full" style="margin-top:10px">MUA GÓI</button>';d.querySelector('button').onclick=()=>safeOrder('GAMEPASS BLOX FRUITS',x[0]+' — '+x[1]+' Robux',x[2]);list.appendChild(d);});s.querySelector('#gp-open').onclick=function(){const on=list.style.display==='none';list.style.display=on?'block':'none';this.textContent=on?'ẨN BẢNG GIÁ ↑':'XEM BẢNG GIÁ →';};}
 function safeOrder(service,pkg,price){if(typeof currentUser==='undefined'||!currentUser){if(typeof openAuth==='function')openAuth();return;}if(typeof catalog!=='undefined'){catalog.__TEMP__=[[pkg,price]];selectedService='__TEMP__';const title=document.getElementById('orderTitle');if(title)title.textContent='Đặt đơn — '+pkg;const sel=document.getElementById('package');if(sel)sel.innerHTML='<option value="0">'+esc(pkg)+' — '+money(price)+'</option>';const modal=document.getElementById('orderModal');if(modal)modal.classList.add('show');}}
 function dungeonInsideMain(){document.querySelectorAll('#dungeon-ring-service,#dungeon-service-standalone').forEach(x=>x.remove());}
-function boot(){addCatalog();if(typeof renderServices==='function')renderServices();icons();gamepass();dungeonInsideMain();}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,80));else setTimeout(boot,80);window.addEventListener('load',()=>setTimeout(boot,250));
+function addPhoneField(){
+ const box=document.querySelector('#orderModal .box');
+ if(!box||document.getElementById('customerPhone'))return;
+ const btn=box.querySelector('button[onclick="submitOrder()"]');
+ const wrap=document.createElement('div');
+ wrap.className='field';
+ wrap.innerHTML='<label>📱 Số điện thoại hỗ trợ</label><input id="customerPhone" type="tel" inputmode="numeric" autocomplete="tel" maxlength="15" placeholder="Nhập số điện thoại của bạn">';
+ if(btn)box.insertBefore(wrap,btn);else box.appendChild(wrap);
+}
+function patchSubmitOrder(){
+ if(typeof window.submitOrder!=='function'||window.submitOrder.__phonePatched)return;
+ const original=window.submitOrder;
+ async function submitOrderWithPhone(){
+   const phone=(document.getElementById('customerPhone')?.value||'').trim();
+   if(!phone){alert('Vui lòng nhập số điện thoại để shop hỗ trợ đơn hàng.');return;}
+   if(!/^0\d{8,14}$/.test(phone)){alert('Số điện thoại không hợp lệ. Vui lòng kiểm tra lại.');return;}
+   window.__customerPhone=phone;
+   try{
+     const oldApi=window.api;
+     if(typeof oldApi!=='function')return original();
+     window.api=async function(path,opt={}){
+       if(path==='orders'&&opt?.body){
+         try{
+           const data=JSON.parse(opt.body);
+           data.extra_data=(data.extra_data?data.extra_data+' • ':'')+'SĐT hỗ trợ: '+phone;
+           opt={...opt,body:JSON.stringify(data)};
+         }catch(e){}
+       }
+       return oldApi(path,opt);
+     };
+     await original();
+   }finally{window.api=oldApi;}
+ }
+ submitOrderWithPhone.__phonePatched=true;
+ window.submitOrder=submitOrderWithPhone;
+}
+function boot(){addCatalog();if(typeof renderServices==='function')renderServices();icons();gamepass();dungeonInsideMain();addPhoneField();patchSubmitOrder();}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,80));else setTimeout(boot,80);window.addEventListener('load',()=>setTimeout(()=>{addPhoneField();patchSubmitOrder();},250));
 })();
