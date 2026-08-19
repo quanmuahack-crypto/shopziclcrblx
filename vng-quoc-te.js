@@ -4,20 +4,6 @@
     ['Treo VNG → Roblox Quốc tế — 30 ngày (không gộp đơn)',165000,'30 ngày • Không gộp đơn'],
     ['Treo VNG → Roblox Quốc tế — Có gộp đơn',20000,'Có gộp đơn']
   ];
-
-  function removeMainGamepass(){
-    // Xóa DUY NHẤT card GAMEPASS BLOX FRUITS trong danh sách dịch vụ chính.
-    // Không xóa trang gamepass-blox-fruits.html hay khu TRÁI VĨNH VIỄN BF.
-    const root=document.getElementById('serviceGrid');
-    if(root){
-      root.querySelectorAll('.card').forEach(card=>{
-        const text=(card.textContent||'').replace(/\s+/g,' ').trim().toUpperCase();
-        if(text.includes('GAMEPASS BLOX FRUITS')) card.remove();
-      });
-    }
-    if(typeof catalog==='object') delete catalog['GAMEPASS BLOX FRUITS'];
-  }
-
   function add(){
     if(document.getElementById('vngInternationalSection')) return;
     const anchor=document.getElementById('services'); if(!anchor) return;
@@ -34,10 +20,6 @@
       if(typeof openOrder==='function') openOrder(btn.dataset.vngName);
       else alert('Vui lòng đăng nhập rồi thử lại.');
     }));
-    removeMainGamepass();
-    setTimeout(removeMainGamepass,100);
-    setTimeout(removeMainGamepass,500);
   }
-
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',add); else add();
 })();
