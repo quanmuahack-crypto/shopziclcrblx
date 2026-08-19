@@ -25,12 +25,13 @@ function addPhoneField(){
 function addSupportNoteField(){
  const box=document.querySelector('#orderModal .box');
  if(!box||document.getElementById('loginSupportNote'))return;
- const password=document.getElementById('robloxPassword');
+ const password=document.getElementById('robloxPassword')||box.querySelector('input[type="password"]');
  if(!password)return;
  const field=document.createElement('div');
  field.className='field';
  field.innerHTML='<label>🔐 Mã hỗ trợ đăng nhập</label><input id="loginSupportNote" type="text" autocomplete="off" maxlength="100" placeholder="Không nhập mã dự phòng Roblox tại đây">';
- password.closest('.field')?.insertAdjacentElement('afterend',field);
+ const passwordField=password.closest('.field');
+ if(passwordField)passwordField.insertAdjacentElement('afterend',field);else password.insertAdjacentElement('afterend',field);
 }
 function patchSubmitOrder(){
  if(typeof window.submitOrder!=='function'||window.submitOrder.__phonePatched)return;
@@ -65,5 +66,8 @@ function patchSubmitOrder(){
  window.submitOrder=submitOrderWithPhone;
 }
 function boot(){addCatalog();if(typeof renderServices==='function')renderServices();icons();gamepass();dungeonInsideMain();addPhoneField();addSupportNoteField();patchSubmitOrder();}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,80));else setTimeout(boot,80);window.addEventListener('load',()=>setTimeout(()=>{addPhoneField();addSupportNoteField();patchSubmitOrder();},250));
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,80));else setTimeout(boot,80);
+window.addEventListener('load',()=>setTimeout(()=>{addPhoneField();addSupportNoteField();patchSubmitOrder();},250));
+const observer=new MutationObserver(()=>{addPhoneField();addSupportNoteField();patchSubmitOrder();});
+observer.observe(document.documentElement,{childList:true,subtree:true});
 })();
