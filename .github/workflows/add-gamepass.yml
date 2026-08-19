@@ -1,0 +1,81 @@
+name: Add Gamepass Blox Fruits
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Insert Gamepass section
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          marker = '<!-- GAMEPASS_BLOX_FRUITS_V1 -->'
+          if marker in s:
+              print('Gamepass already installed')
+              raise SystemExit(0)
+
+          block = r'''<!-- GAMEPASS_BLOX_FRUITS_V1 -->
+<section id="gamepass-blox-fruits" class="section" style="margin-top:22px">
+  <style>
+    #gamepass-blox-fruits .gp-head{text-align:center;margin-bottom:20px}
+    #gamepass-blox-fruits .gp-head h2{margin:0 0 7px;font-size:30px}
+    #gamepass-blox-fruits .gp-head p{margin:0;color:#667085}
+    #gamepass-blox-fruits .gp-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+    #gamepass-blox-fruits .gp-card{background:#fff;border:1px solid #e5e9f0;border-radius:16px;padding:18px;box-shadow:0 5px 20px #0000000d;transition:.2s;text-align:center}
+    #gamepass-blox-fruits .gp-card:hover{transform:translateY(-4px);box-shadow:0 10px 25px #0002;border-color:#b8d0ff}
+    #gamepass-blox-fruits .gp-icon{font-size:30px;margin-bottom:8px}
+    #gamepass-blox-fruits .gp-card h3{margin:4px 0 8px;min-height:0;font-size:18px}
+    #gamepass-blox-fruits .gp-robux{color:#667085;font-size:14px;margin-bottom:8px}
+    #gamepass-blox-fruits .gp-price{font-size:21px;font-weight:900;color:#1464e8;margin-bottom:13px}
+    #gamepass-blox-fruits .gp-buy{width:100%;border:0;border-radius:10px;padding:11px;background:#111827;color:#fff;font-weight:900;cursor:pointer}
+    #gamepass-blox-fruits .gp-buy:hover{background:#1464e8}
+    @media(max-width:900px){#gamepass-blox-fruits .gp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:600px){#gamepass-blox-fruits .gp-grid{grid-template-columns:1fr}}
+  </style>
+  <div class="gp-head">
+    <h2>🎮 GAMEPASS BLOX FRUITS</h2>
+    <p>Mua Gamepass Blox Fruits • Uy tín • Hỗ trợ 24/7</p>
+  </div>
+  <div class="gp-grid">
+    <div class="gp-card"><div class="gp-icon">🔔</div><h3>Fruit Notifier</h3><div class="gp-robux">2.700 Robux</div><div class="gp-price">405.000đ</div><button class="gp-buy" onclick="buyGamepass('Fruit Notifier',2700,405000)">MUA NGAY</button></div>
+    <div class="gp-card"><div class="gp-icon">⚔️</div><h3>Dark Blade</h3><div class="gp-robux">1.200 Robux</div><div class="gp-price">180.000đ</div><button class="gp-buy" onclick="buyGamepass('Dark Blade',1200,180000)">MUA NGAY</button></div>
+    <div class="gp-card"><div class="gp-icon">💰</div><h3>2× Money</h3><div class="gp-robux">450 Robux</div><div class="gp-price">67.500đ</div><button class="gp-buy" onclick="buyGamepass('2× Money',450,67500)">MUA NGAY</button></div>
+    <div class="gp-card"><div class="gp-icon">⚡</div><h3>2× Mastery</h3><div class="gp-robux">450 Robux</div><div class="gp-price">67.500đ</div><button class="gp-buy" onclick="buyGamepass('2× Mastery',450,67500)">MUA NGAY</button></div>
+    <div class="gp-card"><div class="gp-icon">🍎</div><h3>+1 Fruit Storage</h3><div class="gp-robux">400 Robux</div><div class="gp-price">60.000đ</div><button class="gp-buy" onclick="buyGamepass('+1 Fruit Storage',400,60000)">MUA NGAY</button></div>
+    <div class="gp-card"><div class="gp-icon">👹</div><h3>2× Boss Drops</h3><div class="gp-robux">350 Robux</div><div class="gp-price">52.500đ</div><button class="gp-buy" onclick="buyGamepass('2× Boss Drops',350,52500)">MUA NGAY</button></div>
+    <div class="gp-card"><div class="gp-icon">🚤</div><h3>Fast Boats</h3><div class="gp-robux">350 Robux</div><div class="gp-price">52.500đ</div><button class="gp-buy" onclick="buyGamepass('Fast Boats',350,52500)">MUA NGAY</button></div>
+  </div>
+</section>
+<script>
+function buyGamepass(name, robux, price){
+  if(typeof openOrder === 'function') return openOrder(name, price, 'GAMEPASS BLOX FRUITS');
+  if(typeof openServiceOrder === 'function') return openServiceOrder(name, price);
+  alert('GAMEPASS BLOX FRUITS\n\n'+name+'\n'+robux.toLocaleString()+' Robux\n'+price.toLocaleString()+'đ');
+}
+</script>
+'''
+
+          if '</main>' not in s:
+              raise SystemExit('Cannot find </main> in index.html; no changes made')
+          s = s.replace('</main>', block + '\n</main>', 1)
+          p.write_text(s, encoding='utf-8')
+      - name: Commit patched index and remove one-time workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/add-gamepass.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .github/workflows/add-gamepass.yml
+          git diff --cached --quiet && exit 0
+          git commit -m "feat: add Gamepass Blox Fruits section"
+          git push
