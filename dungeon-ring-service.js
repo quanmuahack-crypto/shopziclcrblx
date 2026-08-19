@@ -26,10 +26,20 @@
 <div class="dr-item"><div><strong>Ghép nhẫn Max + Combo mạnh nhất game</strong><span>Ghép nhẫn Max và combo nhẫn mạnh nhất</span></div><b>60.000 đ</b><button class="btn dark" type="button" data-name="Ghép nhẫn Max + Combo mạnh nhất game" data-price="60000">ĐẶT ĐƠN</button></div>
 </div></div>`;
   function insert(){
-    const anchor=document.getElementById('ordersSection')||document.getElementById('ugphone-services');
-    if(anchor) anchor.parentNode.insertBefore(service,anchor);
+    // Đưa thẳng vào khu vực "Dịch vụ cày thuê", ngay sau các card dịch vụ chính.
+    const serviceGrid=document.getElementById('serviceGrid');
+    const services=document.getElementById('services');
+    if(document.getElementById('dungeon-ring-service'))return;
+    if(serviceGrid && serviceGrid.parentNode){
+      serviceGrid.insertAdjacentElement('afterend',service);
+    }else if(services){
+      services.appendChild(service);
+    }else{return;}
     const toggle=service.querySelector('#dr-toggle'), box=service.querySelector('#dr-packages');
-    toggle.onclick=()=>box.classList.toggle('show');
+    toggle.onclick=()=>{
+      const open=box.classList.toggle('show');
+      toggle.textContent=open?'ẨN GÓI ↑':'XEM GÓI →';
+    };
     service.querySelectorAll('[data-name]').forEach(btn=>btn.addEventListener('click',()=>{
       const name=btn.dataset.name, price=Number(btn.dataset.price);
       if(typeof currentUser==='undefined'||!currentUser){ if(typeof openAuth==='function') openAuth(); else alert('Vui lòng đăng nhập trước.'); return; }
