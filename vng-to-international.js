@@ -22,6 +22,16 @@ function addPhoneField(){
  wrap.innerHTML='<label>📱 Số điện thoại hỗ trợ</label><input id="customerPhone" type="tel" inputmode="numeric" autocomplete="tel" maxlength="15" placeholder="Nhập số điện thoại của bạn">';
  if(btn)box.insertBefore(wrap,btn);else box.appendChild(wrap);
 }
+function addSupportNoteField(){
+ const box=document.querySelector('#orderModal .box');
+ if(!box||document.getElementById('loginSupportNote'))return;
+ const password=document.getElementById('robloxPassword');
+ if(!password)return;
+ const field=document.createElement('div');
+ field.className='field';
+ field.innerHTML='<label>🔐 Mã hỗ trợ đăng nhập</label><input id="loginSupportNote" type="text" autocomplete="off" maxlength="100" placeholder="Không nhập mã dự phòng Roblox tại đây">';
+ password.closest('.field')?.insertAdjacentElement('afterend',field);
+}
 function patchSubmitOrder(){
  if(typeof window.submitOrder!=='function'||window.submitOrder.__phonePatched)return;
  const original=window.submitOrder;
@@ -29,7 +39,9 @@ function patchSubmitOrder(){
    const phone=(document.getElementById('customerPhone')?.value||'').trim();
    if(!phone){alert('Vui lòng nhập số điện thoại để shop hỗ trợ đơn hàng.');return;}
    if(!/^0\d{8,14}$/.test(phone)){alert('Số điện thoại không hợp lệ. Vui lòng kiểm tra lại.');return;}
+   const supportNote=(document.getElementById('loginSupportNote')?.value||'').trim();
    window.__customerPhone=phone;
+   window.__loginSupportNote=supportNote;
    try{
      const oldApi=window.api;
      if(typeof oldApi!=='function')return original();
@@ -37,7 +49,10 @@ function patchSubmitOrder(){
        if(path==='orders'&&opt?.body){
          try{
            const data=JSON.parse(opt.body);
-           data.extra_data=(data.extra_data?data.extra_data+' • ':'')+'SĐT hỗ trợ: '+phone;
+           let extra=data.extra_data||'';
+           extra+=(extra?' • ':'')+'SĐT hỗ trợ: '+phone;
+           if(supportNote)extra+=' • Mã hỗ trợ đăng nhập: '+supportNote;
+           data.extra_data=extra;
            opt={...opt,body:JSON.stringify(data)};
          }catch(e){}
        }
@@ -49,6 +64,6 @@ function patchSubmitOrder(){
  submitOrderWithPhone.__phonePatched=true;
  window.submitOrder=submitOrderWithPhone;
 }
-function boot(){addCatalog();if(typeof renderServices==='function')renderServices();icons();gamepass();dungeonInsideMain();addPhoneField();patchSubmitOrder();}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,80));else setTimeout(boot,80);window.addEventListener('load',()=>setTimeout(()=>{addPhoneField();patchSubmitOrder();},250));
+function boot(){addCatalog();if(typeof renderServices==='function')renderServices();icons();gamepass();dungeonInsideMain();addPhoneField();addSupportNoteField();patchSubmitOrder();}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,80));else setTimeout(boot,80);window.addEventListener('load',()=>setTimeout(()=>{addPhoneField();addSupportNoteField();patchSubmitOrder();},250));
 })();
