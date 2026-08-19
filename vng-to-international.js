@@ -53,14 +53,17 @@
       </div>`;
     const services=document.getElementById('services');
     const orders=document.getElementById('ordersSection');
-    if(services&&orders)services.insertBefore(section,orders);else if(services)services.appendChild(section);
+    if(services){
+      if(orders && orders.parentNode===services) services.insertBefore(section,orders);
+      else services.appendChild(section);
+    }
     const nav=document.querySelector('.top');
     if(nav&&!document.getElementById('gamepassNav')){
       const b=document.createElement('button');b.id='gamepassNav';b.textContent='🎟️ Gamepass';b.onclick=()=>section.scrollIntoView({behavior:'smooth'});nav.insertBefore(b,document.getElementById('authBtn'));
     }
   }
   function moneyTop(v){return Number(v||0).toLocaleString('vi-VN')+' đ'}
-  function escTop(v){return String(v??'').replace(/[&<>\\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\\"':'&quot;',"'":'&#039;'}[m]))}
+  function escTop(v){return String(v??'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[m]))}
   async function fixedTop5(){const el=document.getElementById('top5');if(!el)return;try{const url=window.SUPABASE_URL||'https://ufevipuhejvhiufyqqnz.supabase.co',key=window.SUPABASE_KEY||'sb_publishable_6ShPhvGpN4_02Za2tOTOTg_GF0su_OA';const r=await fetch(url+'/rest/v1/rpc/get_top_deposit_ranking',{method:'POST',headers:{apikey:key,Authorization:'Bearer '+(localStorage.getItem('shopzicl_username_token')||key),'Content-Type':'application/json'},body:'{}'});if(!r.ok)throw Error(await r.text()||r.statusText);const rows=await r.json(),top=(Array.isArray(rows)?rows:[]).slice(0,5);el.innerHTML=top.length?top.map((x,i)=>'<div class="top-card"><div class="rank">'+['🥇','🥈','🥉','🏅','🏅'][i]+' TOP '+(i+1)+'</div><strong>'+escTop(x.username||'Khách hàng')+'</strong><div>'+moneyTop(x.total_deposit)+'</div></div>').join(''):'<div class="empty">Chưa có dữ liệu nạp đã duyệt.</div>'}catch(e){el.innerHTML='<div class="empty">Không thể tải bảng xếp hạng.</div>'}}
   const serviceImages={'Leviathan':'./images/leviathan.svg?v=20260818','Beli & Frag':'./images/beli-frag.svg?v=20260818','Combo Tộc V4':'./images/combo-v4.svg?v=20260818','Tộc Draco':'./images/draco.svg?v=20260818','Level':'./images/level.svg?v=20260818','VNG → Roblox Quốc tế':'./images/vng-quoc-te.svg?v=20260818','Robux 120H':'./images/robux-120h.svg?v=20260818','Kiếm / Súng / Phụ kiện':'./images/kiem-sung.svg?v=20260818','Map 2 GAG2':MAP2_AVATAR,'Grow A Garden 2 Map 1':MAP1_GAG2_AVATAR};
   function applyServiceImages(){const grid=document.getElementById('serviceGrid');if(!grid)return;grid.querySelectorAll('.card').forEach(card=>{const title=card.querySelector('h3');if(!title)return;const name=title.textContent.trim(),src=serviceImages[name];if(!src)return;let old=card.querySelector('.service-avatar');if(old){old.src=src;return}const icon=card.querySelector(':scope > div');if(icon){const img=document.createElement('img');img.className='service-avatar';img.src=src;img.alt=name;img.loading='eager';img.decoding='async';icon.replaceWith(img)}});const mapCard=[...grid.querySelectorAll('.card')].find(c=>c.querySelector('h3')?.textContent.trim()==='Map 2 GAG2');if(mapCard&&!mapCard.querySelector('.service-avatar')){const img=document.createElement('img');img.className='service-avatar';img.src=MAP2_AVATAR;img.alt='Map 2 GAG2';img.loading='eager';const first=mapCard.querySelector(':scope > div');if(first)first.replaceWith(img);else mapCard.prepend(img)}const map1Card=[...grid.querySelectorAll('.card')].find(c=>c.querySelector('h3')?.textContent.trim()==='Grow A Garden 2 Map 1');if(map1Card&&!map1Card.querySelector('.service-avatar')){const img=document.createElement('img');img.className='service-avatar';img.src=MAP1_GAG2_AVATAR;img.alt='Grow A Garden 2 Map 1';img.loading='eager';const first=map1Card.querySelector(':scope > div');if(first)first.replaceWith(img);else map1Card.prepend(img)}}
