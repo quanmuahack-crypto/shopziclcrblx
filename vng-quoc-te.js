@@ -23,3 +23,17 @@
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',add); else add();
 })();
+
+// Load Dungeon & Ring service from the main shop bundle.
+(function(){
+  function loadDungeonRing(){
+    if(window.__dungeonRingLoaded) return;
+    window.__dungeonRingLoaded=true;
+    const s=document.createElement('script');
+    s.src='dungeon-ring-service.js?v=2';
+    s.defer=true;
+    document.head.appendChild(s);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',loadDungeonRing);
+  else loadDungeonRing();
+})();
