@@ -26,15 +26,18 @@
 <div class="dr-item"><div><strong>Ghép nhẫn Max + Combo mạnh nhất game</strong><span>Ghép nhẫn Max và combo nhẫn mạnh nhất</span></div><b>60.000 đ</b><button class="btn dark" type="button" data-name="Ghép nhẫn Max + Combo mạnh nhất game" data-price="60000">ĐẶT ĐƠN</button></div>
 </div></div>`;
   function insert(){
-    // Đưa thẳng vào khu vực "Dịch vụ cày thuê", ngay sau các card dịch vụ chính.
     const serviceGrid=document.getElementById('serviceGrid');
     const services=document.getElementById('services');
-    if(document.getElementById('dungeon-ring-service'))return;
-    if(serviceGrid && serviceGrid.parentNode){
-      serviceGrid.insertAdjacentElement('afterend',service);
-    }else if(services){
-      services.appendChild(service);
-    }else{return;}
+    const existing=document.getElementById('dungeon-ring-service');
+    if(!serviceGrid || !services)return;
+    // Nếu bản cũ đã chèn Dungeon ở vị trí cũ thì kéo nó về đúng khu vực Dịch vụ cày thuê.
+    if(existing && existing!==service){
+      service.remove();
+      serviceGrid.insertAdjacentElement('afterend',existing);
+      return;
+    }
+    if(existing)return;
+    serviceGrid.insertAdjacentElement('afterend',service);
     const toggle=service.querySelector('#dr-toggle'), box=service.querySelector('#dr-packages');
     toggle.onclick=()=>{
       const open=box.classList.toggle('show');
