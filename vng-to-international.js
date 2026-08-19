@@ -1,6 +1,15 @@
 (function(){
 'use strict';
 function esc2(v){return String(v??'').replace(/[&<>\"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[m];});}
+var gamepassCatalog=[
+ ['Fruit Notifier — 2.700 Robux',405000],
+ ['Dark Blade — 1.200 Robux',180000],
+ ['2× Money — 450 Robux',67500],
+ ['2× Mastery — 450 Robux',67500],
+ ['+1 Fruit Storage — 400 Robux',60000],
+ ['2× Boss Drops — 350 Robux',52500],
+ ['Fast Boats — 350 Robux',52500]
+];
 function addCatalog(){
  if(typeof catalog==='undefined')return;
  catalog['VNG → Roblox Quốc tế']=[['Treo từ VNG sang Quốc tế — 7 ngày',30000],['Treo từ VNG sang Quốc tế — 30 ngày (không gộp đơn)',165000],['Treo từ VNG sang Quốc tế — có gộp đơn',20000]];
@@ -8,7 +17,7 @@ function addCatalog(){
  if(Array.isArray(catalog['Kiếm / Súng / Phụ kiện'])&&!catalog['Kiếm / Súng / Phụ kiện'].some(function(x){return x[0]==='Lấy áo choàng râu đen';}))catalog['Kiếm / Súng / Phụ kiện'].push(['Lấy áo choàng râu đen',90000]);
  catalog['Map 2 GAG2']=[['X2000 Super Syrup Watering Can',60000],['X1000 Super Syrup Sprinkler',60000],['X1 Shadow Dragon (Rồng Đen)',18000],['x1000 Seed Atlantic Giant Pumpkin',240000]];
  catalog['Grow A Garden 2 Map 1']=[['1000 Super Watering Can',110000],['1000 Super Sprinkler',90000],['100 Dragon Breath',120000],['50 Star Fruit',125000],['150 Moon Bloom',189000],['100 Hypno Bloom',218000],['100 Sun Bloom',100000],['100 Super Watering Can',30000],['100 Super Sprinkler',21000],['1 Mega Ice Serpent Rainbow',400000],['Mega Raccoon',110000],['Mega Black Dragon',350000]];
- catalog['GAMEPASS BLOX FRUITS']=[['Fruit Notifier — 2.700 Robux',405000],['Dark Blade — 1.200 Robux',180000],['2× Money — 450 Robux',67500],['2× Mastery — 450 Robux',67500],['+1 Fruit Storage — 400 Robux',60000],['2× Boss Drops — 350 Robux',52500],['Fast Boats — 350 Robux',52500]];
+ // Gamepass is intentionally NOT added to catalog: it has its own dedicated section below.
 }
 function updateServiceIcons(){
  var iconMap={'VNG → Roblox Quốc tế':'🎮','Robux 120H':'💰','Map 2 GAG2':'🍁','Grow A Garden 2 Map 1':'🌳'};
@@ -21,7 +30,7 @@ function buildGamepass(){
  var s=document.createElement('section');s.id='gamepass-blox-fruits-service';s.className='section';
  s.innerHTML='<style>#gamepass-blox-fruits-service .gphead{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid #e5e9f0;border-radius:16px;padding:18px}#gamepass-blox-fruits-service .gplist{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}#gamepass-blox-fruits-service .gplist.show{display:grid}#gamepass-blox-fruits-service .gpitem{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e5e9f0;border-radius:14px;padding:14px}.gpinfo{flex:1}.gpinfo strong{display:block}.gpinfo small{color:#667085}#gamepass-blox-fruits-service .gpprice{font-weight:900;white-space:nowrap}@media(max-width:700px){#gamepass-blox-fruits-service .gplist.show{grid-template-columns:1fr}#gamepass-blox-fruits-service .gpitem{flex-wrap:wrap}#gamepass-blox-fruits-service .gpitem button{width:100%}}</style><h2>🎟️ GAMEPASS BLOX FRUITS</h2><div class="gphead"><div style="font-size:42px">🎟️</div><div style="flex:1"><h3 style="margin:0 0 5px">GAMEPASS BLOX FRUITS</h3><p style="margin:0;color:#667085">Bấm xem bảng giá để mở các gamepass.</p></div><button id="gpToggle" class="btn dark" type="button">XEM BẢNG GIÁ →</button></div><div id="gpList" class="gplist"></div>';
  services.appendChild(s);var list=s.querySelector('#gpList');
- (catalog['GAMEPASS BLOX FRUITS']||[]).forEach(function(p){var parts=p[0].split(' — ');var item=document.createElement('div');item.className='gpitem';item.innerHTML='<div class="gpinfo"><strong>'+esc2(parts[0])+'</strong><small>'+esc2(parts[1]||'')+'</small></div><span class="gpprice">'+Number(p[1]).toLocaleString('vi-VN')+' đ</span><button class="btn dark" type="button">MUA GÓI</button>';item.querySelector('button').onclick=function(){openSpecialOrder('GAMEPASS BLOX FRUITS',p[0],p[1],'Gamepass Blox Fruits');};list.appendChild(item);});
+ gamepassCatalog.forEach(function(p){var parts=p[0].split(' — ');var item=document.createElement('div');item.className='gpitem';item.innerHTML='<div class="gpinfo"><strong>'+esc2(parts[0])+'</strong><small>'+esc2(parts[1]||'')+'</small></div><span class="gpprice">'+Number(p[1]).toLocaleString('vi-VN')+' đ</span><button class="btn dark" type="button">MUA GÓI</button>';item.querySelector('button').onclick=function(){openSpecialOrder('GAMEPASS BLOX FRUITS',p[0],p[1],'Gamepass Blox Fruits');};list.appendChild(item);});
  s.querySelector('#gpToggle').onclick=function(){var open=list.classList.toggle('show');this.textContent=open?'ẨN BẢNG GIÁ ↑':'XEM BẢNG GIÁ →';};
 }
 var specialOrder=null;
