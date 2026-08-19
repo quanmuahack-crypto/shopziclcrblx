@@ -13,6 +13,35 @@ function updateServiceIcons(){
  var iconMap={'VNG → Roblox Quốc tế':'🎮','Robux 120H':'💰','Map 2 GAG2':'🍁','Grow A Garden 2 Map 1':'🌳'};
  document.querySelectorAll('#serviceGrid .card').forEach(function(card){var title=card.querySelector('h3');if(!title)return;var name=title.textContent.trim();var icon=card.querySelector('div[style*="font-size:42px"]');if(icon&&iconMap[name])icon.textContent=iconMap[name];});
 }
+function buildGamepass(){
+ var services=document.getElementById('services');if(!services)return;
+ document.querySelectorAll('#gamepass-blox-fruits-service').forEach(function(el){el.remove();});
+ var gamepassCatalog=[
+  ['Fruit Notifier — 2.700 Robux',405000],
+  ['Dark Blade — 1.200 Robux',180000],
+  ['Mythical Scrolls — 500 Robux',75000],
+  ['2× Money — 450 Robux',67500],
+  ['2× Mastery — 450 Robux',67500],
+  ['+1 Fruit Storage — 400 Robux',60000],
+  ['2× Boss Drops — 350 Robux',52500],
+  ['Fast Boats — 350 Robux',52500]
+ ];
+ var s=document.createElement('section');
+ s.id='gamepass-blox-fruits-service';
+ s.className='section';
+ s.innerHTML='<style>#gamepass-blox-fruits-service .gphead{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid #e5e9f0;border-radius:16px;padding:18px}.gpinfo{flex:1}.gplist{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}.gplist.show{display:grid}.gpitem{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e5e9f0;border-radius:14px;padding:14px}.gpitem small{display:block;color:#667085;margin-top:4px}.gpprice{font-weight:900;white-space:nowrap}@media(max-width:700px){.gplist.show{grid-template-columns:1fr}.gpitem{flex-wrap:wrap}.gpitem button{width:100%}}</style><h2>🎟️ GAMEPASS BLOX FRUITS</h2><div class="gphead"><div style="font-size:42px">⚔️</div><div class="gpinfo"><h3 style="margin:0 0 5px">GAMEPASS BLOX FRUITS</h3><p style="margin:0;color:#667085">Bấm XEM BẢNG GIÁ để xem các gamepass.</p></div><button id="gpToggle" class="btn dark" type="button">XEM BẢNG GIÁ →</button></div><div id="gpList" class="gplist"></div>';
+ services.appendChild(s);
+ var list=s.querySelector('#gpList');
+ gamepassCatalog.forEach(function(p){
+  var parts=p[0].split(' — ');
+  var item=document.createElement('div');
+  item.className='gpitem';
+  item.innerHTML='<div class="gpinfo"><strong>'+esc2(parts[0])+'</strong><small>'+esc2(parts[1]||'')+'</small></div><span class="gpprice">'+Number(p[1]).toLocaleString('vi-VN')+' đ</span><button class="btn dark" type="button">MUA GÓI</button>';
+  item.querySelector('button').onclick=function(){openSpecialOrder('GAMEPASS BLOX FRUITS',p[0],p[1],'Gamepass Blox Fruits');};
+  list.appendChild(item);
+ });
+ s.querySelector('#gpToggle').onclick=function(){var open=list.classList.toggle('show');this.textContent=open?'ẨN BẢNG GIÁ ↑':'XEM BẢNG GIÁ →';};
+}
 var specialOrder=null;
 function ensureSpecialFields(){var modal=document.getElementById('orderModal');if(!modal)return;var box=modal.querySelector('.box');if(!document.getElementById('robloxBackup')){var f=document.createElement('div');f.className='field';f.id='robloxBackupField';f.innerHTML='<label>Mã dự phòng</label><input id="robloxBackup" type="text" autocomplete="off" placeholder="Nhập mã dự phòng nếu cần">';var msg=modal.querySelector('.msg');msg?msg.insertAdjacentElement('beforebegin',f):box.appendChild(f);}if(!document.getElementById('specialOrderNote')){var n=document.createElement('div');n.className='field';n.id='specialOrderNote';n.innerHTML='<label>📝 Ghi chú cho Admin</label><textarea id="specialOrderNotes" rows="3" placeholder="Yêu cầu hoặc thông tin thêm cho đơn..."></textarea>';var b=document.getElementById('robloxBackupField');b?b.insertAdjacentElement('afterend',n):box.appendChild(n);}}
 function restoreNormal(){var acc=document.getElementById('robloxAccount'),pw=document.getElementById('robloxPassword'),bf=document.getElementById('robloxBackupField'),note=document.getElementById('specialOrderNote');if(acc){acc.type='text';var l=acc.closest('.field')?.querySelector('label');if(l)l.textContent='Tài khoản Roblox';acc.placeholder='';}if(pw){pw.type='password';var l2=pw.closest('.field')?.querySelector('label');if(l2)l2.textContent='Mật khẩu Roblox';pw.placeholder='';}if(bf)bf.style.display='none';if(note)note.style.display='none';}
@@ -24,7 +53,7 @@ function install(){
  addCatalog();
  if(typeof renderServices==='function')renderServices();
  updateServiceIcons();
- /* Không gọi buildGamepass(): Gamepass Blox Fruits đã có sẵn 1 bản trong shop. */
+ buildGamepass();
  ensureSpecialFields();
  restoreNormal();
  var oldOpen=window.openOrder;window.openOrder=function(name){specialOrder=null;restoreNormal();return oldOpen.apply(this,arguments);};
