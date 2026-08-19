@@ -8,6 +8,17 @@
   const MODAL_ID='dungeon-ring-order-modal';
   let selected={name:'',price:0};
 
+  function addCdkExistingSwordsPackage(){
+    if(typeof catalog==='undefined') return;
+    const service='Kiếm / Súng / Phụ kiện';
+    const name='Lấy CDK A-Z (đã có Tushita và Yama)';
+    if(!Array.isArray(catalog[service])) return;
+    if(!catalog[service].some(x=>Array.isArray(x)&&x[0]===name)){
+      catalog[service].push([name,20000]);
+      if(typeof renderServices==='function') renderServices();
+    }
+  }
+
   function removeOldDungeon(){
     document.querySelectorAll('#'+ID+', #'+PANEL_ID+', [data-dungeon-ring="true"], [data-dungeon-old="true"]').forEach(el=>el.remove());
     document.querySelectorAll('#services section, #services article, #services .section').forEach(el=>{
@@ -158,6 +169,11 @@
     document.head.appendChild(s);
   }
 
-  function start(){addStyle();if(build()) return;setTimeout(start,300)}
+  function start(){
+    addCdkExistingSwordsPackage();
+    addStyle();
+    if(build()) return;
+    setTimeout(start,300)
+  }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start); else start();
 })();
