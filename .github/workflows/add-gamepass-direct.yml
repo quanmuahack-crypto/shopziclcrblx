@@ -1,0 +1,42 @@
+name: Add Gamepass Blox Fruits Directly
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  edit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update index
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          marker='<section id="contact-section" class="section">'
+          if 'id="gamepass-blox-fruits"' in s:
+              print('already present'); raise SystemExit(0)
+          cards='''<section id="gamepass-blox-fruits" class="section"><style>#gamepass-blox-fruits .gp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}#gamepass-blox-fruits .gp-card{background:#fff;border:1px solid #e5e9f0;border-radius:16px;padding:18px;box-shadow:0 5px 20px #0000000d;display:flex;flex-direction:column}#gamepass-blox-fruits .gp-card h3{min-height:42px}#gamepass-blox-fruits .gp-icon{font-size:34px}#gamepass-blox-fruits .gp-robux{color:#667085;font-size:13px}#gamepass-blox-fruits .gp-price{font-size:22px;font-weight:900;color:#1464e8;margin:9px 0 14px}#gamepass-blox-fruits .gp-card .btn{margin-top:auto}@media(max-width:900px){#gamepass-blox-fruits .gp-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){#gamepass-blox-fruits .gp-grid{grid-template-columns:1fr}}</style><div style="text-align:center;margin-bottom:18px"><div class="status">🎮 GAMEPASS</div><h2>GAMEPASS BLOX FRUITS</h2><p>Gamepass Blox Fruits • Giá RT150 • Hỗ trợ 24/7</p></div><div class="gp-grid">'''
+          items=[('🔔','Fruit Notifier',2700,405000),('⚔️','Dark Blade',1200,180000),('💰','2× Money',450,67500),('⚡','2× Mastery',450,67500),('🍎','+1 Fruit Storage',400,60000),('👹','2× Boss Drops',350,52500),('🚤','Fast Boats',350,52500)]
+          for icon,name,robux,price in items:
+              cards+=f'<article class="gp-card"><div class="gp-icon">{icon}</div><h3>{name}</h3><div class="gp-robux">{robux:,} Robux</div><div class="gp-price">{price:,} đ</div><button class="btn dark full" type="button" onclick="openGamepassOrder(\'{name}\',{robux},{price})">MUA NGAY</button></article>'
+          cards+='''</div><script>let selectedGamepass=null;function openGamepassOrder(name,robux,price){if(!currentUser){openAuth();return}selectedGamepass={name,robux,price};document.getElementById('gamepassOrderTitle').textContent='Đặt đơn — '+name;document.getElementById('gamepassOrderPrice').textContent=Number(price).toLocaleString('vi-VN')+' đ';document.getElementById('gamepassRobloxAccount').value='';document.getElementById('gamepassRobloxPassword').value='';document.getElementById('gamepassOrderMsg').innerHTML='';document.getElementById('gamepassOrderModal').classList.add('show')}function closeGamepassOrder(){document.getElementById('gamepassOrderModal').classList.remove('show')}async function submitGamepassOrder(){const m=document.getElementById('gamepassOrderMsg');if(!selectedGamepass||!currentUser)return;const account=document.getElementById('gamepassRobloxAccount').value.trim(),password=document.getElementById('gamepassRobloxPassword').value;if(!account||!password){m.innerHTML='<div class="msg danger">Vui lòng nhập tài khoản và mật khẩu Roblox.</div>';return}try{await refreshBalance();if(Number(currentUser.balance||0)<selectedGamepass.price){m.innerHTML='<div class="msg danger">Số dư không đủ.</div>';return}await api('orders',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:currentUser.id,service_name:'GAMEPASS BLOX FRUITS',package_name:selectedGamepass.name+' — '+selectedGamepass.robux+' Robux',price:selectedGamepass.price,status:'pending',account,password})});await refreshBalance();closeGamepassOrder();alert('✅ Đơn Gamepass đã được gửi lên Admin.')}catch(e){m.innerHTML='<div class="msg danger">Không tạo được đơn: '+esc(e.message)+'</div>'}}</script></section><div id="gamepassOrderModal" class="modal"><div class="box"><button class="close" onclick="closeGamepassOrder()">✕</button><h2 id="gamepassOrderTitle">Đặt đơn Gamepass</h2><div class="msg">💰 Giá: <b id="gamepassOrderPrice">0 đ</b></div><div class="field"><label>Tài khoản Roblox</label><input id="gamepassRobloxAccount" autocomplete="off"></div><div class="field"><label>Mật khẩu Roblox</label><input id="gamepassRobloxPassword" type="password" autocomplete="off"></div><div id="gamepassOrderMsg"></div><button class="btn dark full" type="button" onclick="submitGamepassOrder()">ĐẶT ĐƠN</button></div></div>'''
+          if marker not in s: raise SystemExit('marker not found')
+          p.write_text(s.replace(marker,cards+marker,1),encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Add Gamepass Blox Fruits section" || true
+          git push
+      - name: Remove workflow
+        if: always()
+        run: |
+          rm -f .github/workflows/add-gamepass-direct.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Remove temporary workflow" || true
+          git push
