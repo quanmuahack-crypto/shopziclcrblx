@@ -79,32 +79,21 @@ function togglePermanentFruitPackages(){document.getElementById('pf-packages').c
 function openPermanentFruitOrder(name,robux,price){
   if(typeof currentUser==='undefined'||!currentUser){if(typeof openAuth==='function')openAuth();else alert('Vui lòng đăng nhập trước.');return}
   window._pfOrder={name,robux,price};
-  const modal=document.getElementById('pf-order-modal');
-  const summary=document.getElementById('pf-order-summary');
-  if(summary)summary.textContent=name+' • '+Number(price).toLocaleString('vi-VN')+' đ';
-  if(modal)modal.classList.add('show');
+  document.getElementById('pf-order-summary').textContent=name+' • '+Number(price).toLocaleString('vi-VN')+' đ';
+  document.getElementById('pf-order-modal').classList.add('show');
 }
-function closePermanentFruitOrder(){const m=document.getElementById('pf-order-modal');if(m)m.classList.remove('show')}
+function closePermanentFruitOrder(){document.getElementById('pf-order-modal').classList.remove('show')}
 async function submitPermanentFruitOrder(){
   const o=window._pfOrder;if(!o)return;
-  const username=(document.getElementById('pf-roblox-username')||{}).value?.trim()||'';
-  const phone=(document.getElementById('pf-phone')||{}).value?.trim()||'';
+  const username=document.getElementById('pf-roblox-username').value.trim();
+  const phone=document.getElementById('pf-phone').value.trim();
   if(!username||!phone){alert('Vui lòng nhập Username/ID Roblox và số điện thoại.');return}
   try{
     if(typeof refreshBalance==='function')await refreshBalance();
     if(Number(currentUser.balance||0)<o.price){alert('Số dư không đủ. Vui lòng nạp tiền trước.');return}
     await api('orders',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:currentUser.id,service_name:'TRÁI VĨNH VIỄN BF',package_name:o.name,price:o.price,status:'pending',game_username:username,game_password:'',extra_data:'Trái vĩnh viễn Blox Fruits • '+o.robux+' Robux • SĐT: '+phone})});
-    closePermanentFruitOrder();
-    document.getElementById('pf-roblox-username').value='';document.getElementById('pf-phone').value='';
+    closePermanentFruitOrder();document.getElementById('pf-roblox-username').value='';document.getElementById('pf-phone').value='';
     alert('✅ Đã gửi đơn '+o.name+' lên Admin.');
-  }catch(e){alert('Không tạo được đơn: '+(e.message||e))}
-}
-async function sendPermanentFruitOrder(name,robux,price){return openPermanentFruitOrder(name,robux,price)}
-async function __unusedPermanentFruitOrder(name,robux,price){
-  try{
-    if(Number(currentUser.balance||0)<price){alert('Số dư không đủ. Vui lòng nạp tiền trước.');return}
-    await api('orders',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:currentUser.id,service_name:'TRÁI VĨNH VIỄN BF',package_name:name,price:price,status:'pending',game_username:'',game_password:'',extra_data:'Trái vĩnh viễn Blox Fruits • '+robux+' Robux'})});
-    alert('✅ Đã gửi đơn '+name+' lên Admin.');
   }catch(e){alert('Không tạo được đơn: '+(e.message||e))}
 }
 </script>
