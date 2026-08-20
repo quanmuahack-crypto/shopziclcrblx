@@ -43,6 +43,6 @@ async function submitGamepassOrderIsolated(){
     document.getElementById('gp-isolated-modal').classList.remove('show');alert('✅ Đã gửi đơn Gamepass lên Admin.');
   }catch(e){alert('Không tạo được đơn: '+(e.message||e))}
 }
-// GAMEPASS_ISOLATED_FORM_V1
-function safeOrder(service,pkg,price){if(typeof currentUser==='undefined'||!currentUser){if(typeof openAuth==='function')openAuth();return;}if(typeof catalog!=='undefined'){catalog.__TEMP__=[[pkg,price]];selectedService='__TEMP__';const title=document.getElementById('orderTitle');if(title)title.textContent='Đặt đơn — '+pkg;const sel=document.getElementById('package');if(sel)sel.innerHTML='<option value="0">'+esc(pkg)+' — '+money(price)+'</option>';const modal=document.getElementById('orderModal');if(modal)modal.classList.add('show');}}
-function boot(){}
+function boot(){addCatalog();if(typeof renderServices==='function')renderServices();icons();gamepass();}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,80));else setTimeout(boot,80);
+})();
