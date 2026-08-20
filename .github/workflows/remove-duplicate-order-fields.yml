@@ -14,7 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Remove duplicate order fields
+      - name: Enforce exactly one phone and support-code field
+        shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -23,60 +24,38 @@ jobs:
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
 
-          # Remove the second and later phone/support-code .field blocks from the order modal.
-          # Keep the first occurrence so existing submit logic continues to use it.
-          def remove_duplicates(text, phrases):
-              seen = {x: 0 for x in phrases}
-              pattern = re.compile(r'<div\s+class=["\']field["\'][\s\S]*?</div>', re.I)
+          # The source modal should contain one of each. Remove duplicate .field blocks
+          # only when their label identifies them as phone/support-code fields.
+          field_re = re.compile(r'<div\s+class=["\']field["\'][\s\S]*?</div>', re.I)
+          order_re = re.compile(r'<div\s+id=["\']orderModal["\'][\s\S]*?</div>\s*<div\s+id=["\']ugOrderModal["\']', re.I)
+
+          def clean_segment(seg):
+              seen_phone = False
+              seen_support = False
               def repl(m):
+                  nonlocal seen_phone, seen_support
                   block = m.group(0)
-                  low = re.sub(r'<[^>]+>', ' ', block).lower()
-                  for phrase in phrases:
-                      if phrase in low:
-                          seen[phrase] += 1
-                          if seen[phrase] > 1:
-                              return ''
-                          break
+                  text = re.sub(r'<[^>]+>', ' ', block).lower()
+                  if 'số điện thoại' in text or 'sđt' in text:
+                      if seen_phone:
+                          return ''
+                      seen_phone = True
+                  if 'mã hỗ trợ đăng nhập' in text:
+                      if seen_support:
+                          return ''
+                      seen_support = True
                   return block
-              return pattern.sub(repl, text)
+              return field_re.sub(repl, seg)
 
-          # Limit the cleanup to the order modal when it exists; this avoids touching unrelated forms.
-          modal_names = ['orderModal', 'permanentFruitOrderModal']
-          for modal_id in modal_names:
-              marker = f'id="{modal_id}"'
-              pos = s.find(marker)
-              if pos < 0:
-                  continue
-              start = s.rfind('<div', 0, pos)
-              if start < 0:
-                  continue
-              # Find the next modal close conservatively by locating the next </div>\n<script or end.
-              end = s.find('</body>', pos)
-              if end < 0:
-                  end = len(s)
-              segment = s[start:end]
-              cleaned = remove_duplicates(segment, ['số điện thoại', 'mã hỗ trợ đăng nhập roblox', 'mã hỗ trợ đăng nhập'])
-              s = s[:start] + cleaned + s[end:]
+          m = order_re.search(s)
+          if m:
+              s = s[:m.start()] + clean_segment(m.group(0)) + s[m.end()-len('<div id="ugOrderModal"'):]
 
-          # Also add a runtime guard so any duplicate dynamically-rendered fields are hidden.
-          guard = r'''<script>
-(function(){
-  function cleanOrderFields(){
-    var root=document.getElementById('orderModal')||document;
-    var seen={phone:false,support:false};
-    root.querySelectorAll('.field').forEach(function(el){
-      var label=(el.querySelector('label')?.textContent||'').toLowerCase().trim();
-      var type=label.includes('số điện thoại')?'phone':(label.includes('mã hỗ trợ đăng nhập')?'support':null);
-      if(!type)return;
-      if(seen[type]) el.remove(); else seen[type]=true;
-    });
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',cleanOrderFields); else cleanOrderFields();
-  new MutationObserver(cleanOrderFields).observe(document.body,{childList:true,subtree:true});
-})();
-</script>'''
-          if 'function cleanOrderFields()' not in s:
-              s = s.replace('</body>', guard + '\n</body>', 1)
+          # Runtime safety net: if an older cached script or another renderer inserts duplicates,
+          # keep only the first phone field and first support-code field inside orderModal.
+          guard = '''\n<script>\n(function(){\n  function oneEach(){\n    var root=document.getElementById('orderModal');\n    if(!root)return;\n    var phone=false,support=false;\n    root.querySelectorAll('.field').forEach(function(f){\n      var label=(f.querySelector('label')?.textContent||'').toLowerCase().replace(/\\s+/g,' ').trim();\n      if(label.includes('số điện thoại')||label.includes('sđt')){\n        if(phone) f.remove(); else phone=true;\n      }else if(label.includes('mã hỗ trợ đăng nhập')){\n        if(support) f.remove(); else support=true;\n      }\n    });\n  }\n  oneEach();\n  document.addEventListener('DOMContentLoaded',oneEach);\n  new MutationObserver(oneEach).observe(document.body,{childList:true,subtree:true});\n})();\n</script>\n'''
+          if 'function oneEach(){' not in s:
+              s = s.replace('</body>', guard + '</body>', 1)
 
           p.write_text(s, encoding='utf-8')
           PY
@@ -86,7 +65,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'fix: remove duplicate phone and login support fields'
+          git commit -m 'fix: keep exactly one phone and support field in order form'
           git push
       - name: Remove one-time workflow
         if: always()
@@ -94,5 +73,5 @@ jobs:
           git rm -f .github/workflows/remove-duplicate-order-fields.yml || true
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'chore: remove duplicate-field workflow' || true
+          git commit -m 'chore: remove one-time duplicate-field workflow' || true
           git push || true
