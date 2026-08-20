@@ -20,8 +20,7 @@
 </header>
 <main class="wrap">
 <div class="balance"><div>👤 <span id="who">Chưa đăng nhập</span></div><div>Số dư: <span id="balance" class="money">0 đ</span></div></div>
-<section class="section"><h2>🏆 TOP NẠP TIỀN</h2><p>Top được cập nhật từ dữ liệu tài khoản.</p><div id="top5" class="top5"></div></section>
-<section id="deposit" class="section"><h2>💳 Nạp thẻ cào</h2><p>Chỉ hỗ trợ Viettel và Zing. Admin sẽ kiểm tra và duyệt thủ công.</p><div class="field"><label>Nhà mạng</label><select id="cardType"><option value="Viettel">Viettel</option><option value="Zing">Zing</option></select></div><div class="field"><label>Seri thẻ</label><input id="cardSerial" autocomplete="off"></div><div class="field"><label>Mã thẻ</label><input id="cardCode" autocomplete="off"></div><div class="field"><label>Mệnh giá</label><select id="cardAmount"><option value="20000">20.000 đ</option><option value="50000">50.000 đ</option><option value="100000">100.000 đ</option><option value="200000">200.000 đ</option><option value="500000">500.000 đ</option><option value="1000000">1.000.000 đ</option></select></div><button class="btn dark full" onclick="submitDeposit()">GỬI YÊU CẦU NẠP</button><div id="depositMsg"></div></section>
+<section class="section" id="top-deposit-section"><h2>🏆 TOP NẠP TIỀN</h2><p>Top 5 người có tổng tiền nạp đã duyệt cao nhất.</p><div id="top5" class="top5"><div class="top-card">Đang tải...</div></div></section><section id="deposit" class="section"><h2>💳 Nạp thẻ cào</h2><p>Chỉ hỗ trợ Viettel và Zing. Admin sẽ kiểm tra và duyệt thủ công.</p><div class="field"><label>Nhà mạng</label><select id="cardType"><option value="Viettel">Viettel</option><option value="Zing">Zing</option></select></div><div class="field"><label>Seri thẻ</label><input id="cardSerial" autocomplete="off"></div><div class="field"><label>Mã thẻ</label><input id="cardCode" autocomplete="off"></div><div class="field"><label>Mệnh giá</label><select id="cardAmount"><option value="20000">20.000 đ</option><option value="50000">50.000 đ</option><option value="100000">100.000 đ</option><option value="200000">200.000 đ</option><option value="500000">500.000 đ</option><option value="1000000">1.000.000 đ</option></select></div><button class="btn dark full" onclick="submitDeposit()">GỬI YÊU CẦU NẠP</button><div id="depositMsg"></div></section>
 <section id="services"><h2>Dịch vụ cày thuê</h2><div class="grid" id="serviceGrid"></div><section id="permanent-fruits-service" class="section">
 <style>
 .pf-card{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid #e5e9f0;border-radius:16px;padding:18px;box-shadow:0 5px 20px #0000000d}
@@ -232,5 +231,24 @@ document.addEventListener('visibilitychange',async()=>{if(!document.hidden&&acce
 (async()=>{if(accessToken){await loadProfile();if(currentUser)await refreshBalance()}})();
 </script>
 <script src="vng-to-international.js"></script>
+<script>
+async function rebuildTopDeposit(){
+  const box=document.getElementById('top5');
+  if(!box)return;
+  const url='https://ufevipuhejvhiufyqqnz.supabase.co';
+  const key='sb_publishable_6ShPhGpN4_02Za2tOTOTg_GF0su_OA';
+  const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const money=n=>Number(n||0).toLocaleString('vi-VN')+' đ';
+  try{
+    const r=await fetch(url+'/rest/v1/rpc/get_top5_depositors',{method:'POST',headers:{apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json'},body:'{}',cache:'no-store'});
+    if(!r.ok)throw new Error(await r.text());
+    const rows=await r.json();
+    const medals=['🥇','🥈','🥉','🏅','🏅'];
+    const top=Array.isArray(rows)?rows.slice(0,5):[];
+    box.innerHTML=Array.from({length:5},(_,i)=>{const x=top[i];return '<div class="top-card"><div class="rank">'+medals[i]+' TOP '+(i+1)+'</div>'+(x?'<strong>'+esc(x.username||'Ẩn danh')+'</strong><div>'+money(x.total_deposit)+'</div>':'<div class="empty">Chưa có dữ liệu</div><div class="empty">0 đ</div>')+'</div>'}).join('');
+  }catch(e){console.error('Top deposit:',e);box.innerHTML=Array.from({length:5},(_,i)=>'<div class="top-card"><div class="rank">🏆 TOP '+(i+1)+'</div><div class="empty">Chưa có dữ liệu</div></div>').join('');}
+}
+document.addEventListener('DOMContentLoaded',rebuildTopDeposit);
+</script>
 </body>
 </html>
