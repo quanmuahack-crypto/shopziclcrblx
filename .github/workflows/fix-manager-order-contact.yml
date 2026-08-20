@@ -1,0 +1,81 @@
+name: Fix manager order contact display
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/fix-manager-order-contact.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch manager order display only
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('admin.html')
+          s=p.read_text(encoding='utf-8')
+          marker='init();'
+          if 'MANAGER_CONTACT_DISPLAY_V2' in s:
+              raise SystemExit('patch already present')
+          override=r'''/* MANAGER_CONTACT_DISPLAY_V2 */
+function managerOrderContactValue(o, type){
+  const extra = parseExtra(o && o.extra_data);
+  const sources = [o, extra];
+  const keys = type === 'phone'
+    ? ['phone_number','phone','phoneNumber','sdt','so_dien_thoai','soDienThoai','mobile','mobile_number','mobileNumber','SĐT','Số điện thoại','So dien thoai']
+    : ['login_support_code','support_code','loginSupportCode','supportCode','backup_code','backupCode','recovery_code','recoveryCode','backup','recovery','ma_du_phong','maDuPhong','Mã hỗ trợ đăng nhập Roblox','Mã hỗ trợ đăng nhập','Mã dự phòng','Mã khôi phục'];
+  for(const src of sources){
+    if(!src) continue;
+    if(typeof src === 'object'){
+      for(const k of keys){
+        if(src[k] !== undefined && src[k] !== null && String(src[k]).trim() !== '') return String(src[k]).trim();
+      }
+    }
+  }
+  if(typeof extra === 'string'){
+    for(const k of keys){
+      const escaped=k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      const m=extra.match(new RegExp('(?:'+escaped+')\\s*[:=]\\s*([^|;\\n]+)','i'));
+      if(m && m[1]) return m[1].trim();
+    }
+  }
+  return '';
+}
+function renderOrders(os,map){
+  document.getElementById('orders').innerHTML='<h2>📦 Quản lý đơn hàng</h2><div class="table-wrap"><table class="table"><tr><th>Khách</th><th>Thông tin tài khoản</th><th>Dịch vụ</th><th>Gói</th><th>Giá</th><th>Trạng thái</th><th>Thao tác</th></tr>'+os.map(o=>{
+    const rid=o.game_username||o.account||'';
+    const rpw=o.game_password||o.password||'';
+    const phone=managerOrderContactValue(o,'phone');
+    const support=managerOrderContactValue(o,'support');
+    const phoneText=phone||'Chưa có';
+    const supportText=support||'Chưa có';
+    return `<tr><td>${esc(map[o.user_id]?.username||o.user_id)}</td><td class="order-info">🎮 <b>ID Roblox:</b> <span class="secret">${esc(rid||'Chưa có')}</span><br>🔑 <b>Mật khẩu:</b> <span class="secret">${esc(rpw||'Chưa có')}</span><br>📱 <b>Số điện thoại:</b> <span class="secret">${esc(phoneText)}</span><br>🛡️ <b>Mã hỗ trợ đăng nhập:</b> <span class="secret">${esc(supportText)}</span></td><td>${esc(o.service_name)}</td><td>${esc(o.package_name)}</td><td>${money(o.price)}</td><td>${esc(o.status)}</td><td>${o.status==='pending'?`<button class="btn green" onclick="updateOrder('${o.id}','processing')">🔄 Nhận đơn</button>`:''}${o.status==='processing'?`<button class="btn blue" onclick="updateOrder('${o.id}','completed')">✅ Hoàn thành</button>`:''}${['pending','processing'].includes(o.status)?`<button class="btn red" onclick="openCancelConfirm('${o.id}',${JSON.stringify((map[o.user_id]?.username||o.user_id)+' — '+o.package_name)})">❌ Hủy + hoàn tiền</button>`:''}</td></tr>`;
+  }).join('')+'</table></div>';
+}
+'''
+          if marker not in s:
+              raise SystemExit('init marker not found')
+          s=s.replace(marker,override+'\n'+marker,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add admin.html
+          git commit -m 'fix: show phone and login support code in manager orders'
+          git push
+      - name: Remove one-time workflow
+        if: always()
+        run: |
+          git rm -f .github/workflows/fix-manager-order-contact.yml || true
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore: remove one-time manager contact workflow' || true
+          git push || true
