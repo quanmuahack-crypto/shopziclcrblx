@@ -1,0 +1,67 @@
+name: Rebuild Top 5 only
+on:
+  push:
+    paths:
+      - '.github/workflows/rebuild-top5-only.yml'
+permissions:
+  contents: write
+jobs:
+  rebuild:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rebuild only Top 5 section
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          start='<section class="section"><h2>🏆 TOP NẠP TIỀN</h2>'
+          end='<section id="deposit" class="section">'
+          a=s.find(start)
+          b=s.find(end,a)
+          if a<0 or b<0:
+              raise SystemExit('Không tìm thấy đúng vùng Top Nạp Tiền; dừng để không ảnh hưởng phần khác')
+          section='''<section class="section" id="top-deposit-section"><h2>🏆 TOP NẠP TIỀN</h2><p>Top 5 người có tổng tiền nạp đã duyệt cao nhất.</p><div id="top5" class="top5"><div class="top-card">Đang tải...</div></div></section>'''
+          s=s[:a]+section+s[b:]
+          script='''<script>
+          async function rebuildTopDeposit(){
+            const box=document.getElementById('top5');
+            if(!box)return;
+            const url='https://ufevipuhejvhiufyqqnz.supabase.co';
+            const key='sb_publishable_6ShPhGpN4_02Za2tOTOTg_GF0su_OA';
+            const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+            const money=n=>Number(n||0).toLocaleString('vi-VN')+' đ';
+            try{
+              const r=await fetch(url+'/rest/v1/rpc/get_top5_depositors',{method:'POST',headers:{apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json'},body:'{}',cache:'no-store'});
+              if(!r.ok)throw new Error(await r.text());
+              const rows=await r.json();
+              const medals=['🥇','🥈','🥉','🏅','🏅'];
+              const top=Array.isArray(rows)?rows.slice(0,5):[];
+              box.innerHTML=Array.from({length:5},(_,i)=>{const x=top[i];return '<div class="top-card"><div class="rank">'+medals[i]+' TOP '+(i+1)+'</div>'+(x?'<strong>'+esc(x.username||'Ẩn danh')+'</strong><div>'+money(x.total_deposit)+'</div>':'<div class="empty">Chưa có dữ liệu</div><div class="empty">0 đ</div>')+'</div>'}).join('');
+            }catch(e){console.error('Top deposit:',e);box.innerHTML=Array.from({length:5},(_,i)=>'<div class="top-card"><div class="rank">🏆 TOP '+(i+1)+'</div><div class="empty">Chưa có dữ liệu</div></div>').join('');}
+          }
+          document.addEventListener('DOMContentLoaded',rebuildTopDeposit);
+          </script>'''
+          if '</body>' not in s: raise SystemExit('Không tìm thấy body; dừng')
+          s=s.replace('</body>',script+'\n</body>',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit index only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'fix: rebuild Top 5 deposit leaderboard'
+          git push
+      - name: Remove workflow
+        if: always()
+        run: |
+          rm -f .github/workflows/rebuild-top5-only.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/workflows/rebuild-top5-only.yml
+          git diff --cached --quiet || git commit -m 'chore: remove one-time Top 5 rebuild workflow'
+          git push || true
