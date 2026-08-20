@@ -1,0 +1,44 @@
+name: Add admin phone field
+
+on:
+  push:
+    paths:
+      - '.github/workflows/add-admin-phone-field.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch admin order display
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('admin.html')
+          s=p.read_text(encoding='utf-8')
+          marker="function backupCode(extra){"
+          if marker not in s:
+              raise SystemExit('backupCode helper not found; no changes made')
+          if 'function phoneNumber(extra)' not in s:
+              start=s.index(marker)
+              end=s.index('\nasync function api', start)
+              helper="\nfunction phoneNumber(extra){if(!extra)return '';let x=extra;try{if(typeof x==='string')x=JSON.parse(x)}catch{}if(!x||typeof x!=='object')return '';for(const k of ['phone','phone_number','phoneNumber','sdt','so_dien_thoai','soDienThoai','mobile']){if(x[k]!==undefined&&x[k]!==null&&String(x[k]).trim()!=='')return String(x[k])}return ''}\n"
+              s=s[:end]+helper+s[end:]
+          old="const backup=backupCode(o.extra_data);return `<tr><td>${esc(map[o.user_id]?.username||o.user_id)}</td><td class=\"order-info\"><div>🎮 <b>ID Roblox:</b> <span class=\"secret\">${esc(rid||'Chưa có')}</span></div><div>🔑 <b>Mật khẩu:</b> <span class=\"secret\">${esc(rpw||'Chưa có')}</span></div><div>🛡️ <b>Mã dự phòng:</b> <span class=\"secret\">${esc(backup||'Chưa có')}</span></div></td>"
+          new="const backup=backupCode(o.extra_data);const phone=phoneNumber(o.extra_data);return `<tr><td>${esc(map[o.user_id]?.username||o.user_id)}</td><td class=\"order-info\"><div>🎮 <b>ID Roblox:</b> <span class=\"secret\">${esc(rid||'Chưa có')}</span></div><div>🔑 <b>Mật khẩu:</b> <span class=\"secret\">${esc(rpw||'Chưa có')}</span></div><div>📱 <b>Số điện thoại:</b> <span class=\"secret\">${esc(phone||'Chưa có')}</span></div><div>🛡️ <b>Mã dự phòng:</b> <span class=\"secret\">${esc(backup||'Chưa có')}</span></div></td>"
+          if old not in s:
+              raise SystemExit('order display block not found; no changes made')
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit admin only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add admin.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'Add phone number to admin order details'
+          git push
