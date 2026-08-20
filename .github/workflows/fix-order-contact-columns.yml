@@ -1,0 +1,64 @@
+name: Fix order contact columns
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/fix-order-contact-columns.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch frontend and admin
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          # Customer frontend: save the two dedicated columns.
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          old="game_username:account,game_password:password,extra_data:JSON.stringify({phone:phone,phone_number:phone,support_code:supportCode,login_support_code:supportCode})"
+          new="game_username:account,game_password:password,phone_number:phone,login_support_code:supportCode,extra_data:JSON.stringify({phone:phone,phone_number:phone,support_code:supportCode,login_support_code:supportCode})"
+          if old not in s:
+              raise SystemExit('frontend order payload pattern not found')
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+
+          # Admin: fetch dedicated columns instead of relying only on extra_data.
+          p=Path('admin.html')
+          s=p.read_text(encoding='utf-8')
+          old_select="status,account,password,game_username,game_password,extra_data,created_at,updated_at"
+          new_select="status,account,password,game_username,game_password,phone_number,login_support_code,extra_data,created_at,updated_at"
+          count=s.count(old_select)
+          if count < 2:
+              raise SystemExit(f'admin order select pattern expected at least 2, found {count}')
+          s=s.replace(old_select,new_select)
+
+          old_render="const rid=o.game_username||o.account||'';const rpw=o.game_password||o.password||'';const backup=backupCode(o.extra_data);const phone=phoneNumber(o.extra_data);"
+          new_render="const rid=o.game_username||o.account||'';const rpw=o.game_password||o.password||'';const backup=o.login_support_code||backupCode(o.extra_data);const phone=o.phone_number||phoneNumber(o.extra_data);"
+          if old_render not in s:
+              raise SystemExit('admin render pattern not found')
+          s=s.replace(old_render,new_render,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html admin.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'fix: persist phone and login support code on orders'
+          git push
+      - name: Remove one-time workflow
+        if: always()
+        run: |
+          git rm -f .github/workflows/fix-order-contact-columns.yml || true
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore: remove one-time order contact workflow' || true
+          git push || true
