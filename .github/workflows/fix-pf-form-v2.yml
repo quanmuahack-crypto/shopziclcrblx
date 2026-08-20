@@ -1,5 +1,7 @@
-name: Fix permanent fruit order form v2
-on: push
+name: Fix permanent fruit order form v3
+on:
+  push:
+  workflow_dispatch:
 permissions:
   contents: write
 jobs:
@@ -8,40 +10,81 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Replace only permanent fruit script
+      - name: Append isolated permanent fruit form only
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import re
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
-          new='''<script>\nfunction togglePermanentFruitPackages(){document.getElementById('pf-packages').classList.toggle('show')}\nfunction openPermanentFruitOrder(name,robux,price){\n  if(typeof currentUser==='undefined'||!currentUser){if(typeof openAuth==='function')openAuth();else alert('Vui lòng đăng nhập trước.');return}\n  window._pfOrder={name,robux,price};\n  document.getElementById('pf-order-summary').textContent=name+' • '+Number(price).toLocaleString('vi-VN')+' đ';\n  document.getElementById('pf-order-modal').classList.add('show');\n}\nfunction closePermanentFruitOrder(){document.getElementById('pf-order-modal').classList.remove('show')}\nasync function submitPermanentFruitOrder(){\n  const o=window._pfOrder;if(!o)return;\n  const username=document.getElementById('pf-roblox-username').value.trim();\n  const phone=document.getElementById('pf-phone').value.trim();\n  if(!username||!phone){alert('Vui lòng nhập Username/ID Roblox và số điện thoại.');return}\n  try{\n    if(typeof refreshBalance==='function')await refreshBalance();\n    if(Number(currentUser.balance||0)<o.price){alert('Số dư không đủ. Vui lòng nạp tiền trước.');return}\n    await api('orders',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:currentUser.id,service_name:'TRÁI VĨNH VIỄN BF',package_name:o.name,price:o.price,status:'pending',game_username:username,game_password:'',extra_data:'Trái vĩnh viễn Blox Fruits • '+o.robux+' Robux • SĐT: '+phone})});\n    closePermanentFruitOrder();document.getElementById('pf-roblox-username').value='';document.getElementById('pf-phone').value='';\n    alert('✅ Đã gửi đơn '+o.name+' lên Admin.');\n  }catch(e){alert('Không tạo được đơn: '+(e.message||e))}\n}\n</script>'''
-          pattern=r'<script>\s*function togglePermanentFruitPackages\(\).*?</script>\s*</section>\s*\n\s*</section>\s*\n\s*<section id="ordersSection"'
-          replacement=new+'\n</section>\n\n</section>\n<section id="ordersSection"'
-          s2,n=re.subn(pattern,replacement,s,count=1,flags=re.S)
-          if n!=1: raise SystemExit(f'Permanent fruit script boundary not found: {n}')
-          p.write_text(s2,encoding='utf-8')
+          if 'PF_ISOLATED_FORM_V3' in s:
+              raise SystemExit('already patched')
+          block=r'''<!-- PF_ISOLATED_FORM_V3 -->
+          <style>
+          #pf-order-modal-v3{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
+          #pf-order-modal-v3.show{display:flex}
+          #pf-order-modal-v3 .pf-box{width:min(520px,100%);background:#fff;border-radius:18px;padding:24px;box-shadow:0 20px 60px #0004}
+          #pf-order-modal-v3 .pf-close{float:right;border:0;background:#eef2f7;border-radius:8px;padding:7px 10px;cursor:pointer;font-weight:900}
+          #pf-order-modal-v3 input{width:100%;padding:13px;border:1px solid #d6dbe4;border-radius:10px;margin:6px 0 14px}
+          #pf-order-modal-v3 label{display:block;font-weight:800}
+          #pf-order-modal-v3 .pf-summary{background:#fff8e6;color:#805b00;padding:12px;border-radius:10px;margin:12px 0}
+          #pf-order-modal-v3 .pf-note{background:#e7f7ef;color:#087443;padding:12px;border-radius:10px;margin-bottom:14px}
+          #pf-order-modal-v3 .pf-submit{width:100%;border:0;border-radius:10px;padding:13px;background:#111827;color:#fff;font-weight:900;cursor:pointer}
+          </style>
+          <div id="pf-order-modal-v3" aria-hidden="true">
+            <div class="pf-box">
+              <button class="pf-close" type="button" onclick="closePermanentFruitOrderV3()">✕</button>
+              <h2>🍇 ĐẶT TRÁI VĨNH VIỄN BF</h2>
+              <div id="pf-order-summary-v3" class="pf-summary">Gói đã chọn</div>
+              <label>Username / ID Roblox</label>
+              <input id="pf-roblox-username-v3" autocomplete="off" placeholder="Nhập username hoặc ID Roblox">
+              <label>Số điện thoại</label>
+              <input id="pf-phone-v3" type="tel" inputmode="tel" autocomplete="tel" placeholder="Nhập số điện thoại">
+              <div class="pf-note">Chỉ cần Username/ID Roblox và số điện thoại. Không yêu cầu mật khẩu hoặc mã đăng nhập Roblox.</div>
+              <button class="pf-submit" type="button" onclick="submitPermanentFruitOrderV3()">XÁC NHẬN ĐẶT ĐƠN</button>
+            </div>
+          </div>
+          <script>
+          function togglePermanentFruitPackages(){var x=document.getElementById('pf-packages');if(x)x.classList.toggle('show')}
+          function openPermanentFruitOrder(name,robux,price){
+            if(typeof currentUser==='undefined'||!currentUser){if(typeof openAuth==='function')return openAuth();return alert('Vui lòng đăng nhập trước.')}
+            window._pfOrderV3={name:name,robux:robux,price:Number(price)};
+            document.getElementById('pf-order-summary-v3').textContent=name+' • '+Number(price).toLocaleString('vi-VN')+' đ';
+            document.getElementById('pf-order-modal-v3').classList.add('show');
+          }
+          function closePermanentFruitOrderV3(){document.getElementById('pf-order-modal-v3').classList.remove('show')}
+          async function submitPermanentFruitOrderV3(){
+            var o=window._pfOrderV3;if(!o)return;
+            var username=document.getElementById('pf-roblox-username-v3').value.trim();
+            var phone=document.getElementById('pf-phone-v3').value.trim();
+            if(!username||!phone)return alert('Vui lòng nhập Username/ID Roblox và số điện thoại.');
+            try{
+              if(typeof refreshBalance==='function')await refreshBalance();
+              if(Number(currentUser.balance||0)<o.price)return alert('Số dư không đủ. Vui lòng nạp tiền trước.');
+              await api('orders',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:currentUser.id,service_name:'TRÁI VĨNH VIỄN BF',package_name:o.name,price:o.price,status:'pending',game_username:username,game_password:'',extra_data:'Trái vĩnh viễn Blox Fruits • '+o.robux+' Robux • SĐT: '+phone})});
+              closePermanentFruitOrderV3();
+              document.getElementById('pf-roblox-username-v3').value='';document.getElementById('pf-phone-v3').value='';
+              alert('✅ Đã gửi đơn '+o.name+' lên Admin.');
+            }catch(e){alert('Không tạo được đơn: '+(e.message||e))}
+          }
+          </script>'''
+          i=s.rfind('</body>')
+          if i<0: raise SystemExit('body end not found')
+          s=s[:i]+block+'\n'+s[i:]
+          p.write_text(s,encoding='utf-8')
           PY
-      - name: Ensure isolated modal exists
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('index.html');s=p.read_text(encoding='utf-8')
-          if 'id="pf-order-modal"' not in s:
-              modal='''<div id="pf-order-modal" class="modal" aria-hidden="true"><div class="box" style="width:min(520px,100%);border:2px solid #f1c40f"><button class="close" type="button" onclick="closePermanentFruitOrder()">✕</button><h2>🍇 ĐẶT TRÁI VĨNH VIỄN BF</h2><div id="pf-order-summary" class="msg success">Gói đã chọn</div><div class="field"><label>Username / ID Roblox</label><input id="pf-roblox-username" autocomplete="off" placeholder="Nhập username hoặc ID Roblox"></div><div class="field"><label>Số điện thoại</label><input id="pf-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Nhập số điện thoại"></div><div class="msg">Chỉ cần Username/ID Roblox và số điện thoại. Không yêu cầu mật khẩu hoặc mã đăng nhập Roblox.</div><button class="btn dark full" type="button" onclick="submitPermanentFruitOrder()">XÁC NHẬN ĐẶT ĐƠN</button></div></div>'''
-              i=s.rfind('</body>')
-              if i<0: raise SystemExit('body end not found')
-              s=s[:i]+modal+'\n'+s[i:]
-              p.write_text(s,encoding='utf-8')
-          PY
-      - name: Commit index only and remove workflow
+      - name: Commit index only
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
-          git diff --cached --quiet || git commit -m 'fix: isolate permanent fruit order script'
-          git push || true
-          rm -f .github/workflows/fix-pf-form-v2.yml .github/workflows/fix-permanent-fruit-order.yml
-          git add .github/workflows/fix-pf-form-v2.yml .github/workflows/fix-permanent-fruit-order.yml
-          git diff --cached --quiet || git commit -m 'chore: remove one-time fruit form workflows'
+          git diff --cached --quiet && exit 0
+          git commit -m 'fix: isolated permanent fruit order form'
+          git push
+      - name: Remove one-time workflow
+        if: success()
+        run: |
+          git rm -f .github/workflows/fix-pf-form-v2.yml || true
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git diff --cached --quiet || git commit -m 'chore: remove one-time fruit form workflow'
           git push || true
