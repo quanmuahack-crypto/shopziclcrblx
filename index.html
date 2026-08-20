@@ -258,5 +258,54 @@ async function rebuildTopDeposit(){
 document.addEventListener('DOMContentLoaded',rebuildTopDeposit);
 </script>
 <div id="pf-order-modal" class="modal" aria-hidden="true"><div class="box" style="width:min(520px,100%);border:2px solid #f1c40f"><button class="close" type="button" onclick="closePermanentFruitOrder()">✕</button><h2>🍇 ĐẶT TRÁI VĨNH VIỄN BF</h2><div id="pf-order-summary" class="msg success">Gói đã chọn</div><div class="field"><label>Username / ID Roblox</label><input id="pf-roblox-username" autocomplete="off" placeholder="Nhập username hoặc ID Roblox"></div><div class="field"><label>Số điện thoại</label><input id="pf-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Nhập số điện thoại"></div><div class="msg">Chỉ cần Username/ID Roblox và số điện thoại. Không yêu cầu mật khẩu hoặc mã đăng nhập Roblox.</div><button class="btn dark full" type="button" onclick="submitPermanentFruitOrder()">XÁC NHẬN ĐẶT ĐƠN</button></div></div>
+<!-- PF_ISOLATED_FORM_V3 -->
+<style>
+#pf-order-modal-v3{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
+#pf-order-modal-v3.show{display:flex}
+#pf-order-modal-v3 .pf-box{width:min(520px,100%);background:#fff;border-radius:18px;padding:24px;box-shadow:0 20px 60px #0004}
+#pf-order-modal-v3 .pf-close{float:right;border:0;background:#eef2f7;border-radius:8px;padding:7px 10px;cursor:pointer;font-weight:900}
+#pf-order-modal-v3 input{width:100%;padding:13px;border:1px solid #d6dbe4;border-radius:10px;margin:6px 0 14px}
+#pf-order-modal-v3 label{display:block;font-weight:800}
+#pf-order-modal-v3 .pf-summary{background:#fff8e6;color:#805b00;padding:12px;border-radius:10px;margin:12px 0}
+#pf-order-modal-v3 .pf-note{background:#e7f7ef;color:#087443;padding:12px;border-radius:10px;margin-bottom:14px}
+#pf-order-modal-v3 .pf-submit{width:100%;border:0;border-radius:10px;padding:13px;background:#111827;color:#fff;font-weight:900;cursor:pointer}
+</style>
+<div id="pf-order-modal-v3" aria-hidden="true">
+  <div class="pf-box">
+    <button class="pf-close" type="button" onclick="closePermanentFruitOrderV3()">✕</button>
+    <h2>🍇 ĐẶT TRÁI VĨNH VIỄN BF</h2>
+    <div id="pf-order-summary-v3" class="pf-summary">Gói đã chọn</div>
+    <label>Username / ID Roblox</label>
+    <input id="pf-roblox-username-v3" autocomplete="off" placeholder="Nhập username hoặc ID Roblox">
+    <label>Số điện thoại</label>
+    <input id="pf-phone-v3" type="tel" inputmode="tel" autocomplete="tel" placeholder="Nhập số điện thoại">
+    <div class="pf-note">Chỉ cần Username/ID Roblox và số điện thoại. Không yêu cầu mật khẩu hoặc mã đăng nhập Roblox.</div>
+    <button class="pf-submit" type="button" onclick="submitPermanentFruitOrderV3()">XÁC NHẬN ĐẶT ĐƠN</button>
+  </div>
+</div>
+<script>
+function togglePermanentFruitPackages(){var x=document.getElementById('pf-packages');if(x)x.classList.toggle('show')}
+function openPermanentFruitOrder(name,robux,price){
+  if(typeof currentUser==='undefined'||!currentUser){if(typeof openAuth==='function')return openAuth();return alert('Vui lòng đăng nhập trước.')}
+  window._pfOrderV3={name:name,robux:robux,price:Number(price)};
+  document.getElementById('pf-order-summary-v3').textContent=name+' • '+Number(price).toLocaleString('vi-VN')+' đ';
+  document.getElementById('pf-order-modal-v3').classList.add('show');
+}
+function closePermanentFruitOrderV3(){document.getElementById('pf-order-modal-v3').classList.remove('show')}
+async function submitPermanentFruitOrderV3(){
+  var o=window._pfOrderV3;if(!o)return;
+  var username=document.getElementById('pf-roblox-username-v3').value.trim();
+  var phone=document.getElementById('pf-phone-v3').value.trim();
+  if(!username||!phone)return alert('Vui lòng nhập Username/ID Roblox và số điện thoại.');
+  try{
+    if(typeof refreshBalance==='function')await refreshBalance();
+    if(Number(currentUser.balance||0)<o.price)return alert('Số dư không đủ. Vui lòng nạp tiền trước.');
+    await api('orders',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:currentUser.id,service_name:'TRÁI VĨNH VIỄN BF',package_name:o.name,price:o.price,status:'pending',game_username:username,game_password:'',extra_data:'Trái vĩnh viễn Blox Fruits • '+o.robux+' Robux • SĐT: '+phone})});
+    closePermanentFruitOrderV3();
+    document.getElementById('pf-roblox-username-v3').value='';document.getElementById('pf-phone-v3').value='';
+    alert('✅ Đã gửi đơn '+o.name+' lên Admin.');
+  }catch(e){alert('Không tạo được đơn: '+(e.message||e))}
+}
+</script>
 </body>
 </html>
