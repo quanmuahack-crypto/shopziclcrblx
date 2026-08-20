@@ -257,7 +257,7 @@ async function rebuildTopDeposit(){
 }
 document.addEventListener('DOMContentLoaded',rebuildTopDeposit);
 </script>
-<div id="pf-order-modal" class="modal" aria-hidden="true"><div class="box" style="width:min(520px,100%);border:2px solid #f1c40f"><button class="close" type="button" onclick="closePermanentFruitOrder()">✕</button><h2>🍇 ĐẶT TRÁI VĨNH VIỄN BF</h2><div id="pf-order-summary" class="msg success">Gói đã chọn</div><div class="field"><label>Username / ID Roblox</label><input id="pf-roblox-username" autocomplete="off" placeholder="Nhập username hoặc ID Roblox"></div><div class="msg">Chỉ cần Username/ID Roblox và số điện thoại. Không yêu cầu mật khẩu hoặc mã đăng nhập Roblox.</div><button class="btn dark full" type="button" onclick="submitPermanentFruitOrder()">XÁC NHẬN ĐẶT ĐƠN</button></div></div>
+<div id="pf-order-modal" class="modal" aria-hidden="true"><div class="box" style="width:min(520px,100%);border:2px solid #f1c40f"><button class="close" type="button" onclick="closePermanentFruitOrder()">✕</button><h2>🍇 ĐẶT TRÁI VĨNH VIỄN BF</h2><div id="pf-order-summary" class="msg success">Gói đã chọn</div><div class="field"><label>Username / ID Roblox</label><input id="pf-roblox-username" autocomplete="off" placeholder="Nhập username hoặc ID Roblox"></div><div class="field"><label>Số điện thoại</label><input id="pf-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Nhập số điện thoại"></div><div class="msg">Chỉ cần Username/ID Roblox và số điện thoại. Không yêu cầu mật khẩu hoặc mã đăng nhập Roblox.</div><button class="btn dark full" type="button" onclick="submitPermanentFruitOrder()">XÁC NHẬN ĐẶT ĐƠN</button></div></div>
 <!-- PF_ISOLATED_FORM_V3 -->
 <style>
 #pf-order-modal-v3{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
@@ -306,27 +306,6 @@ async function submitPermanentFruitOrderV3(){
     alert('✅ Đã gửi đơn '+o.name+' lên Admin.');
   }catch(e){alert('Không tạo được đơn: '+(e.message||e))}
 }
-</script>
-
-<script>
-(function(){
-  function oneEach(){
-    var root=document.getElementById('orderModal');
-    if(!root)return;
-    var phone=false,support=false;
-    root.querySelectorAll('.field').forEach(function(f){
-      var label=(f.querySelector('label')?.textContent||'').toLowerCase().replace(/\s+/g,' ').trim();
-      if(label.includes('số điện thoại')||label.includes('sđt')){
-        if(phone) f.remove(); else phone=true;
-      }else if(label.includes('mã hỗ trợ đăng nhập')){
-        if(support) f.remove(); else support=true;
-      }
-    });
-  }
-  oneEach();
-  document.addEventListener('DOMContentLoaded',oneEach);
-  new MutationObserver(oneEach).observe(document.body,{childList:true,subtree:true});
-})();
 </script>
 </body>
 </html>
