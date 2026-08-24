@@ -1,0 +1,38 @@
+name: Fix special order forms
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch special forms
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('vng-to-international.js')
+          s=p.read_text()
+          old="if(title)title.textContent='Đặt đơn — '+name;const select=document.getElementById('package');"
+          new="if(title)title.textContent='Đặt đơn — '+name;if(typeof setOrderFields==='function')setOrderFields(name);const select=document.getElementById('package');"
+          if old not in s:
+              raise SystemExit('target not found')
+          s=s.replace(old,new,1)
+          p.write_text(s)
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add vng-to-international.js
+          git commit -m 'Fix special service order forms [skip ci]' || exit 0
+          git push
+      - name: Remove temporary workflow
+        if: always()
+        run: |
+          git rm -f .github/workflows/fix-special-order-forms.yml || true
+          git commit -m 'Remove temporary order form workflow [skip ci]' || true
+          git push || true
