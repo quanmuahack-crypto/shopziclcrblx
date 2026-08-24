@@ -2,7 +2,7 @@
 function esc(v){return String(v??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[m]));}
 function money(n){return Number(n||0).toLocaleString('vi-VN')+' đ';}
 const GP=[['Fruit Notifier',2700,425000],['Dark Blade',1200,200000],['Mythical Scrolls',500,95000],['2× Money',450,87500],['2× Mastery',450,87500],['+1 Fruit Storage',400,80000],['2× Boss Drops',350,72500],['Fast Boats',350,72500]];
-const ICON={'GAMEPASS BLOX FRUITS':'🎟️','VNG → Roblox Quốc tế':'🤖','Robux 120H':'💰','Map 2 GAG2':'🍁','Grow A Garden 2 Map 1':'🌳','Dungeon & Nhẫn':'💍','Kiếm / Súng / Phụ kiện':'⚔️','Trái Vĩnh Viễn BF':'💰','UGPHONE GVIP':'💎','UGPHONE SVIP':'👑'};
+const ICON={'GAMEPASS BLOX FRUITS':'🎟️','VNG → Roblox Quốc tế':'🤖','Robux 120H':'💎','Map 2 GAG2':'🍁','Grow A Garden 2 Map 1':'🌳','Dungeon & Nhẫn':'💍','Kiếm / Súng / Phụ kiện':'⚔️','Trái Vĩnh Viễn BF':'💰','UGPHONE GVIP':'💎','UGPHONE SVIP':'👑'};
 const SPECIAL={'UGPHONE GVIP':'ugphone','UGPHONE SVIP':'ugphone','GAMEPASS BLOX FRUITS':'gamepass','Trái Vĩnh Viễn BF':'fruit'};
 function addCatalog(){if(typeof catalog==='undefined')return;
 catalog['VNG → Roblox Quốc tế']=[['Treo từ VNG sang Quốc tế — 7 ngày',30000],['Treo từ VNG sang Quốc tế — 30 ngày',165000],['Treo từ VNG sang Quốc tế — Có gộp đơn',20000]];
