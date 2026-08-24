@@ -56,4 +56,26 @@ window.openOrder=function(name){
   if(typeof updateTotal==='function')try{updateTotal()}catch(e){}
   modal.classList.add('show');
 };
+
+/* TOP NẠP FIX — chỉ đọc tổng tiền nạp đã duyệt và hiển thị TOP 5 */
+async function loadTopDeposits(){
+  const el=document.getElementById('top5');
+  if(!el)return;
+  el.innerHTML='<div class="top-card">Đang tải...</div>';
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),7000);
+  try{
+    const r=await fetch(SUPABASE_URL+'/rest/v1/top_deposit_leaderboard?select=username,total_deposited&order=total_deposited.desc&limit=5',{method:'GET',headers:{apikey:SUPABASE_KEY},signal:controller.signal,cache:'no-store'});
+    const rows=await r.json().catch(()=>[]);
+    if(!r.ok)throw Error(rows?.message||'Không tải được dữ liệu');
+    const seen=new Set();
+    const top=(Array.isArray(rows)?rows:[]).filter(x=>x&&x.username&&!seen.has(x.username)&&(seen.add(x.username),true)).slice(0,5);
+    el.innerHTML=top.length?top.map((x,i)=>'<div class="top-card"><div class="rank">#'+(i+1)+'</div><div><b>'+esc(x.username)+'</b></div><div class="money" style="font-size:18px;margin-top:6px">'+money(x.total_deposited)+'</div></div>').join(''):'<div class="top-card">Chưa có dữ liệu nạp đã duyệt.</div>';
+  }catch(e){
+    console.error('Top nạp:',e);
+    el.innerHTML='<div class="top-card"><div class="danger" style="padding:12px;border-radius:10px">Không tải được Top nạp.</div></div>';
+  }finally{clearTimeout(timer);}
+}
+function bootTopDeposits(){if(document.getElementById('top5'))loadTopDeposits();}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootTopDeposits);else bootTopDeposits();
 })();
