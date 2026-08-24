@@ -1,0 +1,36 @@
+name: Fix Top Nạp
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch only Top Nạp
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = "renderServices();updateUI();(async()=>{if(accessToken)await loadProfile()})();"
+          new = """async function loadTopDeposits(){const el=document.getElementById('top5');if(!el)return;try{const r=await fetch(SUPABASE_URL+'/rest/v1/top_deposit_leaderboard?select=username,total_deposited&order=total_deposited.desc&limit=5',{headers:{apikey:SUPABASE_KEY}});const rows=await r.json();if(!r.ok)throw Error(rows?.message||'Không tải được dữ liệu');el.innerHTML=rows.length?rows.map((x,i)=>'<div class=\\\"top-card\\\"><div class=\\\"rank\\\">#'+(i+1)+'</div><div><b>'+esc(x.username)+'</b></div><div class=\\\"money\\\" style=\\\"font-size:18px;margin-top:6px\\\">'+money(x.total_deposited)+'</div></div>').join(''):'<div class=\\\"top-card\\\">Chưa có dữ liệu nạp đã duyệt.</div>'}catch(e){el.innerHTML='<div class=\\\"top-card\\\"><div class=\\\"danger\\\" style=\\\"padding:12px;border-radius:10px\\\">Không tải được Top nạp. Vui lòng thử lại.</div></div>';console.error('Top nạp:',e)}}\nrenderServices();updateUI();loadTopDeposits();(async()=>{if(accessToken)await loadProfile()})();"""
+          if old not in s:
+              raise SystemExit('target footer not found; no change made')
+          if 'async function loadTopDeposits()' in s:
+              raise SystemExit('Top Nạp fix already present; no change made')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          PY
+      - name: Commit Top Nạp fix and remove temporary workflow
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add index.html
+          git commit -m "fix top nap loading" || true
+          git push
+          git rm .github/workflows/fix-top-deposit-once.yml
+          git commit -m "remove temporary top nap fixer"
+          git push
