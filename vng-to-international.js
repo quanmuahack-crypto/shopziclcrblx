@@ -1,4 +1,5 @@
 (function(){'use strict';
+const theme=document.createElement('link');theme.rel='stylesheet';theme.href='purple-theme.css';document.head.appendChild(theme);
 function esc(v){return String(v??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[m]));}
 function money(n){return Number(n||0).toLocaleString('vi-VN')+' đ';}
 const GP=[['Fruit Notifier',2700,425000],['Dark Blade',1200,200000],['Mythical Scrolls',500,95000],['2× Money',450,87500],['2× Mastery',450,87500],['+1 Fruit Storage',400,80000],['2× Boss Drops',350,72500],['Fast Boats',350,72500]];
@@ -23,37 +24,10 @@ function specialOpen(name){if(typeof currentUser==='undefined'||!currentUser){if
 function render(){const grid=document.getElementById('serviceGrid');if(!grid)return;Object.keys(ICON).forEach(name=>{if(!catalog[name]||[...grid.querySelectorAll('h3')].some(h=>h.textContent.trim()===name))return;const c=document.createElement('article');c.className='card';c.innerHTML='<div style="font-size:42px">'+ICON[name]+'</div><h3>'+esc(name)+'</h3><span class="status">Sẵn sàng</span><button class="btn dark full" type="button">XEM GÓI →</button>';grid.appendChild(c);});restoreIcons();bindButtons();}
 function boot(){addCatalog();if(typeof renderServices==='function')renderServices();render();restoreIcons();setTimeout(restoreIcons,300);setTimeout(restoreIcons,1000);setTimeout(restoreIcons,2000);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,80));else setTimeout(boot,80);
-
-/* FORM OVERRIDE — chỉ 4 dịch vụ đặc biệt, các dịch vụ khác giữ form cũ */
 function isGamepass(name){return /gamepass/i.test(name||'')}
 function isFruit(name){return /trái\s*vĩnh\s*viễn\s*bf|trái\s*vv\s*bf/i.test(name||'')}
 function isUG(name){return /ugphone/i.test(name||'')}
-window.setOrderFields=function(name){
-  const gp=isGamepass(name), fruit=isFruit(name), ug=isUG(name), special=gp||fruit||ug;
-  const roblox=document.getElementById('robloxAccountField');
-  const pass=document.getElementById('robloxPasswordField');
-  const phone=document.getElementById('robloxPhoneField');
-  const support=document.getElementById('robloxSupportField');
-  const ugfield=document.getElementById('ugphoneAccountField');
-  if(!roblox||!pass||!phone||!support||!ugfield)return;
-  roblox.style.display=(ug?'none':'');
-  pass.style.display=(special?'none':'');
-  support.style.display=(special?'none':'');
-  phone.style.display='';
-  ugfield.style.display=(ug?'':'none');
-  const ra=document.getElementById('robloxAccount'),rp=document.getElementById('robloxPassword'),rs=document.getElementById('robloxSupportCode'),ua=document.getElementById('ugphoneAccount');
-  if(ug){if(ra)ra.value='';if(rp)rp.value='';if(rs)rs.value='';}
-  else{if(ua)ua.value='';}
-};
+window.setOrderFields=function(name){const gp=isGamepass(name),fruit=isFruit(name),ug=isUG(name),special=gp||fruit||ug;const roblox=document.getElementById('robloxAccountField');const pass=document.getElementById('robloxPasswordField');const phone=document.getElementById('robloxPhoneField');const support=document.getElementById('robloxSupportField');const ugfield=document.getElementById('ugphoneAccountField');if(!roblox||!pass||!phone||!support||!ugfield)return;roblox.style.display=(ug?'none':'');pass.style.display=(special?'none':'');support.style.display=(special?'none':'');phone.style.display='';ugfield.style.display=(ug?'':'none');const ra=document.getElementById('robloxAccount'),rp=document.getElementById('robloxPassword'),rs=document.getElementById('robloxSupportCode'),ua=document.getElementById('ugphoneAccount');if(ug){if(ra)ra.value='';if(rp)rp.value='';if(rs)rs.value='';}else{if(ua)ua.value='';}};
 const oldOpenOrder=window.openOrder;
-window.openOrder=function(name){
-  selectedService=name;
-  const modal=document.getElementById('orderModal'),title=document.getElementById('orderTitle'),sel=document.getElementById('package');
-  if(!modal||!sel||!catalog[name]){if(typeof oldOpenOrder==='function')return oldOpenOrder(name);return;}
-  if(title)title.textContent='Đặt đơn — '+name;
-  sel.innerHTML=catalog[name].map((x,i)=>'<option value="'+i+'">'+esc(x[0])+' — '+money(x[1])+'</option>').join('');
-  window.setOrderFields(name);
-  if(typeof updateTotal==='function')try{updateTotal()}catch(e){}
-  modal.classList.add('show');
-};
+window.openOrder=function(name){selectedService=name;const modal=document.getElementById('orderModal'),title=document.getElementById('orderTitle'),sel=document.getElementById('package');if(!modal||!sel||!catalog[name]){if(typeof oldOpenOrder==='function')return oldOpenOrder(name);return;}if(title)title.textContent='Đặt đơn — '+name;sel.innerHTML=catalog[name].map((x,i)=>'<option value="'+i+'">'+esc(x[0])+' — '+money(x[1])+'</option>').join('');window.setOrderFields(name);if(typeof updateTotal==='function')try{updateTotal()}catch(e){}modal.classList.add('show');};
 })();
