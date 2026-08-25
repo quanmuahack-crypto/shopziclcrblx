@@ -1,12 +1,13 @@
 (function(){'use strict';
 const theme=document.createElement('link');theme.rel='stylesheet';theme.href='purple-theme.css';document.head.appendChild(theme);
-function esc(v){return String(v??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[m]));}
+function esc(v){return String(v??'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 function money(n){return Number(n||0).toLocaleString('vi-VN')+' đ';}
 const GP=[['Fruit Notifier',2700,425000],['Dark Blade',1200,200000],['Mythical Scrolls',500,95000],['2× Money',450,87500],['2× Mastery',450,87500],['+1 Fruit Storage',400,80000],['2× Boss Drops',350,72500],['Fast Boats',350,72500]];
 const ICON={'GAMEPASS BLOX FRUITS':'🎟️','VNG → Roblox Quốc tế':'🤖','Robux 120H':'💎','Map 2 GAG2':'🍁','Grow A Garden 2 Map 1':'🌳','Dungeon & Nhẫn':'💍','Trái Vĩnh Viễn BF':'💵','UGPHONE GVIP':'💎','UGPHONE SVIP':'👑'};
 const LEGACY={'Leviathan':'🌊','Level':'📈','Combo Tộc V4':'⚡','Tộc Draco':'🐉','Kiếm / Súng / Phụ kiện':'⚔️','Beli & Frag':'💰'};
 const SPECIAL={'UGPHONE GVIP':'ugphone','UGPHONE SVIP':'ugphone','GAMEPASS BLOX FRUITS':'gamepass','Trái Vĩnh Viễn BF':'fruit'};
 function addCatalog(){if(typeof catalog==='undefined')return;
+catalog['Tộc Draco']=[['Lấy Tộc Rồng A-Z Full Gear',150000],['Lấy tộc rồng (Free V2 V3)',24000],['Lấy súng rồng (Free 250 thông thạo)',26000],['Full đai',18000],['1 bánh răng tộc rồng',15000],['Full gear tộc rồng',36000],['Lấy kiếm rồng + súng rồng (Free mastery)',30000],['Lấy kiếm rồng (Free 350 mastery)',16000]];
 catalog['VNG → Roblox Quốc tế']=[['Treo từ VNG sang Quốc tế — 7 ngày',30000],['Treo từ VNG sang Quốc tế — 30 ngày',165000],['Treo từ VNG sang Quốc tế — Có gộp đơn',20000]];
 catalog['Robux 120H']=[['2.860 Robux — nhận 2.000 Robux sau thuế',514000],['2.150 Robux — nhận 1.505 Robux sau thuế',387000],['1.430 Robux — nhận 1.000 Robux sau thuế',257000]];
 catalog['Map 2 GAG2']=[['X2000 Super Syrup Watering Can',60000],['X1000 Super Syrup Sprinkler',60000],['X1 Shadow Dragon',18000],['X1000 Seed Atlantic Giant Pumpkin',240000]];
