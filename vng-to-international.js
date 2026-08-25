@@ -3,7 +3,7 @@ const theme=document.createElement('link');theme.rel='stylesheet';theme.href='pu
 function esc(v){return String(v??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[m]));}
 function money(n){return Number(n||0).toLocaleString('vi-VN')+' đ';}
 const GP=[['Fruit Notifier',2700,425000],['Dark Blade',1200,200000],['Mythical Scrolls',500,95000],['2× Money',450,87500],['2× Mastery',450,87500],['+1 Fruit Storage',400,80000],['2× Boss Drops',350,72500],['Fast Boats',350,72500]];
-const ICON={'GAMEPASS BLOX FRUITS':'🎟️','VNG → Roblox Quốc tế':'🤖','Robux 120H':'💎','Map 2 GAG2':'🍁','Grow A Garden 2 Map 1':'🌳','Dungeon & Nhẫn':'💍','Trái Vĩnh Viễn BF':'💰','UGPHONE GVIP':'💎','UGPHONE SVIP':'👑'};
+const ICON={'GAMEPASS BLOX FRUITS':'🎟️','VNG → Roblox Quốc tế':'🤖','Robux 120H':'💎','Map 2 GAG2':'🍁','Grow A Garden 2 Map 1':'🌳','Dungeon & Nhẫn':'💍','Trái Vĩnh Viễn BF':'💵','UGPHONE GVIP':'💎','UGPHONE SVIP':'👑'};
 const LEGACY={'Leviathan':'🌊','Level':'📈','Combo Tộc V4':'⚡','Tộc Draco':'🐉','Kiếm / Súng / Phụ kiện':'⚔️','Beli & Frag':'💰'};
 const SPECIAL={'UGPHONE GVIP':'ugphone','UGPHONE SVIP':'ugphone','GAMEPASS BLOX FRUITS':'gamepass','Trái Vĩnh Viễn BF':'fruit'};
 function addCatalog(){if(typeof catalog==='undefined')return;
