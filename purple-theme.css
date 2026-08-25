@@ -7,6 +7,10 @@
 #top5 .top-card:nth-child(3) .rank::before,#top5 .top-card:nth-child(3)>:first-child::before{filter:sepia(1) saturate(3) hue-rotate(330deg) brightness(.82)}
 #top5 .top-card:nth-child(4) .rank::before,#top5 .top-card:nth-child(4)>:first-child::before{content:'4';font-size:32px;font-weight:900}
 #top5 .top-card:nth-child(5) .rank::before,#top5 .top-card:nth-child(5)>:first-child::before{content:'5';font-size:32px;font-weight:900}
-/* Requested top banner — appearance only */
-main.wrap::before{content:"";display:block;width:100%;height:clamp(190px,32vw,430px);margin:0 0 22px;border-radius:18px;background-image:url('banner-cay-thue.svg');background-size:cover;background-position:center;background-repeat:no-repeat;box-shadow:0 10px 35px #0009;border:1px solid #4d2374}
-@media(max-width:600px){main.wrap::before{height:180px;border-radius:14px;margin-bottom:16px}}
+/* Keep one banner frame and use the existing embedded banner artwork */
+.shop-banner{max-width:1250px;margin:16px auto 0;padding:0 18px;height:clamp(190px,32vw,430px);border-radius:18px;background-image:url('banner-cay-thue.svg');background-size:cover;background-position:center;background-repeat:no-repeat;box-shadow:0 10px 35px #0009;border:1px solid #4d2374;overflow:hidden}
+.shop-banner img{display:none!important}
+/* Remove the duplicate large pseudo-banner */
+main.wrap::before{display:none!important}
+@media(max-width:900px){.shop-banner{height:300px}}
+@media(max-width:600px){.shop-banner{margin-top:10px;padding:0 12px;height:180px;border-radius:14px}}
