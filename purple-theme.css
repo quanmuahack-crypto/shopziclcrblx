@@ -9,3 +9,6 @@
 /* Remove the empty banner panel completely */
 .shop-banner{display:none!important}
 main.wrap::before{display:none!important}
+/* Leviathan service avatar */
+#serviceGrid .card:first-child>div:first-child{font-size:0!important}
+#serviceGrid .card:first-child>div:first-child::before{content:'🐳';font-size:42px;display:inline-block}
