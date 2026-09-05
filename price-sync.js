@@ -3,6 +3,23 @@
 const SUPABASE_URL='https://ufevipuhejvhiufyqqnz.supabase.co';
 const SUPABASE_KEY='sb_publishable_6ShPhvGpN4_02Za2tOTOTg_GF0su_OA';
 let syncing=false;
+const ICONS={
+  'Leviathan':'🌊','Level':'📈','Combo Tộc V4':'👹','Tộc Draco':'🐉','Kiếm / Súng / Phụ kiện':'⚔️','Beli & Frag':'💰',
+  'VNG → Roblox Quốc tế':'🤖','Robux 120H':'💎','Map 2 GAG2':'🍁','Grow A Garden 2 Map 1':'🌳','Dungeon & Nhẫn':'💍',
+  'Trái Vĩnh Viễn BF':'💵','UGPHONE GVIP':'💎','UGPHONE SVIP':'👑','GAMEPASS BLOX FRUITS':'🎟️','Trái Ác Quỷ Blox Fruits (Hàng Trade)':'🍎'
+};
+function fixServiceIcons(){
+  const grid=document.getElementById('serviceGrid');
+  if(!grid)return;
+  grid.querySelectorAll('.card').forEach(card=>{
+    const h=card.querySelector('h3');
+    const icon=card.querySelector('div');
+    if(!h||!icon)return;
+    const name=h.textContent.trim();
+    if(ICONS[name])icon.textContent=ICONS[name];
+    icon.style.fontSize='42px';
+  });
+}
 async function syncShopPrices(){
   if(syncing)return;
   syncing=true;
@@ -20,19 +37,20 @@ async function syncShopPrices(){
       });
     });
     rows.forEach(x=>{
-      const service=String(x.service_name),pkg=String(x.package_name),key=service+'\u0000'+pkg;
+      const service=String(x.service_name),pkg=String(x.package_name);
       if(!merged[service])merged[service]=[];
       if(!merged[service].some(x=>x[0]===pkg))merged[service].push([pkg,Number(x.price)]);
     });
     Object.keys(catalog).forEach(k=>delete catalog[k]);
     Object.keys(merged).forEach(k=>catalog[k]=merged[k]);
     if(typeof renderServices==='function')renderServices();
-    if(typeof window.restoreIcons==='function')window.restoreIcons();
-    if(typeof window.bindButtons==='function')window.bindButtons();
+    fixServiceIcons();
+    setTimeout(fixServiceIcons,0);
     window.dispatchEvent(new CustomEvent('shopPricesSynced'));
   }catch(e){console.warn('Shop price sync:',e)}finally{syncing=false;}
 }
 window.syncShopPrices=syncShopPrices;
+window.fixServiceIcons=fixServiceIcons;
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(syncShopPrices,100));
 else setTimeout(syncShopPrices,100);
 setInterval(syncShopPrices,3000);
