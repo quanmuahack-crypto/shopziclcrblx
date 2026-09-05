@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ShopZiCiCRBLX — Quản lý giá</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f3f4f6;color:#172033}
+.top{background:#172554;color:#fff;padding:16px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.top h1{font-size:22px;margin:0}
+.wrap{max-width:1200px;margin:auto;padding:24px 16px}.login,.panel{background:#fff;border:1px solid #e5e7eb;border-radius:18px;box-shadow:0 8px 30px #00000010}
+.login{max-width:430px;margin:80px auto;padding:28px}.login input,.price-input{width:100%;padding:13px;border:1px solid #d1d5db;border-radius:10px;font-size:15px}
+.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:800;cursor:pointer}.primary{background:#172554;color:#fff}.light{background:#e5e7eb;color:#172033}.danger{background:#fee2e2;color:#b91c1c}
+.toolbar{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:18px}.search{padding:12px 14px;border:1px solid #d1d5db;border-radius:10px;min-width:min(100%,320px)}
+.group{margin-bottom:22px}.group h2{margin:0 0 10px;font-size:20px}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:700px}.table th,.table td{padding:13px;border-bottom:1px solid #edf0f4;text-align:left}.table th{background:#f8fafc}.service-tag{font-size:13px;color:#64748b}
+.status{padding:10px 14px;border-radius:10px;margin:10px 0;display:none}.status.ok{display:block;background:#dcfce7;color:#166534}.status.err{display:block;background:#fee2e2;color:#b91c1c}
+.hidden{display:none!important}@media(max-width:600px){.wrap{padding:14px}.top{padding:14px}.table{min-width:620px}}
+</style>
+</head>
+<body>
+<header class="top"><h1>💰 ShopZiCiCRBLX — Quản lý giá dịch vụ</h1><div id="topUser"></div></header>
+<main class="wrap">
+  <div id="loginBox" class="login">
+    <h2>Đăng nhập quản lý</h2>
+    <p>Chỉ tài khoản Admin hoặc Manager mới có quyền chỉnh giá.</p>
+    <input id="username" placeholder="Tên tài khoản" autocomplete="username">
+    <div style="height:10px"></div>
+    <input id="password" type="password" placeholder="Mật khẩu" autocomplete="current-password">
+    <div id="loginMsg" class="status"></div>
+    <button class="btn primary" style="width:100%;margin-top:14px" onclick="login()">ĐĂNG NHẬP</button>
+  </div>
+
+  <div id="app" class="hidden">
+    <div class="toolbar">
+      <div><b id="count">0</b> gói dịch vụ</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input id="search" class="search" placeholder="Tìm dịch vụ..." oninput="renderPrices()">
+        <button class="btn primary" onclick="saveAll()">💾 Lưu tất cả thay đổi</button>
+        <button class="btn light" onclick="loadPrices()">↻ Tải lại</button>
+      </div>
+    </div>
+    <div id="saveMsg" class="status"></div>
+    <div id="priceList"></div>
+  </div>
+</main>
+<script>
+const SUPABASE_URL='https://ufevipuhejvhiufyqqnz.supabase.co';
+const SUPABASE_KEY='sb_publishable_6ShPhvGpN4_02Za2tOTOTg_GF0su_OA';
+const AUTH_URL=SUPABASE_URL+'/functions/v1/username-auth';
+let accessToken=localStorage.getItem('shopzicl_username_token')||'';
+let currentUser=null, prices=[];
+
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function money(n){return Number(n||0).toLocaleString('vi-VN')+' đ'}
+function show(id,msg,type){const e=document.getElementById(id);e.textContent=msg;e.className='status '+type}
+
+async function authMe(){
+  if(!accessToken)return null;
+  const r=await fetch(AUTH_URL,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},body:JSON.stringify({action:'me'})});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok||!d.user)throw Error('Phiên đăng nhập đã hết hạn');
+  return d.user;
+}
+
+async function login(){
+  const username=document.getElementById('username').value.trim();
+  const password=document.getElementById('password').value;
+  if(!username||!password)return show('loginMsg','Vui lòng nhập đủ thông tin.','err');
+  try{
+    const r=await fetch(AUTH_URL,{method:'POST',headers:{apikey:SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({action:'login',username,password})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok)throw Error(d.error||'Đăng nhập thất bại');
+    accessToken=d.access_token;
+    localStorage.setItem('shopzicl_username_token',accessToken);
+    await boot();
+  }catch(e){show('loginMsg',e.message,'err')}
+}
+
+async function boot(){
+  try{
+    currentUser=await authMe();
+    if(!['admin','manager'].includes(currentUser.role))throw Error('Tài khoản này không có quyền quản lý giá.');
+    document.getElementById('loginBox').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    document.getElementById('topUser').innerHTML='<b>'+esc(currentUser.username||'Manager')+'</b> <button class="btn light" onclick="logout()">Đăng xuất</button>';
+    await loadPrices();
+  }catch(e){
+    accessToken='';currentUser=null;localStorage.removeItem('shopzicl_username_token');
+    document.getElementById('loginBox').classList.remove('hidden');
+    document.getElementById('app').classList.add('hidden');
+    show('loginMsg',e.message,'err');
+  }
+}
+
+async function loadPrices(){
+  try{
+    const r=await fetch(SUPABASE_URL+'/rest/v1/service_prices?select=*&order=service_name.asc,sort_order.asc',{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+accessToken}});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok)throw Error(d.message||'Không tải được bảng giá');
+    prices=d;
+    document.getElementById('count').textContent=prices.length;
+    renderPrices();
+  }catch(e){show('saveMsg',e.message,'err')}
+}
+
+function renderPrices(){
+  const q=document.getElementById('search').value.trim().toLowerCase();
+  const filtered=prices.filter(x=>(x.service_name+' '+x.package_name).toLowerCase().includes(q));
+  const groups={};
+  filtered.forEach(x=>(groups[x.service_name]??=[]).push(x));
+  const html=Object.keys(groups).map(service=>`
+    <section class="group panel">
+      <h2>${esc(service)}</h2>
+      <div class="table-wrap"><table class="table">
+      <tr><th>Gói dịch vụ</th><th>Giá hiện tại</th><th>Giá mới</th></tr>
+      ${groups[service].map(x=>`<tr>
+        <td><b>${esc(x.package_name)}</b></td>
+        <td>${money(x.price)}</td>
+        <td><input class="price-input" type="number" min="0" step="1000" value="${Number(x.price)}" data-id="${x.id}"></td>
+      </tr>`).join('')}
+      </table></div>
+    </section>`).join('');
+  document.getElementById('priceList').innerHTML=html||'<div class="panel" style="padding:20px">Không tìm thấy dịch vụ.</div>';
+}
+
+async function saveAll(){
+  const inputs=[...document.querySelectorAll('.price-input')];
+  const changes=inputs.map(i=>({id:Number(i.dataset.id),price:Number(i.value)}))
+    .filter(x=>Number.isFinite(x.price)&&x.price>=0)
+    .filter(x=>prices.find(p=>p.id===x.id)?.price!==x.price);
+  if(!changes.length)return show('saveMsg','Không có thay đổi nào để lưu.','ok');
+  try{
+    for(const c of changes){
+      const r=await fetch(SUPABASE_URL+'/rest/v1/service_prices?id=eq.'+encodeURIComponent(c.id),{
+        method:'PATCH',
+        headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+accessToken,'Content-Type':'application/json',Prefer:'return=minimal'},
+        body:JSON.stringify({price:c.price,updated_at:new Date().toISOString()})
+      });
+      if(!r.ok){const t=await r.text();throw Error(t||'Không thể lưu giá')}
+    }
+    show('saveMsg','✅ Đã lưu '+changes.length+' thay đổi vào Supabase.','ok');
+    await loadPrices();
+  }catch(e){show('saveMsg','❌ '+e.message,'err')}
+}
+
+function logout(){accessToken='';currentUser=null;localStorage.removeItem('shopzicl_username_token');location.reload()}
+boot();
+</script>
+</body>
+</html>
