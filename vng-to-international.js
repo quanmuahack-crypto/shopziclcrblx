@@ -1,6 +1,6 @@
 (function(){'use strict';
 const theme=document.createElement('link');theme.rel='stylesheet';theme.href='purple-theme.css';document.head.appendChild(theme);
-function esc(v){return String(v??'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+function esc(v){return String(v??'').replace(/[&<>\\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 function money(n){return Number(n||0).toLocaleString('vi-VN')+' đ';}
 const GP=[['Fruit Notifier',2700,445000],['Dark Blade',1200,220000],['Mythical Scrolls',500,115000],['2× Money',450,107500],['2× Mastery',450,107500],['+1 Fruit Storage',400,100000],['2× Boss Drops',350,92500],['Fast Boats',350,92500]];
 const ICON={'GAMEPASS BLOX FRUITS':'🎟️','VNG → Roblox Quốc tế':'🤖','Robux 120H':'💎','Map 2 GAG2':'🍁','Grow A Garden 2 Map 1':'🌳','Dungeon & Nhẫn':'💍','Trái Vĩnh Viễn BF':'💵','UGPHONE GVIP':'💎','UGPHONE SVIP':'👑','Trái Ác Quỷ Blox Fruits (Hàng Trade)':'🍎'};
@@ -18,25 +18,13 @@ catalog['Trái Vĩnh Viễn BF']=[['Dragon — 5.000 Robux',800000],['Control �
 catalog['UGPHONE GVIP']=[['GVIP 2 ngày',30000],['GVIP 5 ngày',35000],['GVIP 7 ngày',40000],['GVIP 10 ngày',55000],['GVIP 15 ngày',75000],['GVIP 30 ngày',150000]];
 catalog['UGPHONE SVIP']=[['SVIP 7 ngày',100000],['SVIP 15 ngày',160000],['SVIP 30 ngày',250000]];
 catalog['GAMEPASS BLOX FRUITS']=GP.map(x=>[x[0]+' — '+x[1].toLocaleString('vi-VN')+' Robux',x[2]]);
-catalog['Trái Ác Quỷ Blox Fruits (Hàng Trade)']=[
-['Skin Werewolf Fruit (Tiger Tím) — Có Sẵn X1 — Hàng Cực Hiếm Khó Tìm',155000],
-['Skin Fiend Fruit (Yeti Đỏ) — Hàng Cực Hiếm Khó Tìm',120000],
-['Skin Divine Portal Fruit (Portal Vàng) — Hàng Cực Hiếm Khó Tìm',190000],
-['Skin Red Lightning Fruit (Lôi Đỏ) — Hàng Cực Hiếm Khó Tìm',255000],
-['Skin Green Lightning Fruit (Lôi Xanh Lá Cây)',50000],
-['Skin Yellow Lightning Fruit (Lôi Vàng) — Hàng Cực Hiếm Khó Tìm',200000],
-['Skin Purple Lightning Fruit (Lôi Tím) — Hàng Cực Hiếm Khó Tìm',550000],
-['Skin Ember Dragon Fruit (West) — Hàng Cực Hiếm Khó Tìm',650000],
-['Skin Kit Empyrean Fruit (Galaxy) — Hàng Cực Hiếm Khó Tìm',1000000],
-['Dragon (hàng West)',200000],
-['Dragon (hàng East)',180000]
-];
+catalog['Trái Ác Quỷ Blox Fruits (Hàng Trade)']=[['Skin Werewolf Fruit (Tiger Tím) — Có Sẵn X1 — Hàng Cực Hiếm Khó Tìm',155000],['Skin Fiend Fruit (Yeti Đỏ) — Hàng Cực Hiếm Khó Tìm',120000],['Skin Divine Portal Fruit (Portal Vàng) — Hàng Cực Hiếm Khó Tìm',190000],['Skin Red Lightning Fruit (Lôi Đỏ) — Hàng Cực Hiếm Khó Tìm',255000],['Skin Green Lightning Fruit (Lôi Xanh Lá Cây)',50000],['Skin Yellow Lightning Fruit (Lôi Vàng) — Hàng Cực Hiếm Khó Tìm',200000],['Skin Purple Lightning Fruit (Lôi Tím) — Hàng Cực Hiếm Khó Tìm',550000],['Skin Ember Dragon Fruit (West) — Hàng Cực Hiếm Khó Tìm',650000],['Skin Kit Empyrean Fruit (Galaxy) — Hàng Cực Hiếm Khó Tìm',1000000],['Dragon (hàng West)',200000],['Dragon (hàng East)',180000]];
 }
-function restoreIcons(){const grid=document.getElementById('serviceGrid');if(!grid)return;grid.querySelectorAll('.card').forEach(card=>{const h=card.querySelector('h3');if(!h)return;const name=h.textContent.trim();const icon=card.querySelector('div');if(!icon)return;if(LEGACY[name])icon.textContent=LEGACY[name];else if(ICON[name])icon.textContent=ICON[name];icon.style.fontSize='42px';});}
-function bindButtons(){const grid=document.getElementById('serviceGrid');if(!grid)return;grid.querySelectorAll('.card').forEach(card=>{const h=card.querySelector('h3'),b=card.querySelector('button');if(!h||!b)return;const name=h.textContent.trim();if(!catalog[name])return;b.onclick=()=>SPECIAL[name]?specialOpen(name):(typeof openOrder==='function'?openOrder(name):null);});}
+window.restoreIcons=function(){const grid=document.getElementById('serviceGrid');if(!grid)return;grid.querySelectorAll('.card').forEach(card=>{const h=card.querySelector('h3');if(!h)return;const icon=card.querySelector('div');if(!icon)return;const name=h.textContent.trim();if(LEGACY[name])icon.textContent=LEGACY[name];else if(ICON[name])icon.textContent=ICON[name];});};
+window.bindButtons=function(){const grid=document.getElementById('serviceGrid');if(!grid)return;grid.querySelectorAll('.card').forEach(card=>{const h=card.querySelector('h3'),b=card.querySelector('button');if(!h||!b)return;const name=h.textContent.trim();if(!catalog[name])return;b.onclick=()=>SPECIAL[name]?specialOpen(name):(typeof openOrder==='function'?openOrder(name):null);});};
 function specialOpen(name){if(typeof currentUser==='undefined'||!currentUser){if(typeof openAuth==='function')openAuth();return;}window.__special={name,type:SPECIAL[name]};window.openOrder(name);}
-function render(){const grid=document.getElementById('serviceGrid');if(!grid)return;Object.keys(ICON).forEach(name=>{if(!catalog[name]||[...grid.querySelectorAll('h3')].some(h=>h.textContent.trim()===name))return;const c=document.createElement('article');c.className='card';const note=name==='Trái Ác Quỷ Blox Fruits (Hàng Trade)'?'<div class="msg" style="font-size:12px;line-height:1.4;margin:8px 0">Shop sẽ cố gắng duyệt trong 12 giờ tất cả trái ae đặt nên ae cứ yên tâm</div>':'<span class="status">Sẵn sàng</span>';c.innerHTML='<div style="font-size:42px">'+ICON[name]+'</div><h3>'+esc(name)+'</h3>'+note+'<button class="btn dark full" type="button">XEM GÓI →</button>';grid.appendChild(c);});restoreIcons();bindButtons();}
-function boot(){addCatalog();if(typeof renderServices==='function')renderServices();render();restoreIcons();setTimeout(restoreIcons,300);setTimeout(restoreIcons,1000);setTimeout(restoreIcons,2000);}
+function render(){const grid=document.getElementById('serviceGrid');if(!grid)return;Object.keys(ICON).forEach(name=>{if(!catalog[name]||[...grid.querySelectorAll('h3')].some(h=>h.textContent.trim()===name))return;const c=document.createElement('article');c.className='card';const note=name==='Trái Ác Quỷ Blox Fruits (Hàng Trade)'?'<div class="msg" style="font-size:12px;line-height:1.4;margin:8px 0">Shop sẽ cố gắng duyệt trong 12 giờ tất cả trái ae đặt nên ae cứ yên tâm</div>':'<span class="status">Sẵn sàng</span>';c.innerHTML='<div style="font-size:42px">'+ICON[name]+'</div><h3>'+esc(name)+'</h3>'+note+'<button class="btn dark full" type="button">XEM GÓI →</button>';grid.appendChild(c);});window.restoreIcons();window.bindButtons();}
+function boot(){addCatalog();if(typeof renderServices==='function')renderServices();render();window.restoreIcons();setTimeout(window.restoreIcons,300);setTimeout(window.restoreIcons,1000);setTimeout(window.restoreIcons,2000);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,80));else setTimeout(boot,80);
 function isGamepass(name){return /gamepass/i.test(name||'')}
 function isFruit(name){return /trái\s*vĩnh\s*viễn\s*bf|trái\s*vv\s*bf/i.test(name||'')}
