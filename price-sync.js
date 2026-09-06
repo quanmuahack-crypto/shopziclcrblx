@@ -7,12 +7,16 @@ let syncing=false;
 const SERVICE_IMAGES={
   'UGPHONE GVIP':'assets/ugphone-icon.webp.b64',
   'UGPHONE SVIP':'assets/ugphone-icon.webp.b64',
-  'VNG → Roblox Quốc tế':'assets/vng-quoc-te-icon.webp.b64'
+  'VNG → Roblox Quốc tế':'assets/vng-quoc-te-icon.webp.b64',
+  'Robux 120H':'assets/robux-120h-icon.svg',
+  'Robux 120h':'assets/robux-120h-icon.svg',
+  'ROBUX 120H':'assets/robux-120h-icon.svg'
 };
 
 const imageCache=new Map();
 
 async function loadImageData(path){
+  if(path.endsWith('.svg'))return path;
   if(imageCache.has(path))return imageCache.get(path);
   const p=fetch(path,{cache:'force-cache'})
     .then(r=>{if(!r.ok)throw new Error('Không tải được ảnh '+path);return r.text()})
@@ -47,8 +51,7 @@ async function syncShopPrices(){
   syncing=true;
   try{
     const r=await fetch(SUPABASE_URL+'/rest/v1/service_prices?select=service_name,package_name,price,sort_order&order=service_name.asc,sort_order.asc',{
-      method:'GET',
-      cache:'no-store',
+      method:'GET',cache:'no-store',
       headers:{apikey:SUPABASE_KEY,Accept:'application/json','Cache-Control':'no-cache'}
     });
     if(!r.ok)throw new Error('HTTP '+r.status);
@@ -80,9 +83,7 @@ async function syncShopPrices(){
     Object.keys(catalog).forEach(k=>delete catalog[k]);
     Object.keys(merged).forEach(k=>catalog[k]=merged[k]);
 
-    if(oldServices!==newServices && typeof renderServices==='function'){
-      renderServices();
-    }
+    if(oldServices!==newServices && typeof renderServices==='function')renderServices();
     await applyServiceImages();
     window.dispatchEvent(new CustomEvent('shopPricesSynced'));
   }catch(e){
