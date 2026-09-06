@@ -74,10 +74,15 @@ async function syncShopPrices(){
       if(!merged[service].some(x=>x[0]===pkg))merged[service].push([pkg,Number(x.price)]);
     });
 
+    const oldServices=Object.keys(catalog).join('\u0000');
+    const newServices=Object.keys(merged).join('\u0000');
+
     Object.keys(catalog).forEach(k=>delete catalog[k]);
     Object.keys(merged).forEach(k=>catalog[k]=merged[k]);
 
-    if(typeof renderServices==='function')renderServices();
+    if(oldServices!==newServices && typeof renderServices==='function'){
+      renderServices();
+    }
     await applyServiceImages();
     window.dispatchEvent(new CustomEvent('shopPricesSynced'));
   }catch(e){
