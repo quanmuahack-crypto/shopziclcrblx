@@ -30,6 +30,8 @@ const SUPABASE_URL='https://ufevipuhejvhiufyqqnz.supabase.co';
 const SUPABASE_KEY='sb_publishable_6ShPhvGpN4_02Za2tOTOTg_GF0su_OA';
 let accessToken=localStorage.getItem('shopzicl_price_admin_token')||'';
 let currentUser=null,prices=[];
+const DEFAULT_CATALOG={'Leviathan':[['Đi nhanh 10 Tìm Leviathan - 99 Vảy',159000],['Lấy Huyết Quỷ Thuật A-Z',48000],['Kéo Leviathan về Hydra',21000],['Kéo Leviathan về Tiki',18000]],'Level':[['Level 1-700',30000],['Level 700-Sea 3',50000],['Sea 3-Max Level Bao God Human',30000]],'Combo Tộc V4':[['Combo 3 Tộc V4 Full Gear',110000],['Combo 4 Tộc V4 Full Gear',145000],['Combo 5 Tộc V4 Full Gear',180000],['Combo 6 Tộc V4 Full Gear',215000],['Lấy tộc Quỷ (bao V2-V3)',15000],['Lấy tộc Cyborg (bao V2-V3)',20000],['Pull Lever',10000]],'Tộc Draco':[['Lấy Tộc Rồng A-Z Full Gear',150000]],'Kiếm / Súng / Phụ kiện':[['Lấy CDK A-Z',50000],['Lấy Tam Kiếm A-Z',31000],['Lấy Skull Guitar A-Z',20000],['Lấy Lưỡi Hái Bóng Tối',15000],['Lấy Tushita',15000],['Lấy Yama',20000],['Lấy Mini Yoru',110000],['Lấy Mỏ Neo Cá Mập',40000],['Lấy Fox Lamp',30000]],'Beli & Frag':[['50M Beli',42000],['500M Beli',156000],['1 Tỷ Beli',240000],['15.000 Fragment',10000]],'Chromatic Box':[['1 Box',21000],['3 Box',75000],['10 Box',200000]]};
+function mergeCatalog(rows){const map=new Map((rows||[]).map(x=>[x.service_name+'|||'+x.package_name,x]));let sort=0;for(const [service,items] of Object.entries(DEFAULT_CATALOG))items.forEach(([pkg,price])=>{const key=service+'|||'+pkg;if(!map.has(key))map.set(key,{id:null,service_name:service,package_name:pkg,price,sort_order:sort++,is_new:true})});return [...map.values()]}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function money(n){return Number(n||0).toLocaleString('vi-VN')+' đ'}
 function show(id,msg,type){const e=document.getElementById(id);e.textContent=msg;e.className='status '+type}
@@ -57,17 +59,17 @@ async function boot(){
  }catch(e){accessToken='';currentUser=null;localStorage.removeItem('shopzicl_price_admin_token');document.getElementById('loginBox').classList.remove('hidden');document.getElementById('app').classList.add('hidden');show('loginMsg',e.message,'err')}
 }
 async function loadPrices(){
- try{prices=await supa('/rest/v1/service_prices?select=*&order=service_name.asc,sort_order.asc');document.getElementById('count').textContent=prices.length;renderPrices();}
+ try{const rows=await supa('/rest/v1/service_prices?select=*&order=service_name.asc,sort_order.asc');prices=mergeCatalog(rows);document.getElementById('count').textContent=prices.length;renderPrices();}
  catch(e){show('saveMsg',e.message,'err')}
 }
 function renderPrices(){
  const q=document.getElementById('search').value.trim().toLowerCase();const filtered=prices.filter(x=>(x.service_name+' '+x.package_name).toLowerCase().includes(q));const groups={};filtered.forEach(x=>(groups[x.service_name]??=[]).push(x));
- document.getElementById('priceList').innerHTML=Object.keys(groups).map(service=>`<section class="group panel"><h2>${esc(service)}</h2><div class="table-wrap"><table class="table"><tr><th>Gói dịch vụ</th><th>Giá hiện tại</th><th>Giá mới</th></tr>${groups[service].map(x=>`<tr><td><b>${esc(x.package_name)}</b></td><td>${money(x.price)}</td><td><input class="price-input" type="number" min="0" step="1000" value="${Number(x.price)}" data-id="${x.id}"></td></tr>`).join('')}</table></div></section>`).join('')||'<div class="panel" style="padding:20px">Không tìm thấy dịch vụ.</div>';
+ document.getElementById('priceList').innerHTML=Object.keys(groups).map(service=>`<section class="group panel"><h2>${esc(service)}</h2><div class="table-wrap"><table class="table"><tr><th>Gói dịch vụ</th><th>Giá hiện tại</th><th>Giá mới</th></tr>${groups[service].map(x=>`<tr><td><b>${esc(x.package_name)}</b></td><td>${money(x.price)}</td><td><input class="price-input" type="number" min="0" step="1000" value="${Number(x.price)}" data-id="${x.id??''}" data-service="${esc(x.service_name)}" data-package="${esc(x.package_name)}" data-new="${x.id==null?'1':'0'}"></td></tr>`).join('')}</table></div></section>`).join('')||'<div class="panel" style="padding:20px">Không tìm thấy dịch vụ.</div>';
 }
 async function saveAll(){
- const changes=[...document.querySelectorAll('.price-input')].map(i=>({id:Number(i.dataset.id),price:Number(i.value)})).filter(x=>Number.isFinite(x.price)&&x.price>=0).filter(x=>prices.find(p=>p.id===x.id)?.price!==x.price);
+ const changes=[...document.querySelectorAll('.price-input')].map(i=>({id:i.dataset.id||null,service_name:i.dataset.service,package_name:i.dataset.package,is_new:i.dataset.new==='1',price:Number(i.value)})).filter(x=>Number.isFinite(x.price)&&x.price>=0).filter(x=>x.is_new||prices.find(p=>String(p.id)===String(x.id))?.price!==x.price);
  if(!changes.length)return show('saveMsg','Không có thay đổi nào để lưu.','ok');
- try{for(const c of changes){await supa('/rest/v1/service_prices?id=eq.'+encodeURIComponent(c.id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({price:Math.round(c.price),updated_at:new Date().toISOString()})})}show('saveMsg','✅ Đã lưu '+changes.length+' thay đổi vào Supabase.','ok');await loadPrices()}catch(e){show('saveMsg','❌ '+e.message,'err')}
+ try{for(const c of changes){if(c.is_new){await supa('/rest/v1/service_prices',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({service_name:c.service_name,package_name:c.package_name,price:Math.round(c.price),sort_order:0,updated_at:new Date().toISOString()})})}else{await supa('/rest/v1/service_prices?id=eq.'+encodeURIComponent(c.id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({price:Math.round(c.price),updated_at:new Date().toISOString()})})}}show('saveMsg','✅ Đã lưu '+changes.length+' thay đổi vào Supabase.','ok');await loadPrices()}catch(e){show('saveMsg','❌ '+e.message,'err')}
 }
 function logout(){accessToken='';currentUser=null;localStorage.removeItem('shopzicl_price_admin_token');location.reload()}
 boot();
