@@ -15,7 +15,7 @@
     section.innerHTML=`<h2>🇻🇳 VNG <span style="display:inline-block;margin:0 8px;font-weight:900">⇒</span> 🌎 Roblox Quốc tế</h2><p>Chuyển/treo từ Roblox VNG sang Roblox quốc tế.</p><div class="grid" id="vngInternationalGrid"></div><div class="msg" style="margin-top:16px">📝 <b>Ghi chú:</b> 7 ngày treo thì khả năng ít hơn; nếu 30 ngày treo thì đảm bảo 100% qua Roblox quốc tế.</div>`;
     anchor.parentNode.insertBefore(section,anchor.nextSibling);
     const grid=section.querySelector('#vngInternationalGrid');
-    grid.innerHTML=services.map(([name,price,note])=>`<div class="card"><div style="font-size:28px;font-weight:900">🇻🇳 VNG ⇒ 🌎 Roblox</div><h3>${name}</h3><p style="font-size:24px;font-weight:900;color:#1464e8">${Number(price).toLocaleString('vi-VN')} đ</p><p>${note}</p><button class="btn dark full" type="button" data-vng-name="${name}">XEM GÓI →</button></div>`).join('');
+    grid.innerHTML=services.map(([name,price,note])=>`<div class="card"><div style="font-size:28px;font-weight:900">🇻🇳 VNG ⇒ 🌎 Roblox</div><h3 style="margin:8px 0 4px">${name}</h3><p style="font-size:24px;font-weight:900;color:#1464e8;margin:4px 0">${Number(price).toLocaleString('vi-VN')} đ</p><p style="margin:0 0 8px;font-size:14px">${note}</p><button class="btn dark full" type="button" data-vng-name="${name}">XEM GÓI →</button></div>`).join('');
     grid.querySelectorAll('[data-vng-name]').forEach(btn=>btn.addEventListener('click',()=>{
       if(typeof openOrder==='function') openOrder(btn.dataset.vngName);
       else alert('Vui lòng đăng nhập rồi thử lại.');
