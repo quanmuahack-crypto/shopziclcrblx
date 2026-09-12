@@ -3,7 +3,7 @@ const theme=document.createElement('link');theme.rel='stylesheet';theme.href='pu
 function esc(v){return String(v??'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[m]));}
 function money(n){return Number(n||0).toLocaleString('vi-VN')+' đ';}
 const GP=[];
-const ICON={'VNG → Roblox Quốc tế':'🤖','Robux 120H':'💎','UGPHONE GVIP':'💎','UGPHONE SVIP':'👑','Trái Ác Quỷ Blox Fruits (Hàng Trade)':'🍎'};
+const ICON={'VNG → Roblox Quốc tế':'🤖','Robux 120H':'💎','UGPHONE GVIP':'💎','UGPHONE SVIP':'👑'};
 const AVATAR={};
 const LEGACY={'Leviathan':'🌊','Level':'📈','Combo Tộc V4':'⚡','Tộc Draco':'🐉','Kiếm / Súng / Phụ kiện':'⚔️','Beli & Frag':'💰'};
 const SPECIAL={'UGPHONE GVIP':'ugphone','UGPHONE SVIP':'ugphone','Robux 120H':'robux'};
@@ -15,14 +15,14 @@ delete catalog['Map 2 GAG2'];delete catalog['Grow A Garden 2 Map 1'];
 delete catalog['Dungeon & Nhẫn'];
 delete catalog['Trái Vĩnh Viễn BF'];
 delete catalog['GAMEPASS BLOX FRUITS'];
+delete catalog['Trái Ác Quỷ Blox Fruits (Hàng Trade)'];
 catalog['UGPHONE GVIP']=[['GVIP 2 ngày',30000],['GVIP 5 ngày',35000],['GVIP 7 ngày',40000],['GVIP 10 ngày',55000],['GVIP 15 ngày',75000],['GVIP 30 ngày',150000]];
 catalog['UGPHONE SVIP']=[['SVIP 7 ngày',100000],['SVIP 15 ngày',160000],['SVIP 30 ngày',250000]];
-catalog['Trái Ác Quỷ Blox Fruits (Hàng Trade)']=[['Skin Werewolf Fruit (Tiger Tím) — Có Sẵn X1 — Hàng Cực Hiếm Khó Tìm',155000],['Skin Fiend Fruit (Yeti Đỏ) — Hàng Cực Hiếm Khó Tìm',120000],['Skin Divine Portal Fruit (Portal Vàng) — Hàng Cực Hiếm Khó Tìm',190000],['Skin Red Lightning Fruit (Lôi Đỏ) — Hàng Cực Hiếm Khó Tìm',255000],['Skin Green Lightning Fruit (Lôi Xanh Lá Cây)',50000],['Skin Yellow Lightning Fruit (Lôi Vàng) — Hàng Cực Hiếm Khó Tìm',200000],['Skin Purple Lightning Fruit (Lôi Tím) — Hàng Cực Hiếm Khó Tìm',550000],['Skin Ember Dragon Fruit (West) — Hàng Cực Hiếm Khó Tìm',650000],['Skin Kit Empyrean Fruit (Galaxy) — Hàng Cực Hiếm Khó Tìm',1000000],['Dragon (hàng West)',200000],['Dragon (hàng East)',180000]];
 }
 function avatar(name){return AVATAR[name]?'<img class="service-avatar" src="'+AVATAR[name]+'" alt="'+esc(name)+'">':'<div style="font-size:42px">'+(ICON[name]||LEGACY[name]||'🎮')+'</div>';}
 function bindButtons(){const grid=document.getElementById('serviceGrid');if(!grid)return;grid.querySelectorAll('.card').forEach(card=>{const h=card.querySelector('h3'),b=card.querySelector('button');if(!h||!b)return;const name=h.textContent.trim();if(!catalog[name])return;b.onclick=()=>SPECIAL[name]?specialOpen(name):(typeof openOrder==='function'?openOrder(name):null);});}
 function specialOpen(name){if(typeof currentUser==='undefined'||!currentUser){if(typeof openAuth==='function')openAuth();return;}window.openOrder(name);}
-function render(){const grid=document.getElementById('serviceGrid');if(!grid)return;Object.keys(ICON).forEach(name=>{if(!catalog[name]||[...grid.querySelectorAll('h3')].some(h=>h.textContent.trim()===name))return;const c=document.createElement('article');c.className='card';const note=name==='Trái Ác Quỷ Blox Fruits (Hàng Trade)'?'<div class="msg" style="font-size:12px;line-height:1.4;margin:8px 0">Shop sẽ cố gắng duyệt trong 12 giờ tất cả trái ae đặt nên ae cứ yên tâm</div>':'<span class="status">Sẵn sàng</span>';c.innerHTML=avatar(name)+'<h3>'+esc(name)+'</h3>'+note+'<button class="btn dark full" type="button">XEM GÓI →</button>';grid.appendChild(c);});bindButtons();}
+function render(){const grid=document.getElementById('serviceGrid');if(!grid)return;Object.keys(ICON).forEach(name=>{if(!catalog[name]||[...grid.querySelectorAll('h3')].some(h=>h.textContent.trim()===name))return;const c=document.createElement('article');c.className='card';const note='<span class="status">Sẵn sàng</span>';c.innerHTML=avatar(name)+'<h3>'+esc(name)+'</h3>'+note+'<button class="btn dark full" type="button">XEM GÓI →</button>';grid.appendChild(c);});bindButtons();}
 function boot(){addCatalog();if(typeof renderServices==='function')renderServices();render();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,80));else setTimeout(boot,80);
 function isGamepass(name){return false}function isFruit(name){return false}function isRobux(name){return /robux\s*120h/i.test(name||'')}function isUG(name){return /ugphone/i.test(name||'')}
