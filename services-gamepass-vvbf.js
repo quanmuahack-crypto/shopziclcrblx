@@ -21,11 +21,12 @@
   };
   const SAFE=new Set(Object.keys(GAMEPASS));
   function add(){
-    if(typeof catalog==='undefined') return;
+    if(typeof catalog==='undefined') return false;
     Object.keys(GAMEPASS).forEach(n=>{catalog[n]=GAMEPASS[n];});
     if(typeof renderServices==='function') renderServices();
+    return true;
   }
-  window.addEventListener('load',add);
-  setTimeout(add,0);
+  window.addGamepassVvbfServices=add;
   window.isSimpleRobloxService=window.isSimpleRobloxService||function(n){return SAFE.has(String(n||''));};
+  add();
 })();
