@@ -26,6 +26,17 @@ async function loadImageData(path){
   return p;
 }
 
+function loadExtraServices(){
+  if(window.__gamepassVvbfLoaded)return;
+  window.__gamepassVvbfLoaded=true;
+  const s=document.createElement('script');
+  s.src='services-gamepass-vvbf.js?v=1';
+  s.async=false;
+  s.onload=()=>{try{if(typeof window.addGamepassVvbfServices==='function')window.addGamepassVvbfServices();}catch(e){console.warn('Extra services:',e)}};
+  s.onerror=()=>{console.warn('Không tải được services-gamepass-vvbf.js')};
+  (document.head||document.documentElement).appendChild(s);
+}
+
 async function applyServiceImages(){
   const grid=document.getElementById('serviceGrid');
   if(!grid)return;
@@ -50,6 +61,7 @@ async function syncShopPrices(){
   if(syncing)return;
   syncing=true;
   try{
+    loadExtraServices();
     const r=await fetch(SUPABASE_URL+'/rest/v1/service_prices?select=service_name,package_name,price,sort_order&order=service_name.asc,sort_order.asc',{
       method:'GET',cache:'no-store',
       headers:{apikey:SUPABASE_KEY,Accept:'application/json','Cache-Control':'no-cache'}
