@@ -7,7 +7,6 @@ let syncing=false;
 const SERVICE_IMAGES={
   'UGPHONE GVIP':'assets/ugphone-icon.webp.b64',
   'UGPHONE SVIP':'assets/ugphone-icon.webp.b64',
-  'VNG → Roblox Quốc tế':'assets/vng-quoc-te-icon.webp.b64',
   'Robux 120H':'assets/robux-120h-icon.svg',
   'Robux 120h':'assets/robux-120h-icon.svg',
   'ROBUX 120H':'assets/robux-120h-icon.svg'
@@ -30,7 +29,7 @@ function loadExtraServices(){
   if(window.__gamepassVvbfLoaded)return;
   window.__gamepassVvbfLoaded=true;
   const s=document.createElement('script');
-  s.src='services-gamepass-vvbf.js?v=1';
+  s.src='services-gamepass-vvbf.js?v=2';
   s.async=false;
   s.onload=()=>{try{if(typeof window.addGamepassVvbfServices==='function')window.addGamepassVvbfServices();}catch(e){console.warn('Extra services:',e)}};
   s.onerror=()=>{console.warn('Không tải được services-gamepass-vvbf.js')};
@@ -77,6 +76,7 @@ async function syncShopPrices(){
 
     const merged={};
     Object.keys(catalog).forEach(service=>{
+      if(service==='VNG → Roblox Quốc tế')return;
       merged[service]=(catalog[service]||[]).map(x=>{
         const hit=remote.get(service+'\u0000'+x[0]);
         return hit?[x[0],hit.price]:x;
@@ -85,17 +85,15 @@ async function syncShopPrices(){
 
     rows.forEach(x=>{
       const service=String(x.service_name),pkg=String(x.package_name);
+      if(service==='VNG → Roblox Quốc tế')return;
       if(!merged[service])merged[service]=[];
       if(!merged[service].some(x=>x[0]===pkg))merged[service].push([pkg,Number(x.price)]);
     });
 
-    const oldServices=Object.keys(catalog).join('\u0000');
-    const newServices=Object.keys(merged).join('\u0000');
-
     Object.keys(catalog).forEach(k=>delete catalog[k]);
     Object.keys(merged).forEach(k=>catalog[k]=merged[k]);
 
-    if(oldServices!==newServices && typeof renderServices==='function')renderServices();
+    if(typeof renderServices==='function')renderServices();
     await applyServiceImages();
     window.dispatchEvent(new CustomEvent('shopPricesSynced'));
   }catch(e){
