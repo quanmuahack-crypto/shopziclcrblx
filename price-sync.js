@@ -5,11 +5,7 @@ const SUPABASE_KEY='sb_publishable_6ShPhvGpN4_02Za2tOTOTg_GF0su_OA';
 let syncing=false;
 
 const SERVICE_IMAGES={
-  'UGPHONE GVIP':'assets/ugphone-icon.webp.b64',
-  'UGPHONE SVIP':'assets/ugphone-icon.webp.b64',
-  'Robux 120H':'assets/robux-120h-icon.svg',
-  'Robux 120h':'assets/robux-120h-icon.svg',
-  'ROBUX 120H':'assets/robux-120h-icon.svg'
+  
 };
 
 const imageCache=new Map();
@@ -76,7 +72,7 @@ async function syncShopPrices(){
 
     const merged={};
     Object.keys(catalog).forEach(service=>{
-      if(service==='VNG → Roblox Quốc tế'||service==='Chromatic Box')return;
+      if(service==='VNG → Roblox Quốc tế'||service==='Chromatic Box'||service==='Robux 120H'||service==='Robux 120h'||service==='ROBUX 120H'||service==='UGPHONE GVIP'||service==='UGPHONE SVIP')return;
       merged[service]=(catalog[service]||[]).map(x=>{
         const hit=remote.get(service+'\\u0000'+x[0]);
         return hit?[x[0],hit.price]:x;
@@ -85,7 +81,7 @@ async function syncShopPrices(){
 
     rows.forEach(x=>{
       const service=String(x.service_name),pkg=String(x.package_name);
-      if(service==='VNG → Roblox Quốc tế'||service==='Chromatic Box')return;
+      if(service==='VNG → Roblox Quốc tế'||service==='Chromatic Box'||service==='Robux 120H'||service==='Robux 120h'||service==='ROBUX 120H'||service==='UGPHONE GVIP'||service==='UGPHONE SVIP')return;
       if(!merged[service])merged[service]=[];
       if(!merged[service].some(x=>x[0]===pkg))merged[service].push([pkg,Number(x.price)]);
     });
