@@ -64,6 +64,7 @@ function render(rows){
   box.scrollTop=box.scrollHeight;
 }
 async function loadMessages(){
+  if(!currentUserId){$('messages').innerHTML='<div class="notice">Chưa xác định được tài khoản.</div>';return;}
   let q=sb.from('shop_chat_messages').select('id,user_id,sender_role,message,created_at').order('created_at',{ascending:true});
   if(!isAdmin) q=q.eq('user_id',currentUserId);
   else if(currentUserId) q=q.eq('user_id',currentUserId);
@@ -86,17 +87,33 @@ async function loadConversations(){
   await loadMessages();
 }
 async function start(){
+  $('send').disabled=true;
+  $('messages').innerHTML='<div class="notice">Đang xác thực tài khoản...</div>';
   if(!token){$('status').textContent='Chưa đăng nhập';$('messages').innerHTML='<div class="notice">Bạn cần đăng nhập tài khoản shop trước khi chat với Admin.</div>';$('send').disabled=true;return;}
-  const {data,error}=await sb.auth.getUser(token);
-  if(error||!data.user){$('status').textContent='Phiên đăng nhập hết hạn';$('send').disabled=true;return;}
-  me=data.user;
-  const p=await sb.from('profiles').select('id,username,role').eq('id',me.id).single();
-  if(p.error){$('status').textContent='Không đọc được tài khoản';return;}
-  isAdmin=p.data.role==='admin'||p.data.role==='manager';
+  try{
+    const authRes=await fetch(URL+'/auth/v1/user',{headers:{apikey:KEY,Authorization:'Bearer '+token}});
+    const authData=await authRes.json();
+    if(!authRes.ok||!authData.id)throw new Error('Phiên đăng nhập hết hạn. Hãy đăng xuất rồi đăng nhập lại.');
+    me=authData;
+    const p=await sb.from('profiles').select('id,username,role').eq('id',me.id).maybeSingle();
+    if(p.error)throw new Error('Không đọc được tài khoản: '+p.error.message);
+    if(!p.data)throw new Error('Tài khoản chưa có hồ sơ trong hệ thống.');
+    isAdmin=p.data.role==='admin'||p.data.role==='manager';
+  }catch(e){
+    $('status').textContent='Lỗi kết nối';
+    $('messages').innerHTML='<div class="notice">'+esc(e.message)+'</div>';
+    return;
+  }
   currentUserId=me.id;
   $('title').textContent=isAdmin?'Quản lý Chat khách hàng':'Chat với Admin';
   $('status').textContent=isAdmin?'Admin · đang online':'Đang kết nối';
-  if(isAdmin) await loadConversations(); else await loadMessages();
+  try{
+    if(isAdmin) await loadConversations(); else await loadMessages();
+    $('send').disabled=false;
+  }catch(e){
+    $('status').textContent='Lỗi tải chat';
+    $('messages').innerHTML='<div class="notice">Không tải được tin nhắn: '+esc(e.message)+'</div>';
+  }
 
   channel=sb.channel('shop-chat-realtime')
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'shop_chat_messages'},async payload=>{
