@@ -113,3 +113,22 @@ if(document.readyState==='loading'){
 }
 setInterval(syncShopPrices,3000);
 })();
+
+// Fix Top Nạp: frontend trước đây đọc nhầm total_deposited trong khi RPC trả về total_deposit.
+(function(){
+  'use strict';
+  window.loadTopDeposits=async function(){
+    const el=document.getElementById('top5');
+    if(!el)return;
+    try{
+      const r=await fetch(SUPABASE_URL+'/rest/v1/rpc/top_deposit_leaderboard',{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:'{}'});
+      const rows=await r.json();
+      if(!r.ok)throw new Error(rows?.message||rows?.hint||'Không tải được dữ liệu');
+      el.innerHTML=Array.isArray(rows)&&rows.length?rows.map((x,i)=>'<div class="top-card"><div class="rank">'+(i===0?'🏆':i===1?'🥈':i===2?'🥉':(i+1))+'</div><div><b>'+esc(x.username)+'</b></div><div class="money" style="font-size:18px;margin-top:6px">'+money(x.total_deposit)+'</div></div>').join(''):'<div class="top-card">Chưa có dữ liệu nạp đã duyệt.</div>';
+    }catch(e){
+      el.innerHTML='<div class="top-card"><div class="danger" style="padding:12px;border-radius:10px">Không tải được Top nạp. Vui lòng thử lại.</div></div>';
+      console.error('Top nạp:',e);
+    }
+  };
+  setTimeout(window.loadTopDeposits,150);
+})();
