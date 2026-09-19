@@ -145,7 +145,7 @@ setInterval(syncShopPrices,3000);
       <button class="light btn" onclick="openOrders()">Đơn của tôi</button>
       <a href="#deposit" class="light btn">Nạp thẻ</a>
       <a href="lich-su-nap.html" class="light btn">Lịch sử nạp</a>
-      <a href="chat-admin.html" class="light btn">Chat Admin</a>
+      
       <button id="authBtn" class="dark btn" onclick="openAuth()">Đăng nhập</button>
     `;
     balance.parentNode.insertBefore(nav,balance);
