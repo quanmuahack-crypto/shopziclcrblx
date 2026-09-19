@@ -132,3 +132,29 @@ setInterval(syncShopPrices,3000);
   };
   setTimeout(window.loadTopDeposits,150);
 })();
+/* Restore main navigation/header that was missing from index.html. */
+(function(){
+  'use strict';
+  function restoreShopHeader(){
+    if(document.getElementById('shopMainNav')) return;
+    const balance=document.querySelector('.balance');
+    if(!balance) return;
+    const nav=document.createElement('div');
+    nav.id='shopMainNav';
+    nav.className='top';
+    nav.innerHTML=`
+      <div class="logo">ShopZiCiCRBLX</div>
+      <a href="./" class="dark btn">Trang chủ</a>
+      <a href="#services" class="light btn">Dịch vụ</a>
+      <button class="light btn" onclick="openOrders()">Đơn của tôi</button>
+      <a href="#deposit" class="light btn">Nạp thẻ</a>
+      <a href="#deposit" class="light btn">Nạp Bank</a>
+      <a href="lich-su-nap.html" class="light btn">Lịch sử nạp</a>
+      <button id="authBtn" class="dark btn" onclick="openAuth()">Đăng nhập</button>
+    `;
+    balance.parentNode.insertBefore(nav,balance);
+    if(typeof updateUI==='function') updateUI();
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',restoreShopHeader);
+  else restoreShopHeader();
+})();
