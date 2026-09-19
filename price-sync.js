@@ -148,7 +148,6 @@ setInterval(syncShopPrices,3000);
       <a href="#services" class="light btn">Dịch vụ</a>
       <button class="light btn" onclick="openOrders()">Đơn của tôi</button>
       <a href="#deposit" class="light btn">Nạp thẻ</a>
-      <a href="#deposit" class="light btn">Nạp Bank</a>
       <a href="lich-su-nap.html" class="light btn">Lịch sử nạp</a>
       <button id="authBtn" class="dark btn" onclick="openAuth()">Đăng nhập</button>
     `;
