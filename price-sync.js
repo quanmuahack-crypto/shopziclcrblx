@@ -70,22 +70,22 @@ async function syncShopPrices(){
     if(typeof catalog==='undefined'||!Array.isArray(rows))return;
 
     const remote=new Map(rows.map(x=>[
-      String(x.service_name)+'\u0000'+String(x.package_name),
+      String(x.service_name)+'\\u0000'+String(x.package_name),
       {price:Number(x.price),sort:Number(x.sort_order||0)}
     ]));
 
     const merged={};
     Object.keys(catalog).forEach(service=>{
-      if(service==='VNG → Roblox Quốc tế')return;
+      if(service==='VNG → Roblox Quốc tế'||service==='Chromatic Box')return;
       merged[service]=(catalog[service]||[]).map(x=>{
-        const hit=remote.get(service+'\u0000'+x[0]);
+        const hit=remote.get(service+'\\u0000'+x[0]);
         return hit?[x[0],hit.price]:x;
       });
     });
 
     rows.forEach(x=>{
       const service=String(x.service_name),pkg=String(x.package_name);
-      if(service==='VNG → Roblox Quốc tế')return;
+      if(service==='VNG → Roblox Quốc tế'||service==='Chromatic Box')return;
       if(!merged[service])merged[service]=[];
       if(!merged[service].some(x=>x[0]===pkg))merged[service].push([pkg,Number(x.price)]);
     });
