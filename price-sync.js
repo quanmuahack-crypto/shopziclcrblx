@@ -128,3 +128,32 @@ setInterval(syncShopPrices,3000);
   };
   setTimeout(window.loadTopDeposits,150);
 })();
+
+/* Main shop navigation: create exactly one header. */
+(function(){
+  'use strict';
+  function ensureHeader(){
+    if(document.getElementById('shopMainNav'))return;
+    const existing=document.querySelector('.top');
+    if(existing)return;
+    const balance=document.querySelector('.balance');
+    if(!balance)return;
+    const nav=document.createElement('nav');
+    nav.id='shopMainNav';
+    nav.className='top';
+    nav.innerHTML=`
+      <div class="logo">ShopZiCiCRBLX</div>
+      <a href="./" class="dark btn">⌂ Trang chủ</a>
+      <a href="#services" class="light btn">🎮 Dịch vụ</a>
+      <button class="light btn" onclick="openOrders()">▣ Đơn của tôi</button>
+      <a href="#deposit" class="light btn">💳 Nạp tiền</a>
+      <a href="lich-su-nap.html" class="light btn">📜 Lịch sử nạp</a>
+      <a href="chat-admin.html" class="light btn">💬 Chat Admin</a>
+      <button id="authBtn" class="dark btn" onclick="openAuth()">Đăng nhập</button>
+    `;
+    balance.parentNode.insertBefore(nav,balance);
+    if(typeof updateUI==='function')updateUI();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureHeader);
+  else ensureHeader();
+})();
