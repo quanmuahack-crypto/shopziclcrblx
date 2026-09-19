@@ -29,20 +29,20 @@ main.wrap{position:relative;z-index:1}
 .welcome-content h2{font-size:26px;margin:0 0 10px;color:#f4f4f5}
 .welcome-content p{color:#c7ccd1;margin:0 0 20px;line-height:1.6}
 
-.hero-row{display:flex;gap:16px;align-items:stretch;flex-wrap:wrap;margin:14px 0 6px}
+.hero-row{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;margin:14px 0 6px}
 .hero-row .top-banner{flex:1 1 62%;min-width:280px;margin:0}
-.hero-row .top-banner-img{border-radius:16px;height:100%;min-height:260px}
+.hero-row .top-banner-img{border-radius:16px;width:100%;height:auto;aspect-ratio:16/9}
 .side-panel{flex:1 1 320px;min-width:280px;background:linear-gradient(160deg,#1c1d20,#131415);border:1px solid #2f3136;border-radius:16px;padding:18px;box-shadow:0 8px 28px rgba(0,0,0,.5);display:flex;flex-direction:column}
 .tabs{display:flex;gap:6px;margin-bottom:16px}
 .tab-btn{flex:1;padding:10px 6px;border-radius:10px;border:1px solid #2f3136;background:#1e1f22;color:#9ca3af;cursor:pointer;font-weight:800;font-size:12px}
 .tab-btn.active{background:linear-gradient(135deg,#101113,#26282c);color:#fff;border-color:#4b4e55}
 .tab-pane{display:none}
 .tab-pane.active{display:block}
-.top-list{display:flex;flex-direction:column;gap:10px}
-.top-list-row{display:flex;align-items:center;gap:10px;background:#1a1b1e;border:1px solid #2f3136;border-radius:12px;padding:10px 12px}
-.top-list-rank{width:26px;text-align:center;font-size:18px;font-weight:900;color:#9ca3af}
-.top-list-name{flex:1;font-weight:800;color:#e5e7eb;font-size:14px}
-.top-list-amount{font-weight:900;color:#4ade80;font-size:14px}
+.top-list{display:flex;flex-direction:column;gap:8px;max-height:360px;overflow-y:auto}
+.top-list-row{display:flex;flex-direction:row;align-items:center;gap:10px;background:#1a1b1e;border:1px solid #2f3136;border-radius:12px;padding:9px 12px}
+.top-list-rank{flex:0 0 24px;line-height:1;font-size:15px;text-align:center}
+.top-list-name{flex:1 1 auto;min-width:0;font-weight:800;color:#e5e7eb;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.top-list-amount{flex:0 0 auto;font-weight:900;color:#4ade80;font-size:13px;white-space:nowrap}
 .top-list-empty{color:#8b8f96;padding:10px 0}
 @media(max-width:900px){.hero-row .top-banner-img{min-height:auto}}
 
