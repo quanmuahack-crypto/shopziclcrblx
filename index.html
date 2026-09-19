@@ -18,7 +18,7 @@ html{background:#0a0a0b;color:#e5e7eb}*{box-sizing:border-box}body{margin:0;font
 .shooting-star{position:absolute;width:2px;height:2px;background:linear-gradient(90deg,#fff,transparent);border-radius:50%;box-shadow:0 0 6px 1px #fff,0 0 12px 3px rgba(147,197,253,.6);opacity:0;animation:shootingStar linear infinite}
 .shooting-star::before{content:'';position:absolute;top:50%;right:0;width:120px;height:1px;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.9));transform:translateY(-50%)}
 @keyframes shootingStar{0%{opacity:0;transform:translate(0,0) rotate(215deg)}2%{opacity:1}12%{opacity:0;transform:translate(-420px,320px) rotate(215deg)}100%{opacity:0;transform:translate(-420px,320px) rotate(215deg)}}
-main.wrap,.top{position:relative;z-index:1}
+main.wrap{position:relative;z-index:1}
 
 .welcome-box{position:relative;overflow:hidden;background:radial-gradient(circle at top,#22242a 0,#131417 55%,#0a0a0b 100%);border:1px solid #3a3d43;text-align:center}
 .welcome-box::before,.welcome-box::after{content:'';position:absolute;width:140%;height:60%;top:-10%;left:-20%;filter:blur(55px);mix-blend-mode:screen;opacity:.5;pointer-events:none}
