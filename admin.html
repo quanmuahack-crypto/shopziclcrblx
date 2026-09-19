@@ -58,9 +58,9 @@ async function logout(){token=null;localStorage.removeItem('shopzicl_access_toke
 function render(){root.innerHTML=`<header class="top"><h1>🛠️ ShopZiCiCRBLX — Admin</h1><div><span style="margin-right:12px">${esc(profile.username)}</span><button class="logout" onclick="logout()">Đăng xuất</button></div></header><main class="wrap"><div class="stats"><div class="stat">👥 Khách hàng<b id="sUsers">...</b></div><div class="stat">📦 Đơn hàng<b id="sOrders">...</b></div><div class="stat">💳 Thẻ chờ duyệt<b id="sDeposits">...</b></div><div class="stat">💰 Tổng số dư<b id="sBalance">...</b></div></div><div class="tabs"><button class="active" onclick="tab('users',this)">👥 Khách hàng</button><button onclick="tab('deposits',this)">💳 Duyệt thẻ</button><button onclick="tab('orders',this)">📦 Đơn hàng</button><button onclick="tab('transactions',this)">💰 Lịch sử tiền</button><button onclick="tab('chat',this)">💬 Chat khách</button></div><section id="users" class="panel active"></section><section id="deposits" class="panel"></section><section id="orders" class="panel"></section><section id="transactions" class="panel"></section><section id="chat" class="panel"><div id="adminChat"></div></section></main>`;loadAll()}
 function tab(id,b){document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');b.classList.add('active');if(id==='chat'){renderChatShell();startAdminChatRealtime()}}
 
-let chatUserId=null,chatChannel=null;
+let chatUserId=null,chatChannel=null,adminChatSending=false;
 function renderChatShell(){
- document.getElementById('adminChat').innerHTML='<div class="chat-layout"><div class="chat-list"><div class="chat-list-head">💬 Khách đang chat</div><div id="chatUsers" class="chat-users"><div class="empty">Đang tải...</div></div></div><div class="chat-window"><div id="chatHead" class="chat-head">Chọn một khách để xem tin nhắn</div><div id="chatMessages" class="chat-messages"><div class="empty">Chưa chọn khách</div></div><div class="chat-compose"><input id="chatInput" maxlength="2000" placeholder="Nhập tin nhắn cho khách..." onkeydown="if(event.key===\'Enter\')sendAdminChat()"><button onclick="sendAdminChat()">Gửi</button></div></div></div>';
+ document.getElementById('adminChat').innerHTML='<div class="chat-layout"><div class="chat-list"><div class="chat-list-head">💬 Khách đang chat</div><div id="chatUsers" class="chat-users"><div class="empty">Đang tải...</div></div></div><div class="chat-window"><div id="chatHead" class="chat-head">Chọn một khách để xem tin nhắn</div><div id="chatMessages" class="chat-messages"><div class="empty">Chưa chọn khách</div></div><div class="chat-compose"><input id="chatInput" maxlength="2000" placeholder="Nhập tin nhắn cho khách..." onkeydown="if(event.key===\'Enter\')sendAdminChat()"><button id="chatSendBtn" onclick="sendAdminChat()">Gửi</button></div></div></div>';
  loadChatUsers();
 }
 async function loadChatUsers(){
@@ -88,12 +88,28 @@ async function loadAdminMessages(){
  }catch(e){console.error(e)}
 }
 async function sendAdminChat(){
+ if(adminChatSending)return;
  if(!chatUserId)return alert('Hãy chọn khách trước.');
- const input=document.getElementById('chatInput'),message=input.value.trim(); if(!message)return;
+ const input=document.getElementById('chatInput');
+ const button=document.getElementById('chatSendBtn');
+ const message=input.value.trim();
+ if(!message)return;
+ adminChatSending=true;
+ input.disabled=true;
+ if(button){button.disabled=true;button.textContent='Đang gửi...';}
  try{
   await api('shop_chat_messages',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:chatUserId,sender_role:'admin',message})});
-  input.value='';await loadAdminMessages();await loadChatUsers();
- }catch(e){alert('Không gửi được tin nhắn: '+e.message)}
+  input.value='';
+  await loadAdminMessages();
+  await loadChatUsers();
+ }catch(e){
+  alert('Không gửi được tin nhắn: '+e.message);
+ }finally{
+  adminChatSending=false;
+  input.disabled=false;
+  if(button){button.disabled=false;button.textContent='Gửi';}
+  input.focus();
+ }
 }
 function startAdminChatRealtime(){
  if(chatChannel||!window.supabase||!SUPABASE_URL||!SUPABASE_ANON_KEY)return;
