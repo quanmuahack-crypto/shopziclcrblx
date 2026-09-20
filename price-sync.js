@@ -157,3 +157,79 @@ setInterval(syncShopPrices,3000);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureHeader);
   else ensureHeader();
 })();
+
+
+/* Background music: Lukrembo - Bread */
+(function(){
+  'use strict';
+  function setupShopMusic(){
+    if(document.getElementById('shopMusicBox'))return;
+
+    const box=document.createElement('div');
+    box.id='shopMusicBox';
+    box.innerHTML=`
+      <button id="shopMusicToggle" type="button" aria-label="Bật hoặc tắt nhạc">🎵 Bật nhạc</button>
+      <div id="shopMusicCredit">Lukrembo — Bread</div>
+      <iframe id="shopMusicFrame"
+        title="Lukrembo - Bread"
+        allow="autoplay"
+        style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;border:0"
+        src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Flukrembo%2Fbread&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&visual=false">
+      </iframe>
+    `;
+
+    const style=document.createElement('style');
+    style.textContent=`
+      #shopMusicBox{
+        position:fixed;right:18px;bottom:18px;z-index:99999;
+        display:flex;align-items:center;gap:9px;
+        padding:9px 11px;border-radius:14px;
+        background:rgba(20,20,24,.92);backdrop-filter:blur(10px);
+        box-shadow:0 8px 28px rgba(0,0,0,.25);
+        font-family:Arial,sans-serif
+      }
+      #shopMusicToggle{
+        border:0;border-radius:10px;padding:9px 13px;
+        background:#fff;color:#111;font-weight:800;cursor:pointer
+      }
+      #shopMusicToggle:hover{transform:translateY(-1px)}
+      #shopMusicCredit{font-size:11px;color:#ddd;white-space:nowrap}
+      @media(max-width:600px){#shopMusicCredit{display:none}#shopMusicBox{right:10px;bottom:10px}}
+    `;
+    document.head.appendChild(style);
+    document.body.appendChild(box);
+
+    const frame=box.querySelector('#shopMusicFrame');
+    const btn=box.querySelector('#shopMusicToggle');
+    let widget=null;
+    let playing=false;
+
+    function loadWidget(){
+      if(widget)return;
+      const start=()=>{
+        if(!window.SC||!window.SC.Widget)return;
+        widget=window.SC.Widget(frame);
+        widget.bind(window.SC.Widget.Events.PLAY,()=>{playing=true;btn.textContent='⏸ Tắt nhạc';});
+        widget.bind(window.SC.Widget.Events.PAUSE,()=>{playing=false;btn.textContent='🎵 Bật nhạc';});
+      };
+      if(window.SC&&window.SC.Widget){start();return}
+      const s=document.createElement('script');
+      s.src='https://w.soundcloud.com/player/api.js';
+      s.onload=start;
+      document.head.appendChild(s);
+    }
+
+    btn.addEventListener('click',()=>{
+      loadWidget();
+      setTimeout(()=>{
+        if(!widget)return;
+        if(playing)widget.pause();
+        else widget.play();
+      },250);
+    });
+    loadWidget();
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setupShopMusic);
+  else setupShopMusic();
+})();
