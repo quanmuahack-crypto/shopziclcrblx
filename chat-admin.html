@@ -10,7 +10,7 @@
 </style>
 </head>
 <body><div class="wrap">
-<div class="top"><div class="logo">ShopZiCiCRBLX · Chat Admin</div><a class="back" href="./">← Về shop</a></div>
+<div class="top"><div class="logo">ShopZiCiCRBLX · Chat Admin</div><a class="back" href="./" title="Về shop">← Về shop</a></div>
 <div class="chat">
 <div class="head"><strong id="title">Chat với Admin</strong><span id="status" class="status">Đang kết nối...</span></div>
 <div id="messages" class="messages"><div class="notice">Đang kết nối hệ thống chat...</div></div>
@@ -19,7 +19,7 @@
 <script>
 const URL='https://ufevipuhejvhiufyqqnz.supabase.co';
 const KEY='sb_publishable_6ShPhvGpN4_02Za2tOTOTg_GF0su_OA';
-let token=localStorage.getItem('shopzicl_username_token'),user=null,busy=false,timer=null;
+let token=localStorage.getItem('shopzicl_username_token'),user=null,busy=false,timer=null,sending=false;
 const $=id=>document.getElementById(id);
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function timeoutFetch(url,opt={},ms=8000){return Promise.race([fetch(url,opt),new Promise((_,rej)=>setTimeout(()=>rej(new Error('Kết nối quá lâu. Vui lòng thử lại.')),ms))]);}
@@ -28,6 +28,6 @@ function showError(msg){$('status').textContent='Lỗi kết nối';$('messages'
 function render(rows){if(!rows.length){$('messages').innerHTML='<div class="notice">Chưa có tin nhắn.<br>Hãy gửi tin nhắn đầu tiên cho Admin.</div>';return}$('messages').innerHTML=rows.map(x=>{const mine=x.sender_role==='customer';return '<div class="msg '+(mine?'me':'admin')+'"><div>'+esc(x.message)+'</div><div class="meta">'+(mine?'Bạn':'Admin')+' · '+new Date(x.created_at).toLocaleString('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'})+'</div></div>'}).join('');$('messages').scrollTop=$('messages').scrollHeight}
 async function loadMessages(){if(!user)return;const rows=await jsonFetch('/rest/v1/shop_chat_messages?select=id,user_id,sender_role,message,created_at&user_id=eq.'+encodeURIComponent(user.id)+'&order=created_at.asc');render(rows)}
 async function start(){if(busy)return;busy=true;clearInterval(timer);$('send').disabled=true;$('input').disabled=true;$('status').textContent='Đang kiểm tra đăng nhập...';$('messages').innerHTML='<div class="notice">Đang kết nối hệ thống chat...</div>';try{if(!token)throw new Error('Bạn chưa đăng nhập. Hãy đăng nhập trên shop rồi mở Chat Admin.');const r=await timeoutFetch(URL+'/functions/v1/username-auth',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({action:'me'})});const d=await r.json();if(!r.ok||!d.ok||!d.user)throw new Error(d.error||'Phiên đăng nhập hết hạn. Hãy đăng nhập lại.');user=d.user;if(user.role==='admin'||user.role==='manager'){$('title').textContent='Chat khách hàng';$('status').textContent='Tài khoản quản trị';}await loadMessages();$('status').textContent='Đã kết nối';$('send').disabled=false;$('input').disabled=false;timer=setInterval(async()=>{try{await loadMessages()}catch(e){console.warn(e)}},3000)}catch(e){showError(e.message||'Không kết nối được chat.')}finally{busy=false}}
-async function send(){const text=$('input').value.trim();if(!text||!user)return;const btn=$('send');btn.disabled=true;try{await jsonFetch('/rest/v1/shop_chat_messages',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:user.id,sender_role:'customer',message:text})});$('input').value='';await loadMessages()}catch(e){alert('Không gửi được tin nhắn: '+e.message)}finally{btn.disabled=false}}
-$('send').onclick=send;$('input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});start();
+async function send(){if(sending)return;const text=$('input').value.trim();if(!text||!user)return;sending=true;$('send').disabled=true;$('input').value='';try{await jsonFetch('/rest/v1/shop_chat_messages',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:user.id,sender_role:'customer',message:text})})}catch(e){if(!$('input').value)$('input').value=text;alert('Không gửi được tin nhắn: '+e.message);sending=false;$('send').disabled=false;return}try{await loadMessages()}catch(e){console.warn(e)}sending=false;$('send').disabled=false;$('input').focus()}
+$('send').onclick=send;$('input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&e.keyCode!==229){e.preventDefault();if(!e.repeat)send()}});start();
 </script></body></html>
