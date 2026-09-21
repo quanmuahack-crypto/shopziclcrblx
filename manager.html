@@ -1,1131 +1,353 @@
 <!doctype html>
 <html lang="vi">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
 <title>ShopZiCiCRBLX — Manager</title>
-<style>*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f5f7fb;color:#172033}.wrap{max-width:1450px;margin:auto;padding:25px}.top{background:#172554;color:#fff;padding:18px 25px;display:flex;align-items:center;justify-content:space-between;gap:15px;position:sticky;top:0;z-index:5}.top h1{font-size:21px;margin:0}.top button{border:0;border-radius:10px;padding:11px 15px;font-weight:900;cursor:pointer}.logout{background:#fff;color:#172554}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:20px 0}.stat,.panel{background:#fff;border:1px solid #e5e9f0;border-radius:17px;box-shadow:0 5px 20px #00000009}.stat{padding:20px}.stat b{display:block;font-size:27px;margin-top:8px}.tabs{display:flex;gap:9px;flex-wrap:wrap;margin:20px 0}.tabs button{border:0;background:#e9edf4;padding:12px 16px;border-radius:10px;font-weight:900;cursor:pointer}.tabs button.active{background:#172554;color:#fff}.panel{padding:22px;display:none}.panel.active{display:block}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:950px}.table th,.table td{padding:12px;border-bottom:1px solid #edf0f4;text-align:left;vertical-align:top}.table th{background:#f7f9fc}.btn{border:0;border-radius:8px;padding:8px 10px;font-weight:800;cursor:pointer;margin:2px}.green{background:#dff7ea;color:#087443}.red{background:#ffe3e3;color:#b42318}.blue{background:#e5edff;color:#2855c5}.yellow{background:#fff1c7;color:#805b00}.login{max-width:430px;margin:100px auto;background:#fff;padding:30px;border-radius:20px;box-shadow:0 10px 45px #0002}.login input{width:100%;padding:14px;margin:8px 0;border:1px solid #d7dce5;border-radius:10px}.login button{width:100%;padding:14px;margin-top:10px;background:#172554;color:#fff;border:0;border-radius:10px;font-weight:900;cursor:pointer}.notice{padding:14px;border-radius:11px;background:#fff8e6;border:1px solid #ffe08a;color:#805b00}.secret{font-family:monospace;background:#f3f4f6;border-radius:6px;padding:3px 6px;word-break:break-all}.confirm-overlay{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.confirm-overlay.show{display:flex}.confirm-box{width:min(460px,100%);background:#fff;border-radius:18px;padding:25px;box-shadow:0 20px 70px #0005}.confirm-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}.confirm-actions button{border:0;border-radius:10px;padding:12px 18px;font-weight:900;cursor:pointer}.cancel-confirm{background:#eef2f7}.danger-confirm{background:#b42318;color:#fff}@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.stats{grid-template-columns:1fr}.wrap{padding:12px}}</style>
+<style>
+:root{--bg:#05060a;--panel:#0d0f17;--panel2:#121522;--line:#1f2434;--line2:#2a3046;--text:#e9ebf3;--muted:#8a92a8;--gold:#f5c96b;--gold2:#f59e0b;--emerald:#34d399;--violet:#a78bfa;--cyan:#22d3ee;--rose:#fb7185;--amber:#fbbf24;--blue:#60a5fa}
+*{box-sizing:border-box}
+html{color-scheme:dark;scrollbar-color:#2a3046 #05060a}
+body{margin:0;min-height:100vh;font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--text);position:relative;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:-20%;z-index:0;pointer-events:none;background:radial-gradient(45% 40% at 15% 10%,rgba(124,58,237,.30),transparent 70%),radial-gradient(40% 35% at 85% 15%,rgba(34,211,238,.20),transparent 70%),radial-gradient(45% 40% at 75% 90%,rgba(245,201,107,.16),transparent 70%),radial-gradient(40% 35% at 10% 85%,rgba(251,113,133,.14),transparent 70%);filter:blur(30px);animation:auroraDrift 26s ease-in-out infinite alternate}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background-image:radial-gradient(1px 1px at 12% 22%,#fff9 50%,transparent 51%),radial-gradient(1px 1px at 34% 68%,#fff7 50%,transparent 51%),radial-gradient(1.5px 1.5px at 58% 14%,#fffb 50%,transparent 51%),radial-gradient(1px 1px at 76% 46%,#fff8 50%,transparent 51%),radial-gradient(1px 1px at 90% 82%,#fff7 50%,transparent 51%),radial-gradient(1.5px 1.5px at 6% 88%,#fff9 50%,transparent 51%),radial-gradient(1px 1px at 46% 92%,#fff6 50%,transparent 51%),radial-gradient(1px 1px at 68% 74%,#fff7 50%,transparent 51%);opacity:.7}
+@keyframes auroraDrift{from{transform:translate3d(-2%,-1%,0) scale(1)}to{transform:translate3d(2%,2%,0) scale(1.06)}}
+#root{position:relative;z-index:1}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 28px;background:rgba(7,8,13,.72);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(245,201,107,.18),0 10px 40px rgba(0,0,0,.5)}
+.top h1{margin:0;font-size:21px;font-weight:900;letter-spacing:.3px;background:linear-gradient(90deg,var(--gold),#fff 45%,var(--violet) 75%,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.top-right{display:flex;align-items:center;gap:12px}
+.user-chip{display:flex;align-items:center;gap:9px;padding:7px 14px 7px 8px;border-radius:999px;background:var(--panel2);border:1px solid var(--line2);font-weight:700;font-size:14px}
+.user-chip i{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1204;font-style:normal;font-weight:900;font-size:13px}
+.top button{border:1px solid var(--line2);background:transparent;color:var(--text);border-radius:11px;padding:10px 16px;font-weight:800;cursor:pointer;transition:.18s}
+.top button:hover{border-color:var(--rose);color:var(--rose);box-shadow:0 0 22px rgba(251,113,133,.25)}
+.wrap{max-width:1450px;margin:auto;padding:28px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin:4px 0 26px}
+.stat{position:relative;overflow:hidden;padding:22px 22px 20px;border-radius:20px;color:var(--muted);font-weight:700;font-size:14px;background:linear-gradient(165deg,rgba(var(--c),.17),rgba(13,15,23,.92) 62%);border:1px solid rgba(var(--c),.34);box-shadow:0 14px 40px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05)}
+.stat::after{content:"";position:absolute;right:-40px;top:-40px;width:130px;height:130px;border-radius:50%;background:rgba(var(--c),.22);filter:blur(30px)}
+.stat b{position:relative;z-index:1;display:block;margin-top:10px;font-size:30px;font-weight:900;color:rgb(var(--c));text-shadow:0 0 28px rgba(var(--c),.45);letter-spacing:.3px}
+.s-gold{--c:245,201,107}.s-green{--c:52,211,153}.s-violet{--c:167,139,250}.s-cyan{--c:34,211,238}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 20px;padding:8px;border-radius:18px;background:rgba(13,15,23,.75);border:1px solid var(--line);backdrop-filter:blur(10px);width:fit-content;max-width:100%}
+.tabs button{border:0;background:transparent;color:var(--muted);padding:12px 18px;border-radius:12px;font-weight:800;font-size:14px;cursor:pointer;transition:.18s}
+.tabs button:hover{color:var(--text);background:var(--panel2)}
+.tabs button.active{color:#1a1204;background:linear-gradient(135deg,var(--gold),var(--gold2));box-shadow:0 8px 26px rgba(245,158,11,.38)}
+.panel{display:none;padding:26px;border-radius:22px;background:linear-gradient(180deg,rgba(18,21,34,.92),rgba(10,12,19,.94));border:1px solid var(--line);box-shadow:0 20px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.04)}
+.panel.active{display:block;animation:panelIn .28s ease}
+@keyframes panelIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.panel h2{margin:0 0 18px;font-size:20px;font-weight:900;color:var(--gold);letter-spacing:.2px}
+.table-wrap{overflow:auto;border-radius:16px;border:1px solid var(--line);background:rgba(6,7,12,.55)}
+.table{width:100%;border-collapse:collapse;min-width:850px}
+.table th,.table td{padding:14px 15px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:14px}
+.table th{position:sticky;top:0;background:#0f1220;color:var(--muted);font-weight:800;font-size:13px;letter-spacing:.2px;white-space:nowrap}
+.table tr:last-child td{border-bottom:0}
+.table tbody tr,.table tr:not(:first-child){transition:background .15s}
+.table tr:not(:first-child):hover td{background:rgba(167,139,250,.07)}
+.table td b{color:#fff}
+.money{color:var(--gold)!important;font-weight:900;text-shadow:0 0 18px rgba(245,201,107,.3)}
+.pos{color:var(--emerald)!important;text-shadow:0 0 16px rgba(52,211,153,.35)}
+.neg{color:var(--rose)!important;text-shadow:0 0 16px rgba(251,113,133,.35)}
+.ok-text{color:var(--emerald);font-weight:800}
+.btn{--c:167,139,250;border:1px solid rgba(var(--c),.4);border-radius:10px;padding:8px 12px;font-weight:800;font-size:13px;cursor:pointer;margin:3px;color:rgb(var(--c));background:rgba(var(--c),.12);transition:.16s}
+.btn:hover{background:rgba(var(--c),.24);transform:translateY(-1px);box-shadow:0 8px 22px rgba(var(--c),.28)}
+.btn:active{transform:none}
+.green{--c:52,211,153}.red{--c:251,113,133}.blue{--c:96,165,250}.yellow{--c:251,191,36}
+.badge{display:inline-block;padding:5px 11px;border-radius:999px;font-weight:800;font-size:12px;white-space:nowrap;color:rgb(var(--c,138,146,168));background:rgba(var(--c,138,146,168),.14);border:1px solid rgba(var(--c,138,146,168),.38)}
+.b-pending{--c:251,191,36}.b-working{--c:34,211,238}.b-completed,.b-approved{--c:52,211,153}.b-cancelled,.b-rejected{--c:251,113,133}.b-admin{--c:245,201,107}.b-customer{--c:96,165,250}
+.notice{margin:0 0 18px;padding:14px 16px;border-radius:14px;background:linear-gradient(135deg,rgba(251,191,36,.13),rgba(251,113,133,.07));border:1px solid rgba(251,191,36,.34);color:#f6d98a;font-size:14px;line-height:1.55}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.order-info{line-height:1.8;min-width:270px}
+.secret{display:inline-block;font-family:Consolas,"SFMono-Regular",Menlo,monospace;font-size:13px;color:var(--cyan);background:rgba(34,211,238,.09);border:1px solid rgba(34,211,238,.24);border-radius:8px;padding:2px 8px;word-break:break-all}
+.login{position:relative;max-width:440px;margin:110px auto;padding:34px 30px;border-radius:26px;background:linear-gradient(170deg,rgba(21,24,38,.94),rgba(9,10,16,.96));border:1px solid rgba(245,201,107,.34);box-shadow:0 30px 90px rgba(0,0,0,.65),0 0 60px rgba(124,58,237,.18),inset 0 1px 0 rgba(255,255,255,.06);overflow:hidden}
+.login::before{content:"";position:absolute;inset:-40%;z-index:0;background:conic-gradient(from 0deg,rgba(34,197,94,.14),rgba(6,182,212,.14),rgba(139,92,246,.18),rgba(236,72,153,.13),rgba(34,197,94,.14));filter:blur(50px);animation:spin 22s linear infinite}
+.login>*{position:relative;z-index:1}
+.login h2{margin:0 0 8px;font-size:24px;font-weight:900;background:linear-gradient(90deg,var(--gold),#fff 55%,var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.login p{color:var(--muted);line-height:1.6;margin:0 0 14px}
+.login input{width:100%;padding:14px 16px;margin:8px 0;border-radius:13px;border:1px solid var(--line2);background:rgba(5,6,10,.75);color:var(--text);font-size:15px;outline:none;transition:.16s}
+.login input::placeholder{color:#5d657b}
+.login input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(245,201,107,.16)}
+.login button{width:100%;padding:14px;margin-top:12px;border:0;border-radius:13px;font-weight:900;font-size:15px;letter-spacing:.3px;cursor:pointer;color:#1a1204;background:linear-gradient(135deg,var(--gold),var(--gold2));box-shadow:0 12px 32px rgba(245,158,11,.35);transition:.16s}
+.login button:hover{transform:translateY(-1px);box-shadow:0 16px 40px rgba(245,158,11,.5)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.confirm-overlay{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(2,3,7,.78);backdrop-filter:blur(10px)}
+.confirm-overlay.show{display:flex}
+.confirm-box{width:min(480px,100%);padding:28px;border-radius:24px;background:linear-gradient(170deg,#151827,#0a0b12);border:1px solid rgba(251,113,133,.4);box-shadow:0 30px 90px #000c,0 0 50px rgba(251,113,133,.14);animation:panelIn .25s ease}
+.confirm-box h2{margin:0 0 12px;font-size:21px;color:var(--rose)}
+.confirm-box p{color:#c9cedd;line-height:1.6}
+.confirm-box .notice{margin:14px 0 0}
+.confirm-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
+.confirm-actions button{border:0;border-radius:12px;padding:12px 18px;font-weight:900;cursor:pointer;transition:.16s}
+.cancel-confirm{background:var(--panel2);color:var(--text);border:1px solid var(--line2)!important}
+.cancel-confirm:hover{border-color:var(--muted)!important}
+.danger-confirm{color:#fff;background:linear-gradient(135deg,#e11d48,#be123c);box-shadow:0 10px 28px rgba(225,29,72,.4)}
+.danger-confirm:hover{transform:translateY(-1px)}
+.confirm-actions button:disabled{opacity:.55;cursor:wait;transform:none}
+.chat-layout{display:grid;grid-template-columns:290px 1fr;gap:16px}
+.chat-list,.chat-window{border-radius:18px;overflow:hidden;background:rgba(6,7,12,.6);border:1px solid var(--line)}
+.chat-list-head,.chat-head{padding:15px 18px;font-weight:900;color:var(--gold);background:#0f1220;border-bottom:1px solid var(--line)}
+.chat-users{max-height:560px;overflow:auto}
+.chat-user{padding:14px 16px;border-bottom:1px solid var(--line);cursor:pointer;transition:.15s}
+.chat-user:hover{background:rgba(167,139,250,.08)}
+.chat-user.active{background:linear-gradient(90deg,rgba(167,139,250,.2),transparent);box-shadow:inset 3px 0 0 var(--violet)}
+.chat-user b{display:block;color:#fff}
+.chat-user small{display:block;margin-top:3px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-messages{height:460px;overflow:auto;padding:18px;background:radial-gradient(60% 50% at 80% 0,rgba(124,58,237,.1),transparent 70%),#07080d}
+.chat-msg{max-width:75%;margin:9px 0;padding:11px 14px;border-radius:16px;word-break:break-word;line-height:1.5;font-size:14px}
+.chat-msg.customer{margin-right:auto;background:#161a29;border:1px solid var(--line2);border-bottom-left-radius:5px}
+.chat-msg.admin{margin-left:auto;color:#fff;background:linear-gradient(135deg,#7c3aed,#4f46e5);border-bottom-right-radius:5px;box-shadow:0 8px 24px rgba(99,102,241,.32)}
+.chat-msg small{display:block;opacity:.6;margin-top:5px;font-size:11px}
+.chat-compose{display:flex;gap:10px;padding:14px;border-top:1px solid var(--line);background:#0b0d16}
+.chat-compose input{flex:1;padding:13px 15px;border-radius:12px;border:1px solid var(--line2);background:#05060a;color:var(--text);outline:none;font-size:14px}
+.chat-compose input:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(167,139,250,.16)}
+.chat-compose button{border:0;border-radius:12px;padding:0 22px;font-weight:900;cursor:pointer;color:#1a1204;background:linear-gradient(135deg,var(--gold),var(--gold2));transition:.16s}
+.chat-compose button:hover{box-shadow:0 8px 24px rgba(245,158,11,.4)}
+.chat-compose button:disabled,.chat-compose input:disabled{opacity:.6;cursor:wait}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:#07080d}
+::-webkit-scrollbar-thumb{background:#262c42;border-radius:10px;border:2px solid #07080d}
+::-webkit-scrollbar-thumb:hover{background:#3a4263}
+@media(max-width:1000px){.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){.chat-layout{grid-template-columns:1fr}.chat-users{max-height:220px}.top{padding:14px 16px}.top h1{font-size:17px}.user-chip span{display:none}.user-chip{padding:7px}}
+@media(max-width:520px){.stats{grid-template-columns:1fr}.wrap{padding:14px}.panel{padding:16px}.confirm-actions{flex-direction:column}.confirm-actions button{width:100%}.tabs{width:100%}.tabs button{flex:1 1 auto}}
+@media(prefers-reduced-motion:reduce){body::before,.login::before,.panel.active{animation:none}}
+.ban-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0 6px}
+.ban-grid .btn{margin:0;padding:16px 8px;font-size:14px}
+.del-input{width:100%;padding:13px 15px;margin-top:6px;border-radius:12px;border:1px solid var(--line2);background:#05060a;color:var(--text);font-size:15px;outline:none;transition:.16s}
+.del-input:focus{border-color:var(--rose);box-shadow:0 0 0 3px rgba(251,113,133,.18)}
+.dim-row td{opacity:.5}
+.dim-row td:last-child{opacity:1}
+@media(max-width:520px){.ban-grid{grid-template-columns:1fr}}
+.chat-msg .st{display:block;margin-top:3px;font-size:11px;font-weight:700;text-align:right}.chat-msg .st-sent{color:#c7d2fe}.chat-msg .st-recv{color:#e0e7ff}.chat-msg .st-seen{color:#67e8f9}
+.search-input{width:100%;margin:0 0 14px;padding:13px 16px;border-radius:13px;border:1px solid var(--line2);background:rgba(5,6,10,.75);color:var(--text);font-size:15px;outline:none;transition:.16s}
+.search-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(34,211,238,.16)}
+.secret.order-code{white-space:nowrap;word-break:normal;font-weight:800;letter-spacing:.5px}
+
+.top h1{background:linear-gradient(90deg,#93c5fd,#fff 45%,#c4b5fd 75%,#22d3ee);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tabs button.active{color:#fff;background:linear-gradient(135deg,#60a5fa,#8b5cf6);box-shadow:0 8px 26px rgba(99,102,241,.42)}
+.panel h2{color:#93c5fd}
+.login h2{background:linear-gradient(90deg,#93c5fd,#fff 55%,#c4b5fd);-webkit-background-clip:text;background-clip:text;color:transparent}
+.login button{color:#fff;background:linear-gradient(135deg,#60a5fa,#8b5cf6);box-shadow:0 12px 32px rgba(99,102,241,.4)}
+.login button:hover{box-shadow:0 16px 40px rgba(99,102,241,.55)}
+.login input:focus,.search-input:focus{border-color:#93c5fd;box-shadow:0 0 0 3px rgba(147,197,253,.18)}
+.lock{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;color:var(--rose);background:rgba(251,113,133,.12);border:1px solid rgba(251,113,133,.38)}
+.acc-line{margin-top:8px}
+</style>
 </head>
 <body>
-
 <div id="root"></div>
-
-<div id="cancelConfirm" class="confirm-overlay">
-  <div class="confirm-box">
-    <h2>⚠️ Xác nhận hủy đơn</h2>
-    <p id="cancelConfirmText">Bạn có chắc muốn hủy đơn này?</p>
-    <p class="notice">💰 Nếu đơn đã bị trừ tiền, hệ thống sẽ tự động hoàn lại đúng số tiền của đơn cho khách. Chỉ được hoàn một lần.</p>
-    <div class="confirm-actions">
-      <button class="cancel-confirm" onclick="closeCancelConfirm()">Không, quay lại</button>
-      <button class="danger-confirm" onclick="confirmCancelOrder()">Xác nhận hủy + hoàn tiền</button>
-    </div>
-  </div>
-</div>
-
+<div id="userModal" class="confirm-overlay"><div id="userModalBox" class="confirm-box"></div></div>
+<div id="cancelConfirm" class="confirm-overlay"><div class="confirm-box"><h2>⚠️ Xác nhận hủy đơn</h2><p id="cancelConfirmText">Bạn có chắc muốn hủy đơn này?</p><p class="notice">💰 Nếu đơn đã bị trừ tiền, hệ thống sẽ tự động hoàn lại đúng số tiền của đơn cho khách. Chỉ được hoàn một lần.</p><div class="confirm-actions"><button class="cancel-confirm" onclick="closeCancelConfirm()">Không, quay lại</button><button id="confirmCancelBtn" class="danger-confirm" onclick="confirmCancelOrder()">Xác nhận hủy + hoàn tiền</button></div></div></div>
 <script>
-
 let SUPABASE_URL='',SUPABASE_ANON_KEY='';
-let token=localStorage.getItem('shopzicl_access_token'),
-    profile=null,
-    pendingCancelId=null;
-
-function esc(v){
-  return String(v??'')
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;')
-    .replace(/'/g,'&#039;')
-}
-
-function money(v){
-  return Number(v||0).toLocaleString('vi-VN')+' đ'
-}
-
-function backupCode(extra){
-  if(!extra)return '';
-  let x=extra;
-  try{
-    if(typeof x==='string')x=JSON.parse(x)
-  }catch{}
-  if(!x||typeof x!=='object')return '';
-
-  for(const k of [
-    'backup_code',
-    'backupCode',
-    'recovery_code',
-    'recoveryCode',
-    'backup',
-    'recovery',
-    'ma_du_phong',
-    'maDuPhong'
-  ]){
-    if(x[k]!=null&&String(x[k]).trim())
-      return String(x[k]);
-  }
-
-  return '';
-}
-
+let token=localStorage.getItem('shopzicl_access_token'),profile=null,pendingCancelId=null,cancelBusy=false,refreshing=null;
+function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
+function money(v){return Number(v||0).toLocaleString('vi-VN')+' đ'}
+function badge(s){const v=String(s||'');const labels={pending:'Chờ',working:'Đang làm',completed:'Hoàn thành',cancelled:'Đã hủy',approved:'Đã duyệt',rejected:'Từ chối'};return '<span class="badge b-'+esc(v.toLowerCase())+'">'+esc(labels[v.toLowerCase()]||v)+'</span>'}
 async function loadSupabaseConfig(){
-  const r=await fetch('./index.html',{cache:'no-store'});
-  const html=await r.text();
-
-  function getConst(name){
-    const marker='const '+name+'=';
-    const i=html.indexOf(marker);
-
-    if(i<0)return null;
-
-    const start=i+marker.length;
-    const q=html[start];
-    const end=html.indexOf(q,start+1);
-
-    return end<0?null:html.slice(start+1,end);
-  }
-
-  const url=getConst('SUPABASE_URL');
-  const key=getConst('SUPABASE_KEY');
-
-  if(!url||!key)
-    throw Error('Không tìm thấy cấu hình Supabase trong trang chính.');
-
-  SUPABASE_URL=url;
-  SUPABASE_ANON_KEY=key;
-
-  localStorage.setItem('shopzicl_supabase_url',url);
-  localStorage.setItem('shopzicl_supabase_anon_key',key);
+  const cu=localStorage.getItem('shopzicl_supabase_url'),ck=localStorage.getItem('shopzicl_supabase_anon_key');
+  if(cu&&ck){SUPABASE_URL=cu;SUPABASE_ANON_KEY=ck;return}
+  const r=await fetch('./index.html',{cache:'no-store'});const html=await r.text();
+  function getConst(name){const marker='const '+name+'=';const i=html.indexOf(marker);if(i<0)return null;const start=i+marker.length;const q=html[start];const end=html.indexOf(q,start+1);return end<0?null:html.slice(start+1,end)}
+  const url=getConst('SUPABASE_URL'),key=getConst('SUPABASE_KEY');
+  if(!url||!key)throw Error('Không tìm thấy cấu hình Supabase trong trang chính.');
+  SUPABASE_URL=url;SUPABASE_ANON_KEY=key;
+  localStorage.setItem('shopzicl_supabase_url',url);localStorage.setItem('shopzicl_supabase_anon_key',key);
 }
-
+function refreshSession(){
+  if(refreshing)return refreshing;
+  refreshing=(async()=>{const rt=localStorage.getItem('shopzicl_refresh_token');if(!rt)return false;try{const r=await fetch(SUPABASE_URL+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{apikey:SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:rt})});const d=await r.json();if(!r.ok||!d.access_token)return false;token=d.access_token;localStorage.setItem('shopzicl_access_token',token);if(d.refresh_token)localStorage.setItem('shopzicl_refresh_token',d.refresh_token);return true}catch(e){return false}})().finally(()=>{refreshing=null});
+  return refreshing;
+}
 async function api(path,options={}){
-  const h={
-    'apikey':SUPABASE_ANON_KEY,
-    'Authorization':'Bearer '+(token||SUPABASE_ANON_KEY),
-    'Content-Type':'application/json',
-    ...(options.headers||{})
-  };
-
-  const r=await fetch(
-    SUPABASE_URL+'/rest/v1/'+path,
-    {...options,headers:h}
-  );
-
+  const headers={apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+(token||SUPABASE_ANON_KEY),'Content-Type':'application/json',...(options.headers||{})};
+  const r=await fetch(SUPABASE_URL+'/rest/v1/'+path,{...options,headers});
   const t=await r.text();
-
-  if(!r.ok)
+  if(!r.ok){
+    const expired=r.status===401||/JWT expired/i.test(t);
+    if(expired&&!options._retried&&token){if(await refreshSession())return api(path,{...options,_retried:true});throw Error('Phiên đăng nhập đã hết hạn. Hãy đăng xuất rồi đăng nhập lại.')}
     throw Error(t||r.statusText);
-
-  if(!t)return null;
-
-  try{
-    return JSON.parse(t);
-  }catch{
-    throw Error('Máy chủ trả về dữ liệu không hợp lệ.');
   }
+  if(!t)return null;
+  try{return JSON.parse(t)}catch{throw Error('Máy chủ trả về dữ liệu không hợp lệ.')}
 }
-
-async function rpc(fn,body){
-  return api('rpc/'+fn,{
-    method:'POST',
-    body:JSON.stringify(body)
-  })
-}
-
-async function authUser(){
+async function rpc(fn,body){return api('rpc/'+fn,{method:'POST',body:JSON.stringify(body)})}
+async function authUser(retry=true){
   if(!token)return null;
-
-  const r=await fetch(
-    SUPABASE_URL+'/auth/v1/user',
-    {
-      headers:{
-        apikey:SUPABASE_ANON_KEY,
-        Authorization:'Bearer '+token
-      }
-    }
-  );
-
-  if(!r.ok)return null;
-
+  const r=await fetch(SUPABASE_URL+'/auth/v1/user',{headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+token}});
+  if(!r.ok){if(retry&&await refreshSession())return authUser(false);return null}
   return r.json();
 }
-
 async function init(){
   try{
     await loadSupabaseConfig();
-
     const u=await authUser();
-
-    if(!u){
-      showLogin();
-      return;
-    }
-
-    const rows=await api(
-      'profiles?select=id,username,email,role,balance,created_at&id=eq.'
-      +encodeURIComponent(u.id)
-    );
-
+    if(!u){showLogin();return}
+    const rows=await api('profiles?select=id,username,email,role,balance,created_at&id=eq.'+encodeURIComponent(u.id));
     profile=rows?.[0];
-
-    if(!profile||!['admin','manager'].includes(profile.role)){
-      showDenied();
-      return;
-    }
-
+    if(!profile||!['admin','manager'].includes(profile.role)){showDenied();return}
     render();
-
-  }catch(e){
-    showLogin(e.message);
-  }
+  }catch(e){showLogin(e.message)}
 }
-
 function showLogin(msg=''){
-  root.innerHTML=
-    '<div class="login">'+
-      '<h2>🛠️ ShopZiCiCRBLX — Manager</h2>'+
-      '<p>'+esc(msg||'Đăng nhập tài khoản Manager của shop.')+'</p>'+
-      '<input id="em" type="email" placeholder="Email Manager">'+
-      '<input id="pw" type="password" placeholder="Mật khẩu">'+
-      '<button onclick="login()">ĐĂNG NHẬP</button>'+
-    '</div>';
+  root.innerHTML='<div class="login"><h2>🛠️ ShopZiCiCRBLX — Manager</h2><p>'+esc(msg||'Đăng nhập tài khoản Manager của shop.')+'</p><input id="em" type="email" placeholder="Email Manager"><input id="pw" type="password" placeholder="Mật khẩu"><button onclick="login()">ĐĂNG NHẬP</button></div>';
 }
-
 async function login(){
   try{
     await loadSupabaseConfig();
-
-    const r=await fetch(
-      SUPABASE_URL+'/auth/v1/token?grant_type=password',
-      {
-        method:'POST',
-        headers:{
-          apikey:SUPABASE_ANON_KEY,
-          'Content-Type':'application/json'
-        },
-        body:JSON.stringify({
-          email:em.value.trim(),
-          password:pw.value
-        })
-      }
-    );
-
+    const r=await fetch(SUPABASE_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:em.value.trim(),password:pw.value})});
     const t=await r.text();
-
     let d;
-
-    try{
-      d=JSON.parse(t);
-    }catch{
-      throw Error('Không kết nối được Supabase.');
-    }
-
-    if(!r.ok)
-      throw Error(d.error_description||d.msg||'Đăng nhập thất bại');
-
+    try{d=JSON.parse(t)}catch{throw Error('Không kết nối được Supabase.')}
+    if(!r.ok)throw Error(d.error_description||d.msg||'Đăng nhập thất bại');
     token=d.access_token;
-
-    localStorage.setItem(
-      'shopzicl_access_token',
-      token
-    );
-
+    localStorage.setItem('shopzicl_access_token',token);
+    if(d.refresh_token)localStorage.setItem('shopzicl_refresh_token',d.refresh_token);
     init();
-
-  }catch(e){
-    alert(e.message);
-  }
+  }catch(e){alert(e.message)}
 }
-
 function showDenied(){
-  root.innerHTML=
-    '<div class="login">'+
-      '<h2>⛔ Không có quyền</h2>'+
-      '<p>Tài khoản này chưa được cấp quyền Manager.</p>'+
-      '<button onclick="logout()">ĐĂNG XUẤT</button>'+
-    '</div>';
+  root.innerHTML='<div class="login"><h2>⛔ Không có quyền</h2><p>Tài khoản này chưa được cấp quyền Manager.</p><button onclick="logout()">ĐĂNG XUẤT</button></div>';
 }
-
 function logout(){
   localStorage.removeItem('shopzicl_access_token');
+  localStorage.removeItem('shopzicl_refresh_token');
   token=null;
   location.reload();
 }
-
 function render(){
-  root.innerHTML=`
-    <header class="top">
-      <h1>🛠️ ShopZiCiCRBLX — Manager</h1>
-
-      <div>
-        <span style="margin-right:12px">
-          ${esc(profile.username||profile.email)}
-        </span>
-
-        <button class="logout" onclick="logout()">
-          Đăng xuất
-        </button>
-      </div>
-    </header>
-
-    <main class="wrap">
-
-      <div class="stats">
-
-        <div class="stat">
-          👥 Khách hàng
-          <b id="sUsers">...</b>
-        </div>
-
-        <div class="stat">
-          📦 Đơn hàng
-          <b id="sOrders">...</b>
-        </div>
-
-        <div class="stat">
-          💳 Thẻ chờ duyệt
-          <b id="sDeposits">...</b>
-        </div>
-
-        <div class="stat">
-          💰 Tổng số dư
-          <b id="sBalance">...</b>
-        </div>
-
-      </div>
-
-      <div class="tabs">
-
-        <button class="active" onclick="tab('users',this)">
-          👥 Khách hàng
-        </button>
-
-        <button onclick="tab('deposits',this)">
-          💳 Duyệt thẻ
-        </button>
-
-        <button onclick="tab('orders',this)">
-          📦 Đơn hàng
-        </button>
-
-        <button onclick="tab('transactions',this)">
-          💰 Lịch sử tiền
-        </button>
-
-      </div>
-
-      <section id="users" class="panel active"></section>
-      <section id="deposits" class="panel"></section>
-      <section id="orders" class="panel"></section>
-      <section id="transactions" class="panel"></section>
-
-    </main>
-  `;
-
+  root.innerHTML=`<header class="top"><h1>🛠️ ShopZiCiCRBLX — Manager</h1><div class="top-right"><div class="user-chip"><i>${esc((profile.username||profile.email||'M').charAt(0).toUpperCase())}</i><span>${esc(profile.username||profile.email)}</span></div><button class="logout" onclick="logout()">Đăng xuất</button></div></header><main class="wrap"><div class="stats"><div class="stat s-cyan">👥 Khách hàng<b id="sUsers">...</b></div><div class="stat s-violet">📦 Đơn hàng<b id="sOrders">...</b></div><div class="stat s-green">💳 Thẻ chờ duyệt<b id="sDeposits">...</b></div><div class="stat s-gold">💰 Tổng số dư<b id="sBalance">...</b></div></div><div class="tabs"><button class="active" onclick="tab('users',this)">👥 Khách hàng</button><button onclick="tab('deposits',this)">💳 Duyệt thẻ</button><button onclick="tab('orders',this)">📦 Đơn hàng</button><button onclick="tab('transactions',this)">💰 Lịch sử tiền</button></div><section id="users" class="panel active"></section><section id="deposits" class="panel"></section><section id="orders" class="panel"></section><section id="transactions" class="panel"></section></main>`;
   loadAll();
 }
-
 function tab(id,b){
-  document
-    .querySelectorAll('.panel')
-    .forEach(x=>x.classList.remove('active'));
-
-  document
-    .querySelectorAll('.tabs button')
-    .forEach(x=>x.classList.remove('active'));
-
-  document
-    .getElementById(id)
-    .classList.add('active');
-
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
   b.classList.add('active');
 }
-
-
-/* =========================================================
-   LOAD DATA
-   ========================================================= */
-
+const DEPOSIT_COLS='id,user_id,card_type,amount,status,rejection_reason,created_at';
+const ORDER_COLS='id,user_id,service_name,package_name,price,status,account,game_username,created_at,updated_at';
+async function fetchDeposits(){
+  try{return await api('manager_deposits?select='+DEPOSIT_COLS+'&order=created_at.desc')}
+  catch(e){return api('deposits?select='+DEPOSIT_COLS+'&order=created_at.desc')}
+}
+async function fetchOrders(){
+  try{return await api('manager_orders?select='+ORDER_COLS+',order_code&order=created_at.desc')}
+  catch(e){if(/order_code|column|42703/i.test(String(e.message)))return api('manager_orders?select='+ORDER_COLS+'&order=created_at.desc');throw e}
+}
 async function loadAll(){
-
   try{
-
     const [users,deposits,orders,tx]=await Promise.all([
-
-      api(
-        'profiles?select=id,username,email,role,balance,created_at&order=created_at.desc'
-      ),
-
-      api(
-        'deposits?select=id,user_id,card_type,amount,serial,card_code,status,rejection_reason,created_at&order=created_at.desc'
-      ),
-
-      /*
-       * ADMIN:
-       * đọc orders đầy đủ
-       *
-       * MANAGER:
-       * chỉ đọc manager_orders
-       *
-       * manager_orders KHÔNG có:
-       * password
-       * game_password
-       * extra_data
-       * phone_number
-       * login_support_code
-       */
-
-      profile.role==='admin'
-
-        ? api(
-            'orders?select='+
-            'id,user_id,service_name,package_name,price,status,'+
-            'account,password,game_username,game_password,extra_data,'+
-            'phone_number,login_support_code,created_at,updated_at'+
-            '&order=created_at.desc'
-          )
-
-        : api(
-            'manager_orders?select='+
-            'id,user_id,service_name,package_name,price,status,'+
-            'account,game_username,created_at,updated_at'+
-            '&order=created_at.desc'
-          ),
-
-      api(
-        'balance_transactions?select=id,user_id,amount,balance_after,type,note,created_at&order=created_at.desc'
-      )
-
+      api('profiles?select=id,username,email,role,balance,created_at&order=created_at.desc'),
+      fetchDeposits(),
+      fetchOrders(),
+      api('balance_transactions?select=id,user_id,amount,balance_after,type,note,created_at&order=created_at.desc')
     ]);
-
-    const map=Object.fromEntries(
-      users.map(u=>[u.id,u])
-    );
-
-    sUsers.textContent=
-      users.filter(u=>u.role==='customer').length;
-
-    sOrders.textContent=
-      orders.length;
-
-    sDeposits.textContent=
-      deposits.filter(d=>d.status==='pending').length;
-
-    sBalance.textContent=
-      money(
-        users.reduce(
-          (a,u)=>a+Number(u.balance||0),
-          0
-        )
-      );
-
+    const map=Object.fromEntries(users.map(u=>[u.id,u]));
+    sUsers.textContent=users.filter(u=>u.role==='customer').length;
+    sOrders.textContent=orders.length;
+    sDeposits.textContent=deposits.filter(d=>d.status==='pending').length;
+    sBalance.textContent=money(users.reduce((a,u)=>a+Number(u.balance||0),0));
     renderUsers(users);
     renderDeposits(deposits,map);
     renderOrders(orders,map);
     renderTx(tx,map);
-
   }catch(e){
-
     console.error(e);
-
-    alert(
-      'Không thể tải dữ liệu: '+e.message
-    );
-
+    alert('Không thể tải dữ liệu: '+e.message);
   }
-
 }
-
-
-/* =========================================================
-   USERS
-   ========================================================= */
-
 function renderUsers(users){
-
-  document.getElementById('users').innerHTML=
-    '<h2>👥 Quản lý khách hàng</h2>'+
-
-    '<div class="table-wrap">'+
-
-      '<table class="table">'+
-
-        '<tr>'+
-          '<th>Tài khoản</th>'+
-          '<th>Email</th>'+
-          '<th>Vai trò</th>'+
-          '<th>Số dư</th>'+
-          '<th>Thao tác</th>'+
-        '</tr>'+
-
-        users.map(u=>
-
-          `<tr>
-
-            <td>
-              <b>${esc(u.username)}</b>
-            </td>
-
-            <td>
-              ${esc(u.email)}
-            </td>
-
-            <td>
-              ${esc(u.role)}
-            </td>
-
-            <td>
-              <b>${money(u.balance)}</b>
-            </td>
-
-            <td>
-
-              ${
-                u.role==='customer'
-
-                ?
-
-                `<button
-                  class="btn green"
-                  onclick="adjust('${u.id}',1)"
-                >
-                  ➕ Cộng
-                </button>
-
-                <button
-                  class="btn red"
-                  onclick="adjust('${u.id}',-1)"
-                >
-                  ➖ Trừ
-                </button>
-
-                <button
-                  class="btn blue"
-                  onclick="setBalance('${u.id}')"
-                >
-                  💰 Đặt số dư
-                </button>`
-
-                :
-
-                'Không chỉnh'
-              }
-
-            </td>
-
-          </tr>`
-
-        ).join('')+
-
-      '</table>'+
-
-    '</div>';
+  document.getElementById('users').innerHTML='<h2>👥 Quản lý khách hàng</h2><div class="table-wrap"><table class="table"><tr><th>Tài khoản</th><th>Email</th><th>Vai trò</th><th>Số dư</th><th>Thao tác</th></tr>'+users.map(u=>`<tr><td><b>${esc(u.username)}</b></td><td>${esc(u.email)}</td><td><span class="badge b-${esc(u.role)}">${esc(u.role)}</span></td><td><b class="money">${money(u.balance)}</b></td><td>${u.role==='customer'?`<button class="btn green" onclick="adjust('${u.id}',1)">➕ Cộng</button><button class="btn red" onclick="adjust('${u.id}',-1)">➖ Trừ</button><button class="btn blue" onclick="setBalance('${u.id}')">💰 Đặt số dư</button>`:'Không chỉnh'}</td></tr>`).join('')+'</table></div>';
 }
-
-
-/* =========================================================
-   DEPOSITS
-   ========================================================= */
-
 function renderDeposits(ds,map){
-
-  document.getElementById('deposits').innerHTML=
-
-    '<h2>💳 Duyệt thẻ cào</h2>'+
-
-    '<div class="notice">'+
-      '🔓 Manager được xem đầy đủ Seri và mã thẻ.'+
-    '</div>'+
-
-    '<div class="table-wrap">'+
-
-      '<table class="table">'+
-
-        '<tr>'+
-          '<th>Khách</th>'+
-          '<th>Nhà mạng</th>'+
-          '<th>Mệnh giá</th>'+
-          '<th>Seri</th>'+
-          '<th>Mã thẻ</th>'+
-          '<th>Trạng thái</th>'+
-          '<th>Thao tác</th>'+
-        '</tr>'+
-
-        ds.map(d=>
-
-          `<tr>
-
-            <td>
-              ${esc(map[d.user_id]?.username||d.user_id)}
-            </td>
-
-            <td>
-              ${esc(d.card_type)}
-            </td>
-
-            <td>
-              ${money(d.amount)}
-            </td>
-
-            <td>
-              <span class="secret">
-                ${esc(d.serial||'Chưa có')}
-              </span>
-            </td>
-
-            <td>
-              <span class="secret">
-                ${esc(d.card_code||'Chưa có')}
-              </span>
-            </td>
-
-            <td>
-              ${esc(d.status)}
-            </td>
-
-            <td>
-
-              ${
-                d.status==='pending'
-
-                ?
-
-                `<button
-                  class="btn green"
-                  onclick="reviewDeposit('${d.id}',true)"
-                >
-                  ✅ Duyệt + cộng tiền
-                </button>
-
-                <button
-                  class="btn red"
-                  onclick="reviewDeposit('${d.id}',false)"
-                >
-                  ❌ Từ chối
-                </button>`
-
-                :
-
-                'Đã xử lý'
-              }
-
-            </td>
-
-          </tr>`
-
-        ).join('')+
-
-      '</table>'+
-
-    '</div>';
+  document.getElementById('deposits').innerHTML='<h2>💳 Duyệt thẻ cào</h2><div class="notice">🔒 Manager không xem được Seri và mã thẻ của khách.</div><div class="table-wrap"><table class="table"><tr><th>Khách</th><th>Nhà mạng</th><th>Mệnh giá</th><th>Seri / Mã thẻ</th><th>Trạng thái</th><th>Thao tác</th></tr>'+ds.map(d=>`<tr><td>${esc(map[d.user_id]?.username||d.user_id)}</td><td>${esc(d.card_type)}</td><td><b class="money">${money(d.amount)}</b></td><td><span class="lock">🔒 Ẩn</span></td><td>${badge(d.status)}</td><td>${d.status==='pending'?`<button class="btn green" onclick="reviewDeposit('${d.id}',true)">✅ Duyệt + cộng tiền</button><button class="btn red" onclick="reviewDeposit('${d.id}',false)">❌ Từ chối</button>`:'Đã xử lý'}</td></tr>`).join('')+'</table></div>';
 }
-
-
-/* =========================================================
-   ORDERS
-   ========================================================= */
-
+function filterOrders(){
+  const q=(document.getElementById('orderSearch')||{value:''}).value.trim().toLowerCase();
+  document.querySelectorAll('#orders tr[data-q]').forEach(r=>{r.style.display=r.dataset.q.includes(q)?'':'none'});
+}
 function renderOrders(os,map){
-
-  document.getElementById('orders').innerHTML=
-
-    '<h2>📦 Quản lý đơn hàng</h2>'+
-
-    (
-      profile.role==='manager'
-
-      ?
-
-      '<div class="notice">'+
-        '🔒 Manager không được xem mật khẩu, mã dự phòng hoặc thông tin đăng nhập nhạy cảm của khách.'+
-      '</div>'
-
-      :
-
-      '<div class="notice">'+
-        '🔐 Admin có quyền xem thông tin đăng nhập đầy đủ.'+
-      '</div>'
-    )+
-
-    '<div class="table-wrap">'+
-
-      '<table class="table">'+
-
-        '<tr>'+
-          '<th>Khách</th>'+
-          '<th>Thông tin tài khoản</th>'+
-          '<th>Dịch vụ</th>'+
-          '<th>Gói</th>'+
-          '<th>Giá</th>'+
-          '<th>Trạng thái</th>'+
-          '<th>Thao tác</th>'+
-        '</tr>'+
-
-        os.map(o=>{
-
-          const rid=
-            o.game_username||
-            o.account||
-            '';
-
-          let accountInfo='';
-
-          /*
-           * ADMIN
-           */
-
-          if(profile.role==='admin'){
-
-            const rpw=
-              o.game_password||
-              o.password||
-              '';
-
-            const b=
-              backupCode(o.extra_data);
-
-            accountInfo=
-
-              '<div>'+
-                '🎮 <b>ID Roblox:</b> '+
-                '<span class="secret">'+
-                  esc(rid||'Chưa có')+
-                '</span>'+
-              '</div>'+
-
-              '<div style="margin-top:7px">'+
-                '🔑 <b>Mật khẩu:</b> '+
-                '<span class="secret">'+
-                  esc(rpw||'Chưa có')+
-                '</span>'+
-              '</div>'+
-
-              '<div style="margin-top:7px">'+
-                '🛡️ <b>Mã dự phòng:</b> '+
-                '<span class="secret">'+
-                  esc(b||'Chưa có')+
-                '</span>'+
-              '</div>';
-
-          }
-
-          /*
-           * MANAGER
-           *
-           * Không dùng password,
-           * không dùng game_password,
-           * không dùng extra_data.
-           */
-
-          else{
-
-            accountInfo=
-
-              '<div>'+
-                '🎮 <b>ID Roblox:</b> '+
-                '<span class="secret">'+
-                  esc(rid||'Chưa có')+
-                '</span>'+
-              '</div>'+
-
-              '<div style="margin-top:9px;color:#b42318;font-weight:900">'+
-                '🔒 Mật khẩu: ẨN'+
-              '</div>'+
-
-              '<div style="margin-top:5px;color:#b42318;font-weight:900">'+
-                '🛡️ Mã dự phòng: ẨN'+
-              '</div>';
-
-          }
-
-          return
-
-            '<tr>'+
-
-              '<td>'+
-                esc(
-                  map[o.user_id]?.username||
-                  o.user_id
-                )+
-              '</td>'+
-
-              '<td>'+
-                accountInfo+
-              '</td>'+
-
-              '<td>'+
-                esc(o.service_name)+
-              '</td>'+
-
-              '<td>'+
-                esc(o.package_name)+
-              '</td>'+
-
-              '<td>'+
-                money(o.price)+
-              '</td>'+
-
-              '<td>'+
-                esc(o.status)+
-              '</td>'+
-
-              '<td>'+
-
-                `<button
-                  class="btn yellow"
-                  onclick="orderStatus('${o.id}','pending')"
-                >
-                  Chờ
-                </button>`
-
-                +
-
-                `<button
-                  class="btn blue"
-                  onclick="orderStatus('${o.id}','working')"
-                >
-                  Đang làm
-                </button>`
-
-                +
-
-                `<button
-                  class="btn green"
-                  onclick="orderStatus('${o.id}','completed')"
-                >
-                  Hoàn thành
-                </button>`
-
-                +
-
-                (
-
-                  o.status!=='cancelled'
-
-                  ?
-
-                  `<button
-                    class="btn red"
-                    onclick="openCancelConfirm(
-                      '${o.id}',
-                      '${esc(
-                        map[o.user_id]?.username||
-                        'Khách'
-                      )} — ${esc(
-                        o.package_name
-                      )} — ${money(o.price)}'
-                    )"
-                  >
-                    ❌ Hủy
-                  </button>`
-
-                  :
-
-                  '<span style="color:#087443;font-weight:800">'+
-                    'Đã hủy + hoàn tiền'+
-                  '</span>'
-
-                )+
-
-              '</td>'+
-
-            '</tr>';
-
-        }).join('')+
-
-      '</table>'+
-
-    '</div>';
+  const oldQ=(document.getElementById('orderSearch')||{value:''}).value;
+  document.getElementById('orders').innerHTML='<h2>📦 Quản lý đơn hàng</h2><div class="notice">🔒 Manager không xem được mật khẩu, mã dự phòng hay thông tin đăng nhập nhạy cảm của khách.</div><input id="orderSearch" class="search-input" placeholder="🔍 Tìm theo mã đơn, khách, dịch vụ..." oninput="filterOrders()"><div class="table-wrap"><table class="table"><tr><th>Mã đơn</th><th>Khách</th><th>Thông tin tài khoản</th><th>Dịch vụ</th><th>Gói</th><th>Giá</th><th>Trạng thái</th><th>Thao tác</th></tr>'+os.map(o=>{
+    const rid=o.game_username||o.account||'';
+    const uname=map[o.user_id]?.username||o.user_id;
+    const q=((o.order_code||'')+' '+uname+' '+(o.service_name||'')+' '+(o.package_name||'')).toLowerCase();
+    return `<tr data-q="${esc(q)}"><td><span class="secret order-code">${esc(o.order_code||'—')}</span></td><td>${esc(uname)}</td><td class="order-info"><div>🎮 <b>ID Roblox:</b> <span class="secret">${esc(rid||'Chưa có')}</span></div><div class="acc-line"><span class="lock">🔒 Mật khẩu: ẨN</span></div><div class="acc-line"><span class="lock">🛡️ Mã dự phòng: ẨN</span></div></td><td>${esc(o.service_name)}</td><td>${esc(o.package_name)}</td><td><b class="money">${money(o.price)}</b></td><td>${badge(o.status)}</td><td><button class="btn yellow" onclick="orderStatus('${o.id}','pending')">Chờ</button><button class="btn blue" onclick="orderStatus('${o.id}','working')">Đang làm</button><button class="btn green" onclick="orderStatus('${o.id}','completed')">Hoàn thành</button>${o.status!=='cancelled'?`<button class="btn red" onclick="openCancelConfirm('${o.id}','${esc(uname)} — ${esc(o.package_name)} — ${money(o.price)}')">❌ Hủy</button>`:'<span class="ok-text">Đã hủy + hoàn tiền</span>'}</td></tr>`;
+  }).join('')+'</table></div>';
+  const inp=document.getElementById('orderSearch');
+  if(inp&&oldQ){inp.value=oldQ;filterOrders()}
 }
-
-
-/* =========================================================
-   TRANSACTIONS
-   ========================================================= */
-
 function renderTx(ts,map){
-
-  document.getElementById('transactions').innerHTML=
-
-    '<h2>💰 Lịch sử biến động số dư</h2>'+
-
-    '<div class="table-wrap">'+
-
-      '<table class="table">'+
-
-        '<tr>'+
-          '<th>Khách</th>'+
-          '<th>Biến động</th>'+
-          '<th>Số dư sau</th>'+
-          '<th>Loại</th>'+
-          '<th>Ghi chú</th>'+
-          '<th>Thời gian</th>'+
-        '</tr>'+
-
-        ts.map(t=>
-
-          `<tr>
-
-            <td>
-              ${esc(
-                map[t.user_id]?.username||
-                t.user_id
-              )}
-            </td>
-
-            <td
-              style="color:${
-                Number(t.amount)>=0
-                ?'#087443'
-                :'#b42318'
-              }"
-            >
-              <b>
-                ${
-                  Number(t.amount)>=0
-                  ?'+'
-                  :''
-                }${money(t.amount)}
-              </b>
-            </td>
-
-            <td>
-              ${money(t.balance_after)}
-            </td>
-
-            <td>
-              ${esc(t.type)}
-            </td>
-
-            <td>
-              ${esc(t.note)}
-            </td>
-
-            <td>
-              ${new Date(
-                t.created_at
-              ).toLocaleString('vi-VN')}
-            </td>
-
-          </tr>`
-
-        ).join('')+
-
-      '</table>'+
-
-    '</div>';
+  document.getElementById('transactions').innerHTML='<h2>💰 Lịch sử biến động số dư</h2><div class="table-wrap"><table class="table"><tr><th>Khách</th><th>Biến động</th><th>Số dư sau</th><th>Loại</th><th>Ghi chú</th><th>Thời gian</th></tr>'+ts.map(t=>`<tr><td>${esc(map[t.user_id]?.username||t.user_id)}</td><td class="${Number(t.amount)>=0?'pos':'neg'}"><b class="${Number(t.amount)>=0?'pos':'neg'}">${Number(t.amount)>=0?'+':''}${money(t.amount)}</b></td><td><b class="money">${money(t.balance_after)}</b></td><td>${esc(t.type)}</td><td>${esc(t.note)}</td><td>${new Date(t.created_at).toLocaleString('vi-VN')}</td></tr>`).join('')+'</table></div>';
 }
-
-
-/* =========================================================
-   CANCEL ORDER
-   ========================================================= */
-
 function openCancelConfirm(id,label){
-
+  if(cancelBusy)return;
   pendingCancelId=id;
-
-  document.getElementById(
-    'cancelConfirmText'
-  ).textContent=
-    'Bạn có chắc muốn hủy đơn: '+label+'?';
-
-  document
-    .getElementById('cancelConfirm')
-    .classList.add('show');
+  document.getElementById('cancelConfirmText').textContent='Bạn có chắc muốn hủy đơn: '+label+'?';
+  document.getElementById('cancelConfirm').classList.add('show');
+  document.getElementById('confirmCancelBtn').disabled=false;
+  document.getElementById('confirmCancelBtn').textContent='Xác nhận hủy + hoàn tiền';
 }
-
 function closeCancelConfirm(){
-
+  if(cancelBusy)return;
   pendingCancelId=null;
-
-  document
-    .getElementById('cancelConfirm')
-    .classList.remove('show');
+  document.getElementById('cancelConfirm').classList.remove('show');
 }
-
 async function confirmCancelOrder(){
-
-  if(!pendingCancelId)return;
-
+  if(cancelBusy||!pendingCancelId)return;
+  cancelBusy=true;
   const id=pendingCancelId;
-
+  const btn=document.getElementById('confirmCancelBtn');
+  const closeBtn=document.querySelector('.cancel-confirm');
+  btn.disabled=true;closeBtn.disabled=true;btn.textContent='⏳ Đang hủy...';
   try{
-
-    await rpc(
-      'admin_set_order_status',
-      {
-        p_order_id:id,
-        p_status:'cancelled'
-      }
-    );
-
-    closeCancelConfirm();
-
+    await rpc('admin_set_order_status',{p_order_id:id,p_status:'cancelled'});
+    pendingCancelId=null;
+    document.getElementById('cancelConfirm').classList.remove('show');
     await loadAll();
-
-    alert(
-      '✅ Đã hủy đơn và hoàn tiền cho khách (nếu đơn đã được trừ tiền).'
-    );
-
+    alert('✅ Đã hủy đơn và hoàn tiền cho khách (nếu đơn đã được trừ tiền).');
   }catch(e){
-
-    alert(
-      'Không thể hủy đơn: '+e.message
-    );
-
+    alert('Không thể hủy đơn: '+e.message);
+  }finally{
+    cancelBusy=false;btn.disabled=false;closeBtn.disabled=false;btn.textContent='Xác nhận hủy + hoàn tiền';
   }
 }
-
-
-/* =========================================================
-   BALANCE
-   ========================================================= */
-
 async function adjust(id,sign){
-
-  const raw=prompt(
-    'Nhập số tiền '+
-    (sign>0?'cộng':'trừ')+
-    ':'
-  );
-
+  const raw=prompt('Nhập số tiền '+(sign>0?'cộng':'trừ')+':');
   const n=Number(raw);
-
-  if(!Number.isInteger(n)||n<=0)
-    return alert('Số tiền không hợp lệ');
-
+  if(!Number.isInteger(n)||n<=0)return alert('Số tiền không hợp lệ');
   try{
-
-    await rpc(
-      'admin_adjust_balance',
-      {
-        p_user_id:id,
-        p_amount:n*sign,
-        p_note:'Manager điều chỉnh số dư'
-      }
-    );
-
+    await rpc('admin_adjust_balance',{p_user_id:id,p_amount:n*sign,p_note:'Manager điều chỉnh số dư'});
     loadAll();
-
-  }catch(e){
-
-    alert(e.message);
-
-  }
+  }catch(e){alert(e.message)}
 }
-
 async function setBalance(id){
-
-  const users=await api(
-    'profiles?select=balance&id=eq.'+id
-  );
-
-  const current=
-    Number(users[0]?.balance||0);
-
-  const target=
-    Number(
-      prompt(
-        'Nhập số dư mới:',
-        current
-      )
-    );
-
-  if(!Number.isInteger(target)||target<0)
-    return alert('Số dư không hợp lệ');
-
+  const users=await api('profiles?select=balance&id=eq.'+id);
+  const current=Number(users[0]?.balance||0);
+  const raw=prompt('Nhập số dư mới:',current);
+  if(raw===null)return;
+  const target=Number(raw);
+  if(!Number.isInteger(target)||target<0)return alert('Số dư không hợp lệ');
   try{
-
-    await rpc(
-      'admin_adjust_balance',
-      {
-        p_user_id:id,
-        p_amount:target-current,
-        p_note:'Manager đặt lại số dư'
-      }
-    );
-
+    await rpc('admin_adjust_balance',{p_user_id:id,p_amount:target-current,p_note:'Manager đặt lại số dư'});
     loadAll();
-
-  }catch(e){
-
-    alert(e.message);
-
-  }
+  }catch(e){alert(e.message)}
 }
-
-
-/* =========================================================
-   REVIEW DEPOSIT
-   ========================================================= */
-
 async function reviewDeposit(id,approve){
-
   let reason=null;
-
-  if(!approve)
-    reason=
-      prompt('Lý do từ chối:')||
-      'Thẻ không hợp lệ';
-
-  if(
-    !confirm(
-      approve
-      ?
-      'Duyệt thẻ và cộng tiền cho khách?'
-      :
-      'Từ chối thẻ này?'
-    )
-  )
-    return;
-
+  if(!approve)reason=prompt('Lý do từ chối:')||'Thẻ không hợp lệ';
+  if(!confirm(approve?'Duyệt thẻ và cộng tiền cho khách?':'Từ chối thẻ này?'))return;
   try{
-
-    await rpc(
-      'admin_review_deposit',
-      {
-        p_deposit_id:id,
-        p_approve:approve,
-        p_reason:reason
-      }
-    );
-
+    await rpc('admin_review_deposit',{p_deposit_id:id,p_approve:approve,p_reason:reason});
     loadAll();
-
-  }catch(e){
-
-    alert(e.message);
-
-  }
+  }catch(e){alert(e.message)}
 }
-
-
-/* =========================================================
-   ORDER STATUS
-   ========================================================= */
-
 async function orderStatus(id,status){
-
   try{
-
-    await rpc(
-      'admin_set_order_status',
-      {
-        p_order_id:id,
-        p_status:status
-      }
-    );
-
+    await rpc('admin_set_order_status',{p_order_id:id,p_status:status});
     loadAll();
-
-  }catch(e){
-
-    alert(e.message);
-
-  }
+  }catch(e){alert(e.message)}
 }
-
 init();
-
 </script>
 </body>
 </html>
