@@ -120,6 +120,19 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;back
 .search-input{width:100%;margin:0 0 14px;padding:13px 16px;border-radius:13px;border:1px solid var(--line2);background:rgba(5,6,10,.75);color:var(--text);font-size:15px;outline:none;transition:.16s}
 .search-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(34,211,238,.16)}
 .secret.order-code{white-space:nowrap;word-break:normal;font-weight:800;letter-spacing:.5px}
+.svc-card{padding:18px;margin:0 0 20px;border-radius:16px;background:rgba(6,7,12,.55);border:1px solid var(--line)}
+.svc-card h3{margin:0 0 12px;color:var(--gold);font-size:16px}
+.svc-form{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;align-items:end}
+.svc-form label{display:block;margin:0 0 5px;color:var(--muted);font-size:12px;font-weight:800}
+.svc-form .full-row{grid-column:1/-1}
+.svc-hint{margin:10px 0 0;color:var(--muted);font-size:12.5px;line-height:1.6}
+.avatar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.avatar-item{padding:10px;border-radius:14px;background:rgba(6,7,12,.5);border:1px solid var(--line);text-align:center}
+.avatar-item img{width:100%;height:80px;object-fit:cover;border-radius:10px;margin-bottom:8px;background:#111}
+.avatar-item .name{font-size:12px;color:var(--text);font-weight:800;margin-bottom:8px;min-height:32px;display:flex;align-items:center;justify-content:center;text-align:center}
+.avatar-item input[type=file]{display:none}
+.avatar-item .up-btn{display:block;width:100%;padding:8px;border-radius:9px;border:1px solid var(--line2);background:var(--panel2);color:var(--text);font-size:12px;font-weight:800;cursor:pointer}
+.b-hardcoded{--c:96,165,250}.b-custom{--c:167,139,250}
 </style>
 </head>
 <body>
@@ -176,8 +189,8 @@ function showLogin(msg=''){root.innerHTML='<div class="login"><h2>🔐 ShopZiCiC
 async function login(){try{const r=await fetch(SUPABASE_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:em.value,password:pw.value})});const d=await r.json();if(!r.ok)throw Error(d.error_description||'Đăng nhập thất bại');token=d.access_token;localStorage.setItem('shopzicl_access_token',token);if(d.refresh_token)localStorage.setItem('shopzicl_refresh_token',d.refresh_token);init()}catch(e){alert(e.message)}}
 function showDenied(){root.innerHTML='<div class="login"><h2>⛔ Không có quyền</h2><p>Tài khoản này chưa được cấp quyền Admin.</p><button onclick="logout()">ĐĂNG XUẤT</button></div>'}
 async function logout(){token=null;localStorage.removeItem('shopzicl_access_token');localStorage.removeItem('shopzicl_refresh_token');location.reload()}
-function render(){root.innerHTML=`<header class="top"><h1>🛠️ ShopZiCiCRBLX — Admin</h1><div class="top-right"><div class="user-chip"><i>${esc((profile.username||'A').charAt(0).toUpperCase())}</i><span>${esc(profile.username)}</span></div><button class="logout" onclick="logout()">Đăng xuất</button></div></header><main class="wrap"><div class="stats"><div class="stat s-cyan">👥 Khách hàng<b id="sUsers">...</b></div><div class="stat s-violet">📦 Đơn hàng<b id="sOrders">...</b></div><div class="stat s-green">💳 Thẻ chờ duyệt<b id="sDeposits">...</b></div><div class="stat s-gold">💰 Tổng số dư<b id="sBalance">...</b></div></div><div class="tabs"><button class="active" onclick="tab('users',this)">👥 Khách hàng</button><button onclick="tab('deposits',this)">💳 Duyệt thẻ</button><button onclick="tab('orders',this)">📦 Đơn hàng</button><button onclick="tab('transactions',this)">💰 Lịch sử tiền</button><button onclick="tab('topnap',this)">🏆 Top nạp</button><button onclick="tab('accstock',this)">🗃️ Kho acc</button><button onclick="tab('chat',this)">💬 Chat khách</button></div><section id="users" class="panel active"></section><section id="deposits" class="panel"></section><section id="orders" class="panel"></section><section id="transactions" class="panel"></section><section id="topnap" class="panel"></section><section id="accstock" class="panel"></section><section id="chat" class="panel"><div id="adminChat"></div></section></main>`;loadAll();startAdminChatRealtime()}
-function tab(id,b){document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');b.classList.add('active');if(id==='chat'){renderChatShell();startAdminChatRealtime()}}
+function render(){root.innerHTML=`<header class="top"><h1>🛠️ ShopZiCiCRBLX — Admin</h1><div class="top-right"><div class="user-chip"><i>${esc((profile.username||'A').charAt(0).toUpperCase())}</i><span>${esc(profile.username)}</span></div><button class="logout" onclick="logout()">Đăng xuất</button></div></header><main class="wrap"><div class="stats"><div class="stat s-cyan">👥 Khách hàng<b id="sUsers">...</b></div><div class="stat s-violet">📦 Đơn hàng<b id="sOrders">...</b></div><div class="stat s-green">💳 Thẻ chờ duyệt<b id="sDeposits">...</b></div><div class="stat s-gold">💰 Tổng số dư<b id="sBalance">...</b></div></div><div class="tabs"><button class="active" onclick="tab('users',this)">👥 Khách hàng</button><button onclick="tab('deposits',this)">💳 Duyệt thẻ</button><button onclick="tab('orders',this)">📦 Đơn hàng</button><button onclick="tab('transactions',this)">💰 Lịch sử tiền</button><button onclick="tab('topnap',this)">🏆 Top nạp</button><button onclick="tab('accstock',this)">🗃️ Kho acc</button><button onclick="tab('chat',this)">💬 Chat khách</button><button onclick="tab('services',this)">🧰 Dịch vụ &amp; Giá</button></div><section id="users" class="panel active"></section><section id="deposits" class="panel"></section><section id="orders" class="panel"></section><section id="transactions" class="panel"></section><section id="topnap" class="panel"></section><section id="accstock" class="panel"></section><section id="chat" class="panel"><div id="adminChat"></div></section><section id="services" class="panel"></section></main>`;loadAll();startAdminChatRealtime()}
+function tab(id,b){document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');b.classList.add('active');if(id==='chat'){renderChatShell();startAdminChatRealtime()}if(id==='services')loadServiceMgmt()}
 
 let chatUserId=null,chatChannel=null,adminChatSending=false;
 let chatStatusOn=true,adminChatTimer=null,adminChatTick=0,adminChatSig='',chatForceBottom=false;
@@ -282,6 +295,134 @@ async function toggleTopHidden(id){const u=userById(id);if(!u)return;const o=ove
 async function resetTop(id){if(!confirm('Đặt lại về số nạp thật và hiện khách này trong TOP?'))return;try{await rpc('admin_clear_top_override',{p_user_id:id});loadAll()}catch(e){alert(e.message)}}
 function renderAccStock(){const el=document.getElementById('accstock');if(!el)return;el.innerHTML='<h2>🗃️ Kho acc</h2><div class="notice">Số acc còn lại hiển thị trên web shop. Khi khách đặt đơn acc thì tự trừ 1, khi bạn bấm Hủy + hoàn tiền thì tự cộng lại 1. Nhập acc mới thì bấm Sửa để đặt lại số lượng.</div><div class="table-wrap"><table class="table"><tr><th>Dịch vụ</th><th>Số acc còn lại</th><th>Thao tác</th></tr>'+(accStockRows.length?accStockRows.map((x,i)=>`<tr><td><b>${esc(x.service_name)}</b></td><td><b class="money">${Number(x.stock)}</b></td><td><button class="btn blue" onclick="editAccStock(${i})">✏️ Sửa số acc</button></td></tr>`).join(''):'<tr><td colspan="3" class="empty">Chưa có dữ liệu kho. Hãy chạy file SQL kho acc trong Supabase.</td></tr>')+'</table></div>'}
 async function editAccStock(i){const x=accStockRows[i];if(!x)return;const raw=prompt('Nhập số acc còn lại cho "'+x.service_name+'":',x.stock);if(raw===null)return;const n=Number(raw.trim());if(!Number.isInteger(n)||n<0)return alert('Số acc không hợp lệ');try{await rpc('admin_set_acc_stock',{p_service:x.service_name,p_stock:n});loadAll()}catch(e){alert(e.message)}}
+
+let svcCatalog=null,svcAvatars={},svcCatalogLoaded=false,svcRowsCache=[],svcBusy=false;
+function svcExtractObject(text,marker){const i=text.indexOf(marker);if(i<0)return null;const start=text.indexOf('{',i);if(start<0)return null;let depth=0,j=start;for(;j<text.length;j++){if(text[j]==='{')depth++;else if(text[j]==='}'){depth--;if(depth===0){j++;break}}}return depth===0?text.slice(start,j):null}
+async function loadHardcodedCatalog(){
+ try{
+  const r=await fetch('./index.html',{cache:'no-store'});
+  const html=await r.text();
+  const catSrc=svcExtractObject(html,'const catalog=');
+  svcCatalog=catSrc?new Function('return '+catSrc)():{};
+  const names=[...html.matchAll(/const ([A-Z0-9_]+_IMG)='(data:image\/[a-z+]+;base64,[A-Za-z0-9+\/=]+)'/g)];
+  const avSrc=svcExtractObject(html,'const serviceAvatars=');
+  if(avSrc){
+   const argNames=names.map(m=>m[1]);
+   const argVals=names.map(m=>m[2]);
+   svcAvatars=new Function(...argNames,'return '+avSrc)(...argVals);
+  }else svcAvatars={};
+ }catch(e){console.error('Không đọc được dịch vụ có sẵn:',e);svcCatalog={};svcAvatars={}}
+}
+async function resizeImageFile(file,maxW=480,quality=.75){
+ return new Promise((res,rej)=>{
+  if(!file.type.startsWith('image/'))return rej(Error('Vui lòng chọn một file ảnh'));
+  if(file.size>10*1024*1024)return rej(Error('Ảnh quá lớn, chọn ảnh dưới 10MB'));
+  const url=URL.createObjectURL(file);
+  const img=new Image();
+  img.onload=()=>{let w=img.width,h=img.height;if(w>maxW){h=Math.round(h*maxW/w);w=maxW}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(url);res(c.toDataURL('image/webp',quality))};
+  img.onerror=()=>{URL.revokeObjectURL(url);rej(Error('Không đọc được ảnh'))};
+  img.src=url;
+ });
+}
+async function loadServiceMgmt(){
+ if(!svcCatalogLoaded){await loadHardcodedCatalog();svcCatalogLoaded=true}
+ try{
+  const [customPkgs,customAvs,overrides]=await Promise.all([
+   api('shop_custom_packages?select=service_name,package_name,price&order=service_name.asc').catch(()=>[]),
+   api('shop_custom_avatars?select=service_name,avatar_data').catch(()=>[]),
+   api('service_prices?select=service_name,package_name,price').catch(()=>[])
+  ]);
+  const ovMap=new Map((overrides||[]).map(o=>[o.service_name+'|||'+o.package_name,Number(o.price)]));
+  const avMap=new Map((customAvs||[]).map(a=>[a.service_name,a.avatar_data]));
+  const rows=[];
+  const allNames=new Set([...Object.keys(svcCatalog||{}),...(customPkgs||[]).map(p=>p.service_name)]);
+  [...allNames].sort((a,b)=>a.localeCompare(b,'vi')).forEach(svc=>{
+   (svcCatalog[svc]||[]).forEach(([pkg,price])=>{
+    const key=svc+'|||'+pkg;
+    rows.push({service:svc,package:pkg,price:ovMap.has(key)?ovMap.get(key):Number(price),origin:'hardcoded'});
+   });
+   (customPkgs||[]).filter(p=>p.service_name===svc).forEach(p=>{
+    rows.push({service:svc,package:p.package_name,price:Number(p.price),origin:'custom'});
+   });
+  });
+  svcRowsCache=rows;
+  renderServiceMgmt([...allNames].sort((a,b)=>a.localeCompare(b,'vi')),avMap);
+ }catch(e){document.getElementById('services').innerHTML='<div class="notice">Không tải được: '+esc(e.message)+'</div>'}
+}
+function renderServiceMgmt(names,avMap){
+ const el=document.getElementById('services');if(!el)return;
+ const options=names.map(n=>'<option value="'+esc(n)+'">').join('');
+ const avatarGrid=names.map(svc=>{
+  const src=avMap.get(svc)||svcAvatars[svc]||'';
+  return '<div class="avatar-item">'+(src?'<img src="'+src+'">':'<div style="height:80px;border-radius:10px;background:#1a1c22;margin-bottom:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px">Chưa có ảnh</div>')+'<div class="name">'+esc(svc)+'</div><label class="up-btn">📤 Đổi ảnh<input type="file" accept="image/*" onchange="uploadAvatar(this,'+JSON.stringify(svc)+')"></label></div>';
+ }).join('');
+ el.innerHTML='<h2>🧰 Dịch vụ &amp; Giá</h2>'+
+  '<div class="svc-card"><h3>➕ Thêm dịch vụ / gói mới</h3><div class="svc-form">'+
+   '<div><label>Tên dịch vụ (chọn có sẵn hoặc gõ tên mới)</label><input id="svcNewService" class="search-input" list="svcServiceList" placeholder="Ví dụ: Acc Blox Fruits (Quốc Tế)"><datalist id="svcServiceList">'+options+'</datalist></div>'+
+   '<div><label>Tên gói</label><input id="svcNewPackage" class="search-input" placeholder="Ví dụ: Level Max"></div>'+
+   '<div><label>Giá (đ)</label><input id="svcNewPrice" class="search-input" type="number" min="1" step="1000" placeholder="30000"></div>'+
+   '<div><button class="btn green" style="width:100%;padding:13px" onclick="addNewPackage()">➕ Thêm</button></div>'+
+   '<div class="full-row"><label>Ảnh đại diện (chỉ cần khi tạo dịch vụ hoàn toàn mới)</label><input id="svcNewAvatar" type="file" accept="image/*"></div>'+
+  '</div><div class="svc-hint">Nếu tên dịch vụ đã có sẵn, hệ thống sẽ thêm gói mới vào đúng dịch vụ đó. Nếu là tên hoàn toàn mới, một dịch vụ mới sẽ xuất hiện trên web shop kèm ảnh bạn chọn (nếu có).</div></div>'+
+  '<div class="svc-card"><h3>🖼️ Ảnh đại diện dịch vụ</h3><div class="avatar-grid">'+avatarGrid+'</div></div>'+
+  '<div class="svc-card"><h3>💰 Toàn bộ giá dịch vụ</h3><div class="table-wrap"><table class="table"><tr><th>Dịch vụ</th><th>Gói</th><th>Giá</th><th>Nguồn</th><th>Thao tác</th></tr>'+
+   svcRowsCache.map((r,i)=>`<tr><td>${esc(r.service)}</td><td>${esc(r.package)}</td><td><b class="money">${money(r.price)}</b></td><td><span class="badge b-${r.origin}">${r.origin==='custom'?'Tuỳ chỉnh':'Có sẵn'}</span></td><td><button class="btn blue" onclick="editServicePrice(${i})">✏️ Sửa giá</button>${r.origin==='custom'?`<button class="btn red" onclick="deleteCustomPackage(${i})">🗑️ Xoá</button>`:''}</td></tr>`).join('')+
+  '</table></div></div>';
+}
+async function addNewPackage(){
+ if(svcBusy)return;
+ const service=document.getElementById('svcNewService').value.trim();
+ const pkg=document.getElementById('svcNewPackage').value.trim();
+ const price=Number(document.getElementById('svcNewPrice').value);
+ const fileInput=document.getElementById('svcNewAvatar');
+ if(!service||!pkg)return alert('Nhập đầy đủ tên dịch vụ và tên gói');
+ if(!Number.isFinite(price)||price<=0)return alert('Giá không hợp lệ');
+ svcBusy=true;
+ try{
+  const isNewPkg=!(svcCatalog[service]||[]).some(x=>x[0]===pkg)&&!svcRowsCache.some(r=>r.service===service&&r.package===pkg&&r.origin==='custom');
+  await rpc('admin_set_service_price',{p_service:service,p_package:pkg,p_price:price,p_new:isNewPkg});
+  if(fileInput.files&&fileInput.files[0]){
+   const data=await resizeImageFile(fileInput.files[0]);
+   await rpc('admin_set_avatar',{p_service:service,p_avatar:data});
+  }
+  document.getElementById('svcNewService').value='';
+  document.getElementById('svcNewPackage').value='';
+  document.getElementById('svcNewPrice').value='';
+  fileInput.value='';
+  await loadServiceMgmt();
+  alert('✅ Đã lưu.');
+ }catch(e){alert('Không lưu được: '+e.message)}finally{svcBusy=false}
+}
+async function uploadAvatar(input,service){
+ if(svcBusy||!input.files||!input.files[0])return;
+ svcBusy=true;
+ try{
+  const data=await resizeImageFile(input.files[0]);
+  await rpc('admin_set_avatar',{p_service:service,p_avatar:data});
+  await loadServiceMgmt();
+ }catch(e){alert('Không đổi được ảnh: '+e.message)}finally{svcBusy=false;input.value=''}
+}
+async function editServicePrice(i){
+ const r=svcRowsCache[i];if(!r||svcBusy)return;
+ const raw=prompt('Nhập giá mới cho "'+r.package+'" ('+r.service+'):',r.price);
+ if(raw===null)return;
+ const price=Number(raw);
+ if(!Number.isFinite(price)||price<=0)return alert('Giá không hợp lệ');
+ svcBusy=true;
+ try{
+  await rpc('admin_set_service_price',{p_service:r.service,p_package:r.package,p_price:price,p_new:r.origin==='custom'});
+  await loadServiceMgmt();
+ }catch(e){alert('Không lưu được: '+e.message)}finally{svcBusy=false}
+}
+async function deleteCustomPackage(i){
+ const r=svcRowsCache[i];if(!r||r.origin!=='custom'||svcBusy)return;
+ if(!confirm('Xoá gói "'+r.package+'" của dịch vụ "'+r.service+'"? Gói này sẽ không còn hiển thị trên web shop.'))return;
+ svcBusy=true;
+ try{
+  await rpc('admin_delete_custom_package',{p_service:r.service,p_package:r.package});
+  await loadServiceMgmt();
+ }catch(e){alert('Không xoá được: '+e.message)}finally{svcBusy=false}
+}
 init();
 </script>
 </body>
