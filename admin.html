@@ -296,7 +296,8 @@ async function resetTop(id){if(!confirm('Đặt lại về số nạp thật và
 function renderAccStock(){const el=document.getElementById('accstock');if(!el)return;el.innerHTML='<h2>🗃️ Kho acc</h2><div class="notice">Số acc còn lại hiển thị trên web shop. Khi khách đặt đơn acc thì tự trừ 1, khi bạn bấm Hủy + hoàn tiền thì tự cộng lại 1. Nhập acc mới thì bấm Sửa để đặt lại số lượng.</div><div class="table-wrap"><table class="table"><tr><th>Dịch vụ</th><th>Số acc còn lại</th><th>Thao tác</th></tr>'+(accStockRows.length?accStockRows.map((x,i)=>`<tr><td><b>${esc(x.service_name)}</b></td><td><b class="money">${Number(x.stock)}</b></td><td><button class="btn blue" onclick="editAccStock(${i})">✏️ Sửa số acc</button></td></tr>`).join(''):'<tr><td colspan="3" class="empty">Chưa có dữ liệu kho. Hãy chạy file SQL kho acc trong Supabase.</td></tr>')+'</table></div>'}
 async function editAccStock(i){const x=accStockRows[i];if(!x)return;const raw=prompt('Nhập số acc còn lại cho "'+x.service_name+'":',x.stock);if(raw===null)return;const n=Number(raw.trim());if(!Number.isInteger(n)||n<0)return alert('Số acc không hợp lệ');try{await rpc('admin_set_acc_stock',{p_service:x.service_name,p_stock:n});loadAll()}catch(e){alert(e.message)}}
 
-let svcCatalog=null,svcAvatars={},svcCatalogLoaded=false,svcRowsCache=[],svcBusy=false;
+let svcCatalog=null,svcAvatars={},svcCatalogLoaded=false,svcRowsCache=[],svcBusy=false,svcHidden=new Set();
+function jsStr(s){return "'"+String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+"'"}
 function svcExtractObject(text,marker){const i=text.indexOf(marker);if(i<0)return null;const start=text.indexOf('{',i);if(start<0)return null;let depth=0,j=start;for(;j<text.length;j++){if(text[j]==='{')depth++;else if(text[j]==='}'){depth--;if(depth===0){j++;break}}}return depth===0?text.slice(start,j):null}
 async function loadHardcodedCatalog(){
  try{
@@ -327,11 +328,13 @@ async function resizeImageFile(file,maxW=480,quality=.75){
 async function loadServiceMgmt(){
  if(!svcCatalogLoaded){await loadHardcodedCatalog();svcCatalogLoaded=true}
  try{
-  const [customPkgs,customAvs,overrides]=await Promise.all([
+  const [customPkgs,customAvs,overrides,hiddenRows]=await Promise.all([
    api('shop_custom_packages?select=service_name,package_name,price&order=service_name.asc').catch(()=>[]),
    api('shop_custom_avatars?select=service_name,avatar_data').catch(()=>[]),
-   api('service_prices?select=service_name,package_name,price').catch(()=>[])
+   api('service_prices?select=service_name,package_name,price').catch(()=>[]),
+   api('shop_hidden_services?select=service_name').catch(()=>[])
   ]);
+  svcHidden=new Set((hiddenRows||[]).map(x=>x.service_name));
   const ovMap=new Map((overrides||[]).map(o=>[o.service_name+'|||'+o.package_name,Number(o.price)]));
   const avMap=new Map((customAvs||[]).map(a=>[a.service_name,a.avatar_data]));
   const rows=[];
@@ -354,7 +357,14 @@ function renderServiceMgmt(names,avMap){
  const options=names.map(n=>'<option value="'+esc(n)+'">').join('');
  const avatarGrid=names.map(svc=>{
   const src=avMap.get(svc)||svcAvatars[svc]||'';
-  return '<div class="avatar-item">'+(src?'<img src="'+src+'">':'<div style="height:80px;border-radius:10px;background:#1a1c22;margin-bottom:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px">Chưa có ảnh</div>')+'<div class="name">'+esc(svc)+'</div><label class="up-btn">📤 Đổi ảnh<input type="file" accept="image/*" onchange="uploadAvatar(this,'+JSON.stringify(svc)+')"></label></div>';
+  const hasHard=!!(svcCatalog[svc]&&svcCatalog[svc].length);
+  const isHidden=svcHidden.has(svc);
+  const delBtn=hasHard
+   ?(isHidden
+     ?'<button class="up-btn" style="margin-top:6px;color:var(--emerald);border-color:rgba(52,211,153,.4)" onclick="unhideService('+jsStr(svc)+')">👁️ Hiện lại</button>'
+     :'<button class="up-btn" style="margin-top:6px;color:var(--rose);border-color:rgba(251,113,133,.4)" onclick="hideService('+jsStr(svc)+')">🚫 Ẩn dịch vụ</button>')
+   :'<button class="up-btn" style="margin-top:6px;color:var(--rose);border-color:rgba(251,113,133,.4)" onclick="deleteService('+jsStr(svc)+')">🗑️ Xoá dịch vụ</button>';
+  return '<div class="avatar-item">'+(src?'<img src="'+src+'">':'<div style="height:80px;border-radius:10px;background:#1a1c22;margin-bottom:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px">Chưa có ảnh</div>')+'<div class="name">'+esc(svc)+(isHidden?' <span class="badge b-cancelled">Đang ẩn</span>':'')+'</div><label class="up-btn">📤 Đổi ảnh<input type="file" accept="image/*" onchange="uploadAvatar(this,'+jsStr(svc)+')"></label>'+delBtn+'</div>';
  }).join('');
  el.innerHTML='<h2>🧰 Dịch vụ &amp; Giá</h2>'+
   '<div class="svc-card"><h3>➕ Thêm dịch vụ / gói mới</h3><div class="svc-form">'+
@@ -422,6 +432,27 @@ async function deleteCustomPackage(i){
   await rpc('admin_delete_custom_package',{p_service:r.service,p_package:r.package});
   await loadServiceMgmt();
  }catch(e){alert('Không xoá được: '+e.message)}finally{svcBusy=false}
+}
+
+async function hideService(svc){
+ if(svcBusy)return;
+ if(!confirm('Ẩn dịch vụ "'+svc+'" khỏi web shop? Dịch vụ này có sẵn trong code nên không xoá vĩnh viễn được, chỉ ẩn đi. Bấm "Hiện lại" bất cứ lúc nào để hiện lại.'))return;
+ svcBusy=true;
+ try{await rpc('admin_hide_service',{p_service:svc});await loadServiceMgmt()}
+ catch(e){alert('Không ẩn được: '+e.message)}finally{svcBusy=false}
+}
+async function unhideService(svc){
+ if(svcBusy)return;
+ svcBusy=true;
+ try{await rpc('admin_unhide_service',{p_service:svc});await loadServiceMgmt()}
+ catch(e){alert('Không hiện lại được: '+e.message)}finally{svcBusy=false}
+}
+async function deleteService(svc){
+ if(svcBusy)return;
+ if(!confirm('Xoá vĩnh viễn dịch vụ "'+svc+'" cùng toàn bộ gói và ảnh của nó? Không thể khôi phục.'))return;
+ svcBusy=true;
+ try{await rpc('admin_delete_custom_service',{p_service:svc});await loadServiceMgmt()}
+ catch(e){alert('Không xoá được: '+e.message)}finally{svcBusy=false}
 }
 init();
 </script>
