@@ -22,16 +22,8 @@ async function loadImageData(path){
 }
 
 function loadExtraServices(){
-  if(window.__gamepassVvbfLoaded)return;
-  window.__gamepassVvbfLoaded=true;
-  const s=document.createElement('script');
-  s.src='services-gamepass-vvbf.js?v=2';
-  s.async=false;
-  s.onload=()=>{try{if(typeof window.addGamepassVvbfServices==='function')window.addGamepassVvbfServices();}catch(e){console.warn('Extra services:',e)}};
-  s.onerror=()=>{console.warn('Không tải được services-gamepass-vvbf.js')};
-  (document.head||document.documentElement).appendChild(s);
+  return;
 }
-
 async function applyServiceImages(){
   const grid=document.getElementById('serviceGrid');
   if(!grid)return;
