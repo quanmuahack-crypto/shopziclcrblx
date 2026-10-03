@@ -270,8 +270,35 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:13px;text-align:center}
 .pay-note{margin:0 0 16px;padding:12px 14px;border-radius:12px;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.3);color:#cff8fe;font-size:13.5px;text-align:left;line-height:1.6}
 .pay-note.warn{background:rgba(248,113,113,.08);border-color:rgba(248,113,113,.35);color:#fecaca}
 .pay-actions{display:flex;flex-direction:column;gap:8px}
-.wl-hours{margin:0 0 18px;padding:12px 14px;border-radius:12px;background:var(--bg2);border:1px solid var(--line);color:#d5d8e0}
-.wl-hours b{color:var(--cyan-2)}
+.wl{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(3,6,12,.62);backdrop-filter:blur(16px) saturate(120%);-webkit-backdrop-filter:blur(16px) saturate(120%)}
+.wl.show{display:flex;animation:wlFade .35s ease}
+.wl.hide{animation:wlFadeOut .3s ease forwards}
+.wl-card{position:relative;width:min(460px,100%);max-height:94vh;overflow:auto;border-radius:24px;background:linear-gradient(180deg,#0f1828,#0a101c);border:1px solid rgba(103,232,249,.28);box-shadow:0 0 0 1px rgba(255,255,255,.03) inset,0 40px 120px rgba(0,0,0,.75),0 0 80px -20px rgba(34,211,238,.45);animation:wlIn .55s cubic-bezier(.2,.9,.25,1)}
+.wl.hide .wl-card{animation:wlOut .3s ease forwards}
+.wl-media{position:relative;aspect-ratio:3/2;max-height:210px;width:100%;overflow:hidden;background:var(--bg2)}
+.wl-media img{display:block;width:100%;height:100%;object-fit:cover}
+.wl-media:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,16,28,0) 35%,#0d1626 100%)}
+.wl-body{position:relative;padding:0 28px 28px;margin-top:-34px;text-align:center}
+.wl-logo{width:64px;height:64px;margin:0 auto 14px;border-radius:18px;display:grid;place-items:center;font-size:34px;color:var(--cyan-2);background:#0b1422;border:2px solid var(--cyan);box-shadow:0 0 0 6px rgba(13,22,38,.9),0 0 28px rgba(34,211,238,.55)}
+.wl-kicker{margin:0 0 6px;color:var(--cyan);font-size:13px;font-weight:600}
+.wl-title{margin:0 0 12px;font-family:var(--display);font-size:30px;line-height:1.15;color:#fff;letter-spacing:.3px}
+.wl-sub{margin:0 auto 18px;max-width:34ch;color:#aab7cc;font-size:14.5px;line-height:1.65}
+.wl-feats{list-style:none;margin:0 0 18px;padding:0;display:flex;justify-content:center;flex-wrap:wrap;gap:8px}
+.wl-feats li{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:999px;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.28);color:#d6f8fe;font-size:13px;font-weight:600}
+.wl-feats svg{color:var(--cyan)}
+.wl-hours{display:flex;align-items:center;gap:10px;margin:0 0 20px;padding:12px 16px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);text-align:left;font-size:14px;color:var(--muted)}
+.wl-hours svg{font-size:18px;color:var(--cyan)}
+.wl-hours b{margin-left:auto;color:#fff;font-weight:700}
+.wl-ok{position:relative;overflow:hidden;width:100%;height:54px;border:0;border-radius:14px;background:linear-gradient(135deg,#22d3ee,#67e8f9);color:var(--cyan-ink);font-family:var(--display);font-size:19px;letter-spacing:.5px;box-shadow:0 14px 34px -10px rgba(34,211,238,.7);transition:transform .15s,box-shadow .15s}
+.wl-ok:hover{transform:translateY(-2px);box-shadow:0 18px 40px -10px rgba(34,211,238,.85)}
+.wl-ok:after{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);animation:wlShine 2.8s ease-in-out 1s infinite}
+body.wl-lock{overflow:hidden}
+@keyframes wlFade{from{opacity:0}to{opacity:1}}
+@keyframes wlFadeOut{to{opacity:0}}
+@keyframes wlIn{from{opacity:0;transform:translateY(18px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes wlOut{to{opacity:0;transform:scale(.96)}}
+@keyframes wlShine{0%{left:-60%}45%,100%{left:130%}}
+@media(max-width:480px){.wl-body{padding:0 20px 22px}.wl-title{font-size:25px}.wl-hours{flex-wrap:wrap}.wl-hours b{margin-left:0;width:100%}}
 @media(min-width:1180px){.hero-row{flex-wrap:nowrap}.top-banner{flex:0 0 auto;width:auto;height:465px;aspect-ratio:3/2}.side-panel{flex:1 1 340px}}
 @media(max-width:1180px){.grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:1020px){.top-in{flex-wrap:wrap}.search{order:3;flex:1 1 100%}.actions{margin-left:auto}}
@@ -399,12 +426,7 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:13px;text-align:center}
 <div class="pay-actions"><a class="btn btn-cyan full" href="chat-admin.html" title="Chat Admin">Mở chat admin</a><button class="btn btn-ghost full" onclick="closePay();openOrders()">Xem đơn đã đặt</button><button class="btn btn-ghost full" onclick="closePay()">Đóng</button></div>
 </div></div></div>
 
-<div id="welcomeModal" class="modal show" onclick="if(event.target===this)closeWelcome()"><div class="box"><button class="close" onclick="closeWelcome()" aria-label="Đóng"><svg><use href="#i-x"/></svg></button><div class="box-pad" style="text-align:center">
-<span class="brand-ico" style="margin:6px auto 16px"><svg><use href="#i-pad"/></svg></span>
-<h2>Chào mừng đến với ShopZiCiCRBLX</h2><p class="sub">Cày Thuê Blox Fruits — uy tín, nhanh chóng, giá tốt.</p>
-<div class="wl-hours">Giờ làm việc: <b>5h chiều – 12h tối</b></div>
-<button class="btn btn-cyan full" onclick="closeWelcome()">Bắt đầu mua sắm</button>
-</div></div></div>
+<div id="welcomeModal" class="wl show" role="dialog" aria-modal="true" aria-labelledby="wlTitle"><div class="wl-card"><div class="wl-media"><img id="wlImg" src="" alt=""></div><div class="wl-body"><span class="wl-logo"><svg><use href="#i-pad"/></svg></span><p class="wl-kicker">Shop cày thuê Blox Fruits</p><h2 id="wlTitle" class="wl-title">Chào mừng đến<br>ShopZiCiCRBLX</h2><p class="wl-sub">Lên level, săn trái, farm boss, lấy tộc V4 — đặt đơn trong vài cú bấm, admin xử lý tận tay.</p><ul class="wl-feats"><li><svg><use href="#i-check"/></svg>Uy tín</li><li><svg><use href="#i-check"/></svg>Nhanh chóng</li><li><svg><use href="#i-check"/></svg>An toàn acc</li></ul><div class="wl-hours"><svg><use href="#i-hist"/></svg><span>Giờ làm việc</span><b>17:00 – 24:00 mỗi ngày</b></div><button class="wl-ok" id="wlOk" onclick="closeWelcome()">OK, vào shop</button></div></div></div>
 
 <div id="topupOverlay" class="tp-overlay"><div class="tp-box"><div class="tp-aurora"></div><div class="tp-stars"><span class="tp-dot" style="left:12%;top:14%"></span><span class="tp-dot" style="left:28%;top:8%;animation-delay:.45s"></span><span class="tp-dot" style="left:44%;top:20%;animation-delay:.9s"></span><span class="tp-dot" style="left:8%;top:42%;animation-delay:1.35s"></span><span class="tp-dot" style="left:22%;top:68%;animation-delay:1.8s"></span><span class="tp-dot" style="left:52%;top:12%"></span><span class="tp-dot" style="left:64%;top:30%;animation-delay:.45s"></span><span class="tp-dot" style="left:78%;top:60%;animation-delay:.9s"></span><span class="tp-dot" style="left:90%;top:80%;animation-delay:1.35s"></span><span class="tp-dot" style="left:34%;top:48%;animation-delay:.9s"></span><span class="tp-star" style="left:88%;top:10%;animation-delay:.2s"></span><span class="tp-star" style="left:72%;top:4%;animation-delay:1.6s"></span><span class="tp-star" style="left:96%;top:30%;animation-delay:2.7s"></span></div><div class="tp-content"><div id="tpIcon" class="login-result-icon login-success-icon">✓</div><div id="tpTitle" class="tp-title">Đẩy thẻ lên thành công</div><div id="tpSub" class="tp-sub"></div><div id="tpRef" class="tp-ref" style="display:none"></div><div id="tpLines" class="tp-lines"><div>Tiền thẻ nạp: <b id="tpAmount"></b></div><div>Mã GD: <b id="tpTx"></b></div><div id="tpBalRow" style="display:none">Số dư: <b id="tpBalance" class="tp-gold"></b></div></div><div id="tpWait" class="tp-wait"><div class="tp-bar"><i id="tpBarFill"></i></div><div id="tpCount" class="tp-count"></div><div class="tp-hint">Bạn có thể đóng bảng này. Khi admin duyệt xong, kết quả sẽ tự hiện lại.</div></div><div id="tpNote" class="tp-note" style="display:none"><strong>Lưu ý:</strong> nếu cố tình nạp sai thẻ 2 lần sẽ bị cấm tài khoản vĩnh viễn.</div><button id="tpClose" class="btn btn-ghost full" style="display:none" onclick="closeTopup()">Đóng</button></div></div></div>
 
@@ -528,11 +550,12 @@ async function submitDeposit(){const msg=document.getElementById('depositMsg');i
 
 function maskName(v){v=String(v||'');return v.length<=3?v:v.slice(0,3)+'*'.repeat(Math.min(v.length-3,10))}
 async function loadTopDeposits(){const el=document.getElementById('top5');if(!el)return;try{const r=await fetch(SUPABASE_URL+'/rest/v1/top_deposit_leaderboard?select=username,total_deposited&order=total_deposited.desc&limit=50',{headers:{apikey:SUPABASE_KEY}});const raw=await r.json();if(!r.ok)throw Error(raw?.message||'Không tải được dữ liệu');let ovr=[];try{const o=await fetch(SUPABASE_URL+'/rest/v1/top_nap_overrides?select=username,hidden,display_amount',{headers:{apikey:SUPABASE_KEY}});if(o.ok)ovr=await o.json()}catch(e){}const om=Object.fromEntries(ovr.map(x=>[x.username,x]));const seen=new Set();const merged=raw.filter(x=>!(om[x.username]&&om[x.username].hidden)).map(x=>{seen.add(x.username);const o=om[x.username];return o&&o.display_amount!==null&&o.display_amount!==undefined?{username:x.username,total_deposited:o.display_amount}:x});ovr.forEach(o=>{if(!seen.has(o.username)&&!o.hidden&&o.display_amount!==null&&o.display_amount!==undefined)merged.push({username:o.username,total_deposited:o.display_amount})});const rows=merged.sort((a,b)=>Number(b.total_deposited)-Number(a.total_deposited)).slice(0,5);el.innerHTML=rows.length?rows.map((x,i)=>'<div class="top-list-row"><div class="top-list-rank">'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1))+'</div><div class="top-list-name">'+esc(maskName(x.username))+'</div><div class="top-list-amount">+'+money(x.total_deposited)+'</div></div>').join(''):'<div class="top-list-empty">Chưa có dữ liệu nạp đã duyệt.</div>'}catch(e){el.innerHTML='<div class="msg danger">Không tải được TOP nạp. Tải lại trang để thử lại.</div>';console.error('Top nạp:',e)}}
-function closeWelcome(){document.getElementById('welcomeModal').classList.remove('show')}
+function closeWelcome(){const w=document.getElementById('welcomeModal');if(!w.classList.contains('show')||w.classList.contains('hide'))return;const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;w.classList.add('hide');setTimeout(()=>{w.classList.remove('show','hide');document.body.classList.remove('wl-lock')},reduce?0:300)}
+function openWelcome(){const w=document.getElementById('welcomeModal');const img=document.getElementById('wlImg');if(typeof BANNER_IMG!=='undefined'&&BANNER_IMG)img.src=BANNER_IMG;else w.querySelector('.wl-media').style.display='none';document.body.classList.add('wl-lock');setTimeout(()=>document.getElementById('wlOk').focus(),60)}
 document.addEventListener('click',e=>{if(!e.target.closest('#userBox'))closeMenu()});
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;closeMenu();closeAuth();closeDetail();closeCart();closeCheckout();closeOrders();closePay();closeWelcome()});
 window.addEventListener('storage',e=>{if(e.key===CART_KEY){updateCartBadge();renderCart()}});
-if(typeof BANNER_IMG!=='undefined'&&BANNER_IMG)document.getElementById('bannerImg').src=BANNER_IMG;
+if(typeof BANNER_IMG!=='undefined'&&BANNER_IMG)document.getElementById('bannerImg').src=BANNER_IMG;openWelcome();
 renderServices();renderDepositPicks();updateCartBadge();renderCart();loadManagedPrices();loadAccStock();loadCustomCatalog();loadServiceFields();updateUI();loadTopDeposits();(async()=>{if(accessToken)await loadProfile();resumeTopup()})();
 </script><script src="vng-to-international.js"></script>
 <script src="price-sync.js"></script>
