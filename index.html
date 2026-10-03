@@ -216,6 +216,37 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:13px;text-align:center}
 .note-input{display:block;font-family:var(--body);width:100%;min-height:84px;max-height:220px;padding:12px 14px;resize:vertical;background:var(--bg2);border:1px solid var(--line2);border-radius:11px;color:var(--text);font-size:14.5px;line-height:1.55;outline:0}
 .note-input:focus{border-color:var(--cyan)}
 .note-input::placeholder{color:var(--muted)}
+.terms{position:relative;scroll-margin-top:150px;margin:34px 0 10px;padding:1px;border-radius:22px;background:linear-gradient(140deg,rgba(103,232,249,.75),rgba(34,211,238,.12) 30%,rgba(38,55,79,.6) 55%,rgba(34,211,238,.12) 78%,rgba(103,232,249,.7));box-shadow:0 30px 80px -30px rgba(0,0,0,.8),0 0 70px -30px rgba(34,211,238,.45)}
+.terms-in{position:relative;overflow:hidden;padding:44px 40px 34px;border-radius:21px;background:radial-gradient(120% 60% at 50% 0,#10203a 0,#0b1424 45%,#080e1a 100%)}
+.terms-in:before,.terms-in:after{content:'';position:absolute;width:26px;height:26px;border:2px solid rgba(103,232,249,.55);pointer-events:none}
+.terms-in:before{top:14px;left:14px;border-right:0;border-bottom:0;border-radius:6px 0 0 0}
+.terms-in:after{bottom:14px;right:14px;border-left:0;border-top:0;border-radius:0 0 6px 0}
+.terms-head{text-align:center;margin:0 auto 28px;max-width:640px}
+.terms-seal{width:62px;height:62px;margin:0 auto 16px;border-radius:50%;display:grid;place-items:center;font-size:30px;color:var(--cyan-2);background:#0b1626;border:1px solid rgba(103,232,249,.5);box-shadow:0 0 0 6px rgba(34,211,238,.06),0 0 30px rgba(34,211,238,.35)}
+.terms-kicker{margin:0 0 8px;color:var(--cyan);font-size:12.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.terms-head h2{margin:0 0 10px;font-family:var(--display);font-size:30px;line-height:1.2;color:#fff;text-transform:uppercase;letter-spacing:.5px}
+.terms-sub{margin:0;color:#94a6c2;font-size:14.5px;font-style:italic}
+.terms-sub:before,.terms-sub:after{content:'';display:inline-block;vertical-align:middle;width:34px;height:1px;margin:0 12px;background:linear-gradient(90deg,transparent,rgba(103,232,249,.6))}
+.terms-sub:after{background:linear-gradient(90deg,rgba(103,232,249,.6),transparent)}
+.terms ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.terms ul li{position:relative;padding-left:18px;color:#c2cee0;font-size:14.5px;line-height:1.75}
+.terms ul li:before{content:'';position:absolute;left:0;top:.72em;width:7px;height:7px;border-radius:2px;transform:rotate(45deg);background:var(--cyan)}
+.terms ul li b{color:#fff;font-weight:700}
+.terms-alert{margin:0 0 26px;padding:20px 22px;border-radius:16px;background:linear-gradient(135deg,rgba(248,113,113,.12),rgba(248,113,113,.04));border:1px solid rgba(248,113,113,.4)}
+.terms-alert-title{display:flex;align-items:center;gap:10px;margin:0 0 12px;color:#fecaca;font-family:var(--display);font-size:18px;text-transform:uppercase;letter-spacing:.5px}
+.terms-alert-title svg{font-size:20px;color:#f87171}
+.terms-alert ul li:before{background:#f87171}
+.terms-list{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.terms-item{display:flex;gap:16px;padding:20px;border-radius:16px;background:rgba(13,22,38,.75);border:1px solid var(--line2);transition:border-color .2s}
+.terms-item:hover{border-color:rgba(103,232,249,.45)}
+.terms-num{flex:none;font-family:var(--display);font-size:30px;line-height:1;color:transparent;-webkit-text-stroke:1.2px var(--cyan-2);opacity:.9}
+.terms-item h3{margin:2px 0 12px;font-size:16px;color:#fff;line-height:1.4}
+.terms-foot{margin:24px 0 0;padding-top:18px;border-top:1px solid var(--line);text-align:center;color:var(--muted);font-size:13.5px;line-height:1.7}
+.terms-foot a{color:var(--cyan-2)}
+.foot-link{color:var(--cyan-2);text-decoration:none}
+.foot-link:hover{text-decoration:underline}
+@media(max-width:860px){.terms-list{grid-template-columns:1fr}}
+@media(max-width:560px){.terms-in{padding:34px 18px 24px}.terms-head h2{font-size:22px}.terms-sub:before,.terms-sub:after{display:none}.terms-item{flex-direction:column;gap:8px;padding:16px}.terms-alert{padding:16px}}
 .toast{position:fixed;left:50%;bottom:26px;z-index:90;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;background:var(--panel2);border:1px solid var(--cyan);box-shadow:0 14px 40px rgba(0,0,0,.6);font-weight:600;transition:.25s}
 .toast.show{opacity:1;transform:translateX(-50%)}
 .toast svg{color:var(--cyan)}
@@ -333,6 +364,8 @@ body.wl-lock{overflow:hidden}
 <symbol id="i-chat" viewBox="0 0 24 24"><path fill="currentColor" d="M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H9l-5 4v-4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm3 6v2h2V9H7Zm4 0v2h2V9h-2Zm4 0v2h2V9h-2Z"/></symbol>
 <symbol id="i-user" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-5 0-9 2.5-9 6v2h18v-2c0-3.5-4-6-9-6Z"/></symbol>
 <symbol id="i-box" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="m12 2 9 5v10l-9 5-9-5V7l9-5Zm0 10 9-5M12 12 3 7m9 5v10"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Zm-1.2 13.6-3.3-3.3 1.4-1.4 1.9 1.9 4.6-4.6 1.4 1.4-6 6Z"/></symbol>
+<symbol id="i-warn" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2 1 21h22L12 2Zm1 15h-2v-2h2v2Zm0-4h-2V9h2v4Z"/></symbol>
 <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="m5 12 5 5 9-10"/></symbol>
 <symbol id="i-x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
 <symbol id="i-out" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M15 4h4v16h-4M10 8l-4 4 4 4m-4-4h11"/></symbol>
@@ -397,8 +430,19 @@ body.wl-lock{overflow:hidden}
 <section id="contact-section" class="section"><h2>Liên hệ</h2><p>Cần hỗ trợ thì vào Discord của shop hoặc nhắn admin.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a href="https://discord.gg/VTYgy5qrv" target="_blank" rel="noopener noreferrer" class="btn btn-cyan" title="Discord của shop">Vào Discord</a><a href="chat-admin.html" class="btn btn-ghost" title="Chat Admin"><svg><use href="#i-chat"/></svg>Chat với admin</a></div><p style="margin:14px 0 0">Email: <a href="mailto:cuahangtote@gmail.com" title="Gửi email cho shop" style="color:var(--cyan-2)">cuahangtote@gmail.com</a></p></section>
 
 <section id="admin-words" class="section words"><h2 class="words-title">ShopZiclCRBLX – khách hàng là trên hết</h2><p class="words-intro">Tự hào là điểm đến tin cậy cho người có tiền và học sinh có nhu cầu Cày Thuê game và Mua Vật Phẩm giá rẻ. Đến với chúng tôi, bạn không chỉ nhận được dịch vụ chất lượng cao, mà còn được bảo vệ quyền lợi tuyệt đối với 5 cam kết vàng:</p><div class="words-list"><div class="words-item"><div class="words-ico">🎮</div><div><h3>Cày Thuê & Vật Phẩm Giá Rẻ</h3><p>Đội ngũ chuyên nghiệp xử lý đơn hàng siêu tốc, cung cấp vật phẩm với mức giá rẻ nhất có thể.</p></div></div><div class="words-item"><div class="words-ico">🛡️</div><div><h3>Bảo Mật Đồ Tuyệt Đối</h3><p>Cam kết bảo mật thông tin tài khoản, giữ nguyên vẹn 100% trang bị, trái và vật phẩm có sẵn trong acc của bạn.</p></div></div><div class="words-item"><div class="words-ico">💵</div><div><h3>Chính Sách Hoàn Tiền</h3><p>Sẵn sàng hoàn trả 100% tiền giao dịch hoặc đền bù thỏa đáng nếu xảy ra bất kỳ sai sót hay sự cố nào từ phía shop.</p></div></div><div class="words-item"><div class="words-ico">👥</div><div><h3>Nhân Viên Hỗ Trợ Tận Tâm</h3><p>Đội ngũ hỗ trợ luôn túc trực để tư vấn 24/7, giải đáp về vấn đề bạn không hiểu và xử lý mọi yêu cầu của bạn một cách nhanh nhất.</p></div></div><div class="words-item"><div class="words-ico">⚡</div><div><h3>Hệ Thống Tự Động 24/7</h3><p>Vận hành hoàn toàn tự động từ khâu nhận đơn đến hoàn thành, hoạt động xuyên đêm để phục vụ mấy ông.</p></div></div></div></section>
+<section id="terms" class="terms" aria-labelledby="termsTitle"><div class="terms-in">
+<header class="terms-head"><span class="terms-seal"><svg><use href="#i-shield"/></svg></span><p class="terms-kicker">Điều khoản sử dụng dịch vụ</p><h2 id="termsTitle">Tuyên bố miễn trừ trách nhiệm<br>&amp; điều khoản bắt buộc</h2><p class="terms-sub">Vui lòng đọc kỹ trước khi bấm xác nhận thuê dịch vụ hoặc mua vật phẩm</p></header>
+<div class="terms-alert"><div class="terms-alert-title"><svg><use href="#i-warn"/></svg>Điều khoản ràng buộc (quan trọng)</div><ul><li><b>Xác nhận hành vi:</b> Hệ thống chỉ chấp nhận xử lý đơn hàng khi quý khách chủ động tích chọn/bấm chấp nhận văn bản này.</li><li><b>Giá trị pháp lý thỏa thuận:</b> Việc quý khách bấm xác nhận đồng nghĩa với việc đã đọc, hiểu rõ và tự nguyện chấp nhận mọi rủi ro liên quan đến tài khoản và vật phẩm ảo. Quý khách cam kết không khiếu nại, khiếu kiện hoặc yêu cầu đền bù dưới bất kỳ hình thức nào sau khi dịch vụ hoàn thành. Nếu không đồng ý với bất kỳ điều khoản nào dưới đây, vui lòng dừng giao dịch.</li></ul></div>
+<ol class="terms-list">
+<li class="terms-item"><span class="terms-num">01</span><div><h3>Về quy định pháp luật và chính sách nhà phát hành</h3><ul><li><b>Tuân thủ quy định mới:</b> Quý khách hàng tự ý thức và cập nhật các quy định pháp luật hiện hành (bao gồm các Nghị định, quy định mới về việc quản lý, siết chặt hoặc cấm giao dịch vật phẩm ảo bằng tiền thật) cũng như Điều khoản dịch vụ của nhà phát hành Roblox.</li><li><b>Miễn trừ trách nhiệm do thay đổi pháp lý/chính sách:</b> Trong trường hợp có sự thay đổi về mặt pháp lý từ cơ quan quản lý hoặc nhà phát hành game dẫn đến việc tài khoản bị quét, bị thu hồi vật phẩm, bị khóa (ban) vĩnh viễn hoặc reset dữ liệu, Shop hoàn toàn miễn trừ trách nhiệm đền bù hoặc hoàn tiền. Khách hàng chấp nhận rằng đây là rủi ro bất khả kháng khi tham gia vào các dịch vụ trò chơi điện tử.</li></ul></div></li>
+<li class="terms-item"><span class="terms-num">02</span><div><h3>Về bảo mật và bàn giao tài khoản (cày thuê)</h3><ul><li><b>Trách nhiệm cung cấp thông tin:</b> Khách hàng có nghĩa vụ cung cấp chính xác thông tin tài khoản (Tên đăng nhập, mật khẩu) và chủ động phối hợp tắt mã xác thực (2FA/App Authenticator) để nhân viên thực hiện dịch vụ.</li><li><b>Bàn giao dứt điểm:</b> Ngay sau khi đơn hàng được hệ thống chuyển sang trạng thái Hoàn Thành, khách hàng bắt buộc phải thay đổi mật khẩu tài khoản ngay lập tức. Shop sẽ xóa toàn bộ dữ liệu đăng nhập và miễn trừ toàn bộ trách nhiệm đối với các sự cố mất mát tài khoản, vật phẩm hoặc tranh chấp phát sinh sau thời điểm bàn giao thành công.</li></ul></div></li>
+<li class="terms-item"><span class="terms-num">03</span><div><h3>Về lỗi hệ thống và giao dịch nhầm lẫn</h3><ul><li><b>Lỗi từ phía Game:</b> Shop không chịu trách nhiệm trong trường hợp vật phẩm, chỉ số (Stats) hoặc Trái ác quỷ (Fruit) bị mất mát do lỗi hệ thống (Bug, Lag, Rollback server) từ phía Roblox hoặc tựa game Blox Fruits.</li><li><b>Sai sót thông tin từ khách hàng:</b> Khách hàng vui lòng kiểm tra kỹ tên nhân vật (Username), tên vật phẩm trước khi xác nhận giao dịch. Shop không hỗ trợ hoàn tiền hoặc đền bù nếu lỗi xuất phát từ việc khách hàng cung cấp sai thông tin hoặc vào sai server giao dịch.</li></ul></div></li>
+<li class="terms-item"><span class="terms-num">04</span><div><h3>Quyền thay đổi điều khoản</h3><ul><li>Shop có quyền chỉnh sửa, cập nhật các điều khoản trong bản Miễn trừ trách nhiệm này bất kỳ lúc nào để phù hợp với tình hình thực tế, các biến động pháp lý và chính sách mới từ nhà phát hành game mà không cần thông báo trước.</li></ul></div></li>
+</ol>
+<p class="terms-foot">Bằng việc tiếp tục sử dụng dịch vụ, quý khách xác nhận đã đọc và đồng ý với toàn bộ điều khoản trên. Cần giải đáp, vui lòng liên hệ admin qua <a href="chat-admin.html" title="Chat Admin">Chat Admin</a> hoặc <a href="https://discord.gg/VTYgy5qrv" target="_blank" rel="noopener noreferrer" title="Discord của shop">Discord</a>.</p>
+</div></section>
 </main>
-<footer>© ShopZiCiCRBLX · Giờ làm việc 17:00 – 24:00</footer>
+<footer>© ShopZiCiCRBLX · Giờ làm việc 17:00 – 24:00 · <a href="#terms" title="Điều khoản dịch vụ" class="foot-link">Điều khoản dịch vụ</a></footer>
 
 <div id="authModal" class="modal" onclick="if(event.target===this)closeAuth()"><div class="box"><button class="close" onclick="closeAuth()" aria-label="Đóng"><svg><use href="#i-x"/></svg></button><div class="box-pad">
 <div class="auth-logo"><span class="brand-ico"><svg><use href="#i-pad"/></svg></span><div><h2 id="authTitle">Đăng nhập</h2><p class="sub" style="margin:0">Vào tài khoản để nạp tiền và đặt đơn.</p></div></div>
