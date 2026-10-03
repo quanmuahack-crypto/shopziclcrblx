@@ -133,6 +133,13 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;back
 .avatar-item input[type=file]{display:none}
 .avatar-item .up-btn{display:block;width:100%;padding:8px;border-radius:9px;border:1px solid var(--line2);background:var(--panel2);color:var(--text);font-size:12px;font-weight:800;cursor:pointer}
 .b-hardcoded{--c:96,165,250}.b-custom{--c:167,139,250}
+.need-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.need-opt{display:flex;align-items:center;gap:9px;padding:11px 12px;border-radius:11px;border:1px solid var(--line2);background:rgba(5,6,10,.75);cursor:pointer;font-size:13.5px;font-weight:700;color:var(--muted);transition:.15s;user-select:none}
+.need-opt input{width:17px;height:17px;margin:0;accent-color:var(--cyan);flex:none}
+.need-opt:has(input:checked){border-color:rgba(34,211,238,.55);background:rgba(34,211,238,.1);color:var(--text)}
+.need-sum{font-size:11px;color:var(--muted);margin:-4px 0 8px;line-height:1.45}
+.need-sum b{color:var(--cyan)}
+@media(max-width:800px){.need-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -296,7 +303,17 @@ async function resetTop(id){if(!confirm('Đặt lại về số nạp thật và
 function renderAccStock(){const el=document.getElementById('accstock');if(!el)return;el.innerHTML='<h2>🗃️ Kho acc</h2><div class="notice">Số acc còn lại hiển thị trên web shop. Khi khách đặt đơn acc thì tự trừ 1, khi bạn bấm Hủy + hoàn tiền thì tự cộng lại 1. Nhập acc mới thì bấm Sửa để đặt lại số lượng.</div><div class="table-wrap"><table class="table"><tr><th>Dịch vụ</th><th>Số acc còn lại</th><th>Thao tác</th></tr>'+(accStockRows.length?accStockRows.map((x,i)=>`<tr><td><b>${esc(x.service_name)}</b></td><td><b class="money">${Number(x.stock)}</b></td><td><button class="btn blue" onclick="editAccStock(${i})">✏️ Sửa số acc</button></td></tr>`).join(''):'<tr><td colspan="3" class="empty">Chưa có dữ liệu kho. Hãy chạy file SQL kho acc trong Supabase.</td></tr>')+'</table></div>'}
 async function editAccStock(i){const x=accStockRows[i];if(!x)return;const raw=prompt('Nhập số acc còn lại cho "'+x.service_name+'":',x.stock);if(raw===null)return;const n=Number(raw.trim());if(!Number.isInteger(n)||n<0)return alert('Số acc không hợp lệ');try{await rpc('admin_set_acc_stock',{p_service:x.service_name,p_stock:n});loadAll()}catch(e){alert(e.message)}}
 
-let svcCatalog=null,svcAvatars={},svcCatalogLoaded=false,svcRowsCache=[],svcBusy=false,svcHidden=new Set();
+let svcCatalog=null,svcAvatars={},svcCatalogLoaded=false,svcRowsCache=[],svcBusy=false,svcHidden=new Set(),svcFields={},svcFieldsOn=true;
+const NEED_KEYS=[['account','Tài khoản Roblox','TK'],['password','Mật khẩu','MK'],['phone','Số điện thoại','SĐT'],['support','Mã hỗ trợ đăng nhập','Mã HT']];
+function guessFields(svc){const acc=/^acc\b/i.test(svc)||accStockRows.some(x=>x.service_name===svc);const simple=/gamepass|chromatic box|robux 120h|trái vĩnh viễn|trái ác quỷ|vv bf/i.test(svc);return{account:!acc,password:!acc&&!simple,phone:true,support:!acc&&!simple}}
+function fieldsFor(svc){return svcFields[svc]||guessFields(svc)}
+function needBoxes(prefix,f){return '<div class="need-grid">'+NEED_KEYS.map(([k,label])=>'<label class="need-opt"><input type="checkbox" id="'+prefix+k+'"'+(f[k]?' checked':'')+'>'+label+'</label>').join('')+'</div>'}
+function readNeed(prefix){const o={};NEED_KEYS.forEach(([k])=>{const el=document.getElementById(prefix+k);o[k]=!!(el&&el.checked)});return o}
+function needSummary(svc){const f=fieldsFor(svc);const on=NEED_KEYS.filter(([k])=>f[k]).map(x=>x[2]);return '<div class="need-sum">Khách nhập: '+(on.length?'<b>'+on.join(' · ')+'</b>':'<b>không cần</b>')+(svcFields[svc]?'':' (mặc định)')+'</div>'}
+function syncNewServiceNeed(){const svc=document.getElementById('svcNewService').value.trim();const f=fieldsFor(svc||'');NEED_KEYS.forEach(([k])=>{const el=document.getElementById('svcNeed_'+k);if(el)el.checked=!!f[k]})}
+async function saveServiceFields(svc,f){if(!svcFieldsOn)throw Error('Chưa có bảng shop_service_fields. Hãy chạy file SQL trong Supabase trước.');await rpc('admin_set_service_fields',{p_service:svc,p_account:f.account,p_password:f.password,p_phone:f.phone,p_support:f.support})}
+function openFieldsModal(svc){if(svcBusy)return;showUserModal('<h2 style="color:var(--cyan)">⚙️ Thông tin khách cần nhập</h2><p>Dịch vụ: <b>'+esc(svc)+'</b></p><p>Tick những ô khách phải điền khi thanh toán gói của dịch vụ này.</p>'+needBoxes('fm_',fieldsFor(svc))+'<div class="confirm-actions"><button class="cancel-confirm" onclick="closeUserModal()">Huỷ</button><button class="danger-confirm" style="background:linear-gradient(135deg,#0891b2,#0e7490);box-shadow:0 10px 28px rgba(8,145,178,.4)" onclick="submitFieldsModal('+jsStr(svc)+')">Lưu cài đặt</button></div>')}
+async function submitFieldsModal(svc){runUserAction(async()=>{await saveServiceFields(svc,readNeed('fm_'));await loadServiceMgmt()},'✅ Đã lưu thông tin cần nhập cho "'+svc+'".')}
 function jsStr(s){return "'"+String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+"'"}
 function svcExtractObject(text,marker){const i=text.indexOf(marker);if(i<0)return null;const start=text.indexOf('{',i);if(start<0)return null;let depth=0,j=start;for(;j<text.length;j++){if(text[j]==='{')depth++;else if(text[j]==='}'){depth--;if(depth===0){j++;break}}}return depth===0?text.slice(start,j):null}
 async function loadHardcodedCatalog(){
@@ -328,12 +345,14 @@ async function resizeImageFile(file,maxW=480,quality=.75){
 async function loadServiceMgmt(){
  if(!svcCatalogLoaded){await loadHardcodedCatalog();svcCatalogLoaded=true}
  try{
-  const [customPkgs,customAvs,overrides,hiddenRows]=await Promise.all([
+  const [customPkgs,customAvs,overrides,hiddenRows,fieldRows]=await Promise.all([
    api('shop_custom_packages?select=service_name,package_name,price&order=service_name.asc').catch(()=>[]),
    api('shop_custom_avatars?select=service_name,avatar_data').catch(()=>[]),
    api('service_prices?select=service_name,package_name,price').catch(()=>[]),
-   api('shop_hidden_services?select=service_name').catch(()=>[])
+   api('shop_hidden_services?select=service_name').catch(()=>[]),
+   api('shop_service_fields?select=service_name,need_account,need_password,need_phone,need_support').catch(e=>{if(/shop_service_fields|42P01|PGRST205|does not exist/i.test(String(e.message)))svcFieldsOn=false;return []})
   ]);
+  svcFields={};(fieldRows||[]).forEach(x=>{svcFields[x.service_name]={account:!!x.need_account,password:!!x.need_password,phone:!!x.need_phone,support:!!x.need_support}});
   svcHidden=new Set((hiddenRows||[]).map(x=>x.service_name));
   const ovMap=new Map((overrides||[]).map(o=>[o.service_name+'|||'+o.package_name,Number(o.price)]));
   const avMap=new Map((customAvs||[]).map(a=>[a.service_name,a.avatar_data]));
@@ -364,14 +383,15 @@ function renderServiceMgmt(names,avMap){
      ?'<button class="up-btn" style="margin-top:6px;color:var(--emerald);border-color:rgba(52,211,153,.4)" onclick="unhideService('+jsStr(svc)+')">👁️ Hiện lại</button>'
      :'<button class="up-btn" style="margin-top:6px;color:var(--rose);border-color:rgba(251,113,133,.4)" onclick="hideService('+jsStr(svc)+')">🚫 Ẩn dịch vụ</button>')
    :'<button class="up-btn" style="margin-top:6px;color:var(--rose);border-color:rgba(251,113,133,.4)" onclick="deleteService('+jsStr(svc)+')">🗑️ Xoá dịch vụ</button>';
-  return '<div class="avatar-item">'+(src?'<img src="'+src+'">':'<div style="height:80px;border-radius:10px;background:#1a1c22;margin-bottom:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px">Chưa có ảnh</div>')+'<div class="name">'+esc(svc)+(isHidden?' <span class="badge b-cancelled">Đang ẩn</span>':'')+'</div><label class="up-btn">📤 Đổi ảnh<input type="file" accept="image/*" onchange="uploadAvatar(this,'+jsStr(svc)+')"></label>'+delBtn+'</div>';
+  return '<div class="avatar-item">'+(src?'<img src="'+src+'">':'<div style="height:80px;border-radius:10px;background:#1a1c22;margin-bottom:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px">Chưa có ảnh</div>')+'<div class="name">'+esc(svc)+(isHidden?' <span class="badge b-cancelled">Đang ẩn</span>':'')+'</div>'+needSummary(svc)+'<label class="up-btn">📤 Đổi ảnh<input type="file" accept="image/*" onchange="uploadAvatar(this,'+jsStr(svc)+')"></label><button class="up-btn" style="margin-top:6px;color:var(--cyan);border-color:rgba(34,211,238,.4)" onclick="openFieldsModal('+jsStr(svc)+')">⚙️ Thông tin cần nhập</button>'+delBtn+'</div>';
  }).join('');
  el.innerHTML='<h2>🧰 Dịch vụ &amp; Giá</h2>'+
   '<div class="svc-card"><h3>➕ Thêm dịch vụ / gói mới</h3><div class="svc-form">'+
-   '<div><label>Tên dịch vụ (chọn có sẵn hoặc gõ tên mới)</label><input id="svcNewService" class="search-input" list="svcServiceList" placeholder="Ví dụ: Acc Blox Fruits (Quốc Tế)"><datalist id="svcServiceList">'+options+'</datalist></div>'+
+   '<div><label>Tên dịch vụ (chọn có sẵn hoặc gõ tên mới)</label><input id="svcNewService" class="search-input" list="svcServiceList" placeholder="Ví dụ: Acc Blox Fruits (Quốc Tế)" oninput="syncNewServiceNeed()"><datalist id="svcServiceList">'+options+'</datalist></div>'+
    '<div><label>Tên gói</label><input id="svcNewPackage" class="search-input" placeholder="Ví dụ: Level Max"></div>'+
    '<div><label>Giá (đ)</label><input id="svcNewPrice" class="search-input" type="number" min="1" step="1000" placeholder="30000"></div>'+
    '<div><button class="btn green" style="width:100%;padding:13px" onclick="addNewPackage()">➕ Thêm</button></div>'+
+   '<div class="full-row"><label>Khách cần nhập khi đặt đơn (áp dụng cho cả dịch vụ)</label>'+needBoxes('svcNeed_',fieldsFor(''))+'</div>'+
    '<div class="full-row"><label>Ảnh đại diện (chỉ cần khi tạo dịch vụ hoàn toàn mới)</label><input id="svcNewAvatar" type="file" accept="image/*"></div>'+
   '</div><div class="svc-hint">Nếu tên dịch vụ đã có sẵn, hệ thống sẽ thêm gói mới vào đúng dịch vụ đó. Nếu là tên hoàn toàn mới, một dịch vụ mới sẽ xuất hiện trên web shop kèm ảnh bạn chọn (nếu có).</div></div>'+
   '<div class="svc-card"><h3>🖼️ Ảnh đại diện dịch vụ</h3><div class="avatar-grid">'+avatarGrid+'</div></div>'+
@@ -390,7 +410,9 @@ async function addNewPackage(){
  svcBusy=true;
  try{
   const isNewPkg=!(svcCatalog[service]||[]).some(x=>x[0]===pkg)&&!svcRowsCache.some(r=>r.service===service&&r.package===pkg&&r.origin==='custom');
+  const need=readNeed('svcNeed_');
   await rpc('admin_set_service_price',{p_service:service,p_package:pkg,p_price:price,p_new:isNewPkg});
+  if(svcFieldsOn)await saveServiceFields(service,need);
   if(fileInput.files&&fileInput.files[0]){
    const data=await resizeImageFile(fileInput.files[0]);
    await rpc('admin_set_avatar',{p_service:service,p_avatar:data});
@@ -400,7 +422,7 @@ async function addNewPackage(){
   document.getElementById('svcNewPrice').value='';
   fileInput.value='';
   await loadServiceMgmt();
-  alert('✅ Đã lưu.');
+  alert(svcFieldsOn?'✅ Đã lưu.':'✅ Đã lưu gói. Phần thông tin cần nhập chưa lưu được vì chưa chạy file SQL shop_service_fields.');
  }catch(e){alert('Không lưu được: '+e.message)}finally{svcBusy=false}
 }
 async function uploadAvatar(input,service){
