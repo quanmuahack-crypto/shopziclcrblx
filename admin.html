@@ -325,17 +325,22 @@ function banPickedIps(days){const ips=[...document.querySelectorAll('.ip-pick:ch
 function renderIpBans(){const el=document.getElementById('ipban');if(!el)return;const umap=Object.fromEntries(allUsersCache.map(u=>[u.id,u.username]));const rows=ipBans.slice().sort((a,b)=>Number(activeBan(b))-Number(activeBan(a)));el.innerHTML='<h2>🌐 Chặn IP</h2>'+(ipBansOn?'':'<div class="notice">Chưa có bảng chặn IP. Hãy chạy file SQL ip_ban.sql trong Supabase.</div>')+'<div class="notice">Mạng bị chặn sẽ thấy màn hình "Mạng của bạn đã bị chặn" khi vào shop, và không đặt đơn, nạp thẻ hay chat được. Lưu ý: wifi trường học, quán net hay 4G có thể nhiều người dùng chung 1 IP, chặn sẽ ảnh hưởng cả họ.</div><div class="svc-card"><h3>➕ Chặn IP nhập tay</h3><div class="ip-form"><input id="ipManual" class="search-input" placeholder="Ví dụ: 113.161.20.45"><input id="ipManualReason" class="search-input" maxlength="200" placeholder="Lý do (không bắt buộc)"></div>'+ipDurGrid('banManualIp')+'</div><div class="table-wrap"><table class="table"><tr><th>IP</th><th>Khách</th><th>Lý do</th><th>Chặn đến</th><th>Trạng thái</th><th>Thao tác</th></tr>'+(rows.length?rows.map(b=>{const on=activeBan(b);return '<tr class="'+(on?'':'dim-row')+'"><td><span class="secret">'+esc(b.ip)+'</span></td><td>'+esc(b.user_id?(umap[b.user_id]||'Đã xoá'):'—')+'</td><td>'+esc(b.reason||'—')+'</td><td>'+esc(banUntilText(b))+'</td><td>'+(on?'<span class="badge b-cancelled">Đang chặn</span>':'<span class="badge b-approved">Hết hạn</span>')+'</td><td><button class="btn green" onclick="unbanIp('+jsStr(b.ip)+')">✅ Bỏ chặn</button></td></tr>'}).join(''):'<tr><td colspan="6" class="empty">Chưa chặn IP nào.</td></tr>')+'</table></div>'}
 async function banManualIp(days){const ip=document.getElementById('ipManual').value.trim();if(!ip)return alert('Nhập IP cần chặn');const reason=document.getElementById('ipManualReason').value.trim();if(!confirm('Chặn IP '+ip+' '+(days?days===30?'1 tháng':days+' ngày':'vĩnh viễn')+'?'))return;try{await rpc('admin_ban_ip',{p_ip:ip,p_days:days||null,p_reason:reason||null,p_user_id:null});await loadAll();alert('✅ Đã chặn IP '+ip+'.')}catch(e){alert('Không chặn được: '+e.message)}}
 async function unbanIp(ip){if(!confirm('Bỏ chặn IP '+ip+'?'))return;try{await rpc('admin_unban_ip',{p_ip:ip});await loadAll()}catch(e){alert('Không bỏ chặn được: '+e.message)}}
-let svcCatalog=null,svcAvatars={},svcCatalogLoaded=false,svcRowsCache=[],svcBusy=false,svcHidden=new Set(),svcFields={},svcFieldsOn=true;
+let svcCatalog=null,svcAvatars={},svcCatalogLoaded=false,svcRowsCache=[],svcBusy=false,svcHidden=new Set(),svcFields={},svcFieldsOn=true,svcTypes={},svcTypesOn=true;
+const TYPE_OPTS=[['account','Tài khoản'],['boost','Cày thuê'],['item','Vật phẩm']];
+function guessType(svc){if(/^acc\b/i.test(svc))return 'account';if(/trái|gamepass|robux|chromatic|vv bf/i.test(svc))return 'item';return 'boost'}
+function typeFor(svc){return svcTypes[svc]||guessType(svc||'')}
+function typeSelect(id,v){return '<select id="'+id+'" class="search-input" style="margin:0">'+TYPE_OPTS.map(([k,l])=>'<option value="'+k+'"'+(k===v?' selected':'')+'>'+l+'</option>').join('')+'</select>'}
+async function saveServiceType(svc,t){if(!svcTypesOn)return;await rpc('admin_set_service_type',{p_service:svc,p_type:t})}
 const NEED_KEYS=[['account','Tài khoản Roblox','TK'],['password','Mật khẩu','MK'],['phone','Số điện thoại','SĐT'],['support','Mã hỗ trợ đăng nhập','Mã HT']];
 function guessFields(svc){const acc=/^acc\b/i.test(svc)||accStockRows.some(x=>x.service_name===svc);const simple=/gamepass|chromatic box|robux 120h|trái vĩnh viễn|trái ác quỷ|vv bf/i.test(svc);return{account:!acc,password:!acc&&!simple,phone:true,support:!acc&&!simple}}
 function fieldsFor(svc){return svcFields[svc]||guessFields(svc)}
 function needBoxes(prefix,f){return '<div class="need-grid">'+NEED_KEYS.map(([k,label])=>'<label class="need-opt"><input type="checkbox" id="'+prefix+k+'"'+(f[k]?' checked':'')+'>'+label+'</label>').join('')+'</div>'}
 function readNeed(prefix){const o={};NEED_KEYS.forEach(([k])=>{const el=document.getElementById(prefix+k);o[k]=!!(el&&el.checked)});return o}
-function needSummary(svc){const f=fieldsFor(svc);const on=NEED_KEYS.filter(([k])=>f[k]).map(x=>x[2]);return '<div class="need-sum">Khách nhập: '+(on.length?'<b>'+on.join(' · ')+'</b>':'<b>không cần</b>')+(svcFields[svc]?'':' (mặc định)')+'</div>'}
-function syncNewServiceNeed(){const svc=document.getElementById('svcNewService').value.trim();const f=fieldsFor(svc||'');NEED_KEYS.forEach(([k])=>{const el=document.getElementById('svcNeed_'+k);if(el)el.checked=!!f[k]})}
+function needSummary(svc){const f=fieldsFor(svc);const on=NEED_KEYS.filter(([k])=>f[k]).map(x=>x[2]);return '<div class="need-sum">Loại: <b>'+(TYPE_OPTS.find(x=>x[0]===typeFor(svc))||['',''])[1]+'</b><br>Khách nhập: '+(on.length?'<b>'+on.join(' · ')+'</b>':'<b>không cần</b>')+(svcFields[svc]?'':' (mặc định)')+'</div>'}
+function syncNewServiceNeed(){const svc=document.getElementById('svcNewService').value.trim();const ts=document.getElementById('svcNewType');if(ts)ts.value=typeFor(svc);const f=fieldsFor(svc||'');NEED_KEYS.forEach(([k])=>{const el=document.getElementById('svcNeed_'+k);if(el)el.checked=!!f[k]})}
 async function saveServiceFields(svc,f){if(!svcFieldsOn)throw Error('Chưa có bảng shop_service_fields. Hãy chạy file SQL trong Supabase trước.');await rpc('admin_set_service_fields',{p_service:svc,p_account:f.account,p_password:f.password,p_phone:f.phone,p_support:f.support})}
-function openFieldsModal(svc){if(svcBusy)return;showUserModal('<h2 style="color:var(--cyan)">⚙️ Thông tin khách cần nhập</h2><p>Dịch vụ: <b>'+esc(svc)+'</b></p><p>Tick những ô khách phải điền khi thanh toán gói của dịch vụ này.</p>'+needBoxes('fm_',fieldsFor(svc))+'<div class="confirm-actions"><button class="cancel-confirm" onclick="closeUserModal()">Huỷ</button><button class="danger-confirm" style="background:linear-gradient(135deg,#0891b2,#0e7490);box-shadow:0 10px 28px rgba(8,145,178,.4)" onclick="submitFieldsModal('+jsStr(svc)+')">Lưu cài đặt</button></div>')}
-async function submitFieldsModal(svc){runUserAction(async()=>{await saveServiceFields(svc,readNeed('fm_'));await loadServiceMgmt()},'✅ Đã lưu thông tin cần nhập cho "'+svc+'".')}
+function openFieldsModal(svc){if(svcBusy)return;showUserModal('<h2 style="color:var(--cyan)">⚙️ Thông tin khách cần nhập</h2><p>Dịch vụ: <b>'+esc(svc)+'</b></p><p style="margin:0 0 6px">Loại dịch vụ (quyết định đơn hiện ở trang nào của khách):</p>'+typeSelect('fm_type',typeFor(svc))+'<p>Tick những ô khách phải điền khi thanh toán gói của dịch vụ này.</p>'+needBoxes('fm_',fieldsFor(svc))+'<div class="confirm-actions"><button class="cancel-confirm" onclick="closeUserModal()">Huỷ</button><button class="danger-confirm" style="background:linear-gradient(135deg,#0891b2,#0e7490);box-shadow:0 10px 28px rgba(8,145,178,.4)" onclick="submitFieldsModal('+jsStr(svc)+')">Lưu cài đặt</button></div>')}
+async function submitFieldsModal(svc){const t=document.getElementById('fm_type').value;runUserAction(async()=>{await saveServiceFields(svc,readNeed('fm_'));await saveServiceType(svc,t);await loadServiceMgmt()},'✅ Đã lưu thông tin cần nhập cho "'+svc+'".')}
 function jsStr(s){return "'"+String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+"'"}
 function svcExtractObject(text,marker){const i=text.indexOf(marker);if(i<0)return null;const start=text.indexOf('{',i);if(start<0)return null;let depth=0,j=start;for(;j<text.length;j++){if(text[j]==='{')depth++;else if(text[j]==='}'){depth--;if(depth===0){j++;break}}}return depth===0?text.slice(start,j):null}
 async function loadHardcodedCatalog(){
@@ -367,13 +372,15 @@ async function resizeImageFile(file,maxW=480,quality=.75){
 async function loadServiceMgmt(){
  if(!svcCatalogLoaded){await loadHardcodedCatalog();svcCatalogLoaded=true}
  try{
-  const [customPkgs,customAvs,overrides,hiddenRows,fieldRows]=await Promise.all([
+  const [customPkgs,customAvs,overrides,hiddenRows,fieldRows,typeRows]=await Promise.all([
    api('shop_custom_packages?select=service_name,package_name,price&order=service_name.asc').catch(()=>[]),
    api('shop_custom_avatars?select=service_name,avatar_data').catch(()=>[]),
    api('service_prices?select=service_name,package_name,price').catch(()=>[]),
    api('shop_hidden_services?select=service_name').catch(()=>[]),
-   api('shop_service_fields?select=service_name,need_account,need_password,need_phone,need_support').catch(e=>{if(/shop_service_fields|42P01|PGRST205|does not exist/i.test(String(e.message)))svcFieldsOn=false;return []})
+   api('shop_service_fields?select=service_name,need_account,need_password,need_phone,need_support').catch(e=>{if(/shop_service_fields|42P01|PGRST205|does not exist/i.test(String(e.message)))svcFieldsOn=false;return []}),
+   api('shop_service_types?select=service_name,service_type').catch(e=>{if(/shop_service_types|42P01|PGRST205|does not exist/i.test(String(e.message)))svcTypesOn=false;return []})
   ]);
+  svcTypes={};(typeRows||[]).forEach(x=>{svcTypes[x.service_name]=x.service_type});
   svcFields={};(fieldRows||[]).forEach(x=>{svcFields[x.service_name]={account:!!x.need_account,password:!!x.need_password,phone:!!x.need_phone,support:!!x.need_support}});
   svcHidden=new Set((hiddenRows||[]).map(x=>x.service_name));
   const ovMap=new Map((overrides||[]).map(o=>[o.service_name+'|||'+o.package_name,Number(o.price)]));
@@ -413,6 +420,7 @@ function renderServiceMgmt(names,avMap){
    '<div><label>Tên gói</label><input id="svcNewPackage" class="search-input" placeholder="Ví dụ: Level Max"></div>'+
    '<div><label>Giá (đ)</label><input id="svcNewPrice" class="search-input" type="number" min="1" step="1000" placeholder="30000"></div>'+
    '<div><button class="btn green" style="width:100%;padding:13px" onclick="addNewPackage()">➕ Thêm</button></div>'+
+   '<div class="full-row"><label>Loại dịch vụ (đơn sẽ hiện ở trang Tài khoản đã mua / Đơn cày thuê / Đơn vật phẩm của khách)</label>'+typeSelect('svcNewType',typeFor(''))+'</div>'+
    '<div class="full-row"><label>Khách cần nhập khi đặt đơn (áp dụng cho cả dịch vụ)</label>'+needBoxes('svcNeed_',fieldsFor(''))+'</div>'+
    '<div class="full-row"><label>Ảnh đại diện (chỉ cần khi tạo dịch vụ hoàn toàn mới)</label><input id="svcNewAvatar" type="file" accept="image/*"></div>'+
   '</div><div class="svc-hint">Nếu tên dịch vụ đã có sẵn, hệ thống sẽ thêm gói mới vào đúng dịch vụ đó. Nếu là tên hoàn toàn mới, một dịch vụ mới sẽ xuất hiện trên web shop kèm ảnh bạn chọn (nếu có).</div></div>'+
@@ -433,8 +441,10 @@ async function addNewPackage(){
  try{
   const isNewPkg=!(svcCatalog[service]||[]).some(x=>x[0]===pkg)&&!svcRowsCache.some(r=>r.service===service&&r.package===pkg&&r.origin==='custom');
   const need=readNeed('svcNeed_');
+  const typeVal=document.getElementById('svcNewType').value;
   await rpc('admin_set_service_price',{p_service:service,p_package:pkg,p_price:price,p_new:isNewPkg});
   if(svcFieldsOn)await saveServiceFields(service,need);
+  await saveServiceType(service,typeVal);
   if(fileInput.files&&fileInput.files[0]){
    const data=await resizeImageFile(fileInput.files[0]);
    await rpc('admin_set_avatar',{p_service:service,p_avatar:data});
