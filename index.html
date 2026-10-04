@@ -680,6 +680,108 @@ html,body{background:var(--bg)}
 .card:hover{border-color:transparent;box-shadow:0 0 0 1px rgba(34,211,238,.35),0 16px 40px -16px rgba(8,145,178,.55)}
 @keyframes zcCardLight{to{--zc-ang:360deg}}
 @media(prefers-reduced-motion:reduce){.card{animation:none;background:linear-gradient(var(--panel),var(--panel)) padding-box,linear-gradient(135deg,#22d3ee,#e2e8f0 60%) border-box}}
+
+/* === TINH CHINH GIAO DIEN TIM === */
+#serviceGrid .card {
+  border: 1.5px solid rgba(139, 92, 246, .38) !important;
+  box-shadow: 0 4px 18px -12px rgba(124, 58, 237, .35);
+  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+#serviceGrid .card:hover {
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 10px 28px -12px rgba(124, 58, 237, .55), 0 0 0 1px rgba(139, 92, 246, .12);
+  transform: translateY(-2px);
+}
+#serviceGrid .card h3 { color: #6d28d9; }
+#serviceGrid .card .btn-cyan {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  border-color: #7c3aed;
+  color: #fff;
+}
+#serviceGrid .card .btn-cyan:hover {
+  background: linear-gradient(135deg, #6d28d9, #9333ea);
+  box-shadow: 0 6px 18px -8px rgba(124, 58, 237, .75);
+}
+#donPage .don-card h2,
+#donPage h1,
+#donPage h2 { color: #7c3aed; }
+#donPage .don-card h2 .c1,
+#donPage .don-card h2 .c2 { color: #8b5cf6; }
+
+
+/* === FIX NUT "OK, VAO SHOP" SANG TIM === */
+#welcomeModal .wl-ok,
+#welcomeModal button#wlOk {
+  background: linear-gradient(135deg, #7c3aed, #a855f7) !important;
+  color: #ffffff !important;
+  border: 1px solid #8b5cf6 !important;
+  box-shadow: 0 14px 34px -10px rgba(124, 58, 237, .65) !important;
+}
+#welcomeModal .wl-ok:hover,
+#welcomeModal button#wlOk:hover {
+  background: linear-gradient(135deg, #6d28d9, #9333ea) !important;
+  box-shadow: 0 18px 40px -10px rgba(124, 58, 237, .8) !important;
+}
+</style>
+<style>
+
+/* === DONG BO TOAN BO NUT HANH DONG SANG TIM === */
+:root{--purple-main:#7c3aed;--purple-bright:#a855f7;--purple-dark:#6d28d9;--purple-glow:rgba(139,92,246,.28)}
+.btn-cyan,.btn-green,.btn-blue,.btn-primary,.dep-go,.top-cta,
+#authBtn,[id*="login"] .btn,[id*="Login"] .btn,
+.modal button[type="submit"],.modal .btn[type="button"],
+.auth-modal button,.order-modal button[type="submit"],
+#orderModal button[type="submit"],#loginModal button[type="submit"],
+.zc-main button[type="submit"],.zc-main .btn-primary,.zc-main .btn-cyan,
+button.submit,button.primary,.form-actions button,.order-actions button {
+  background:linear-gradient(135deg,#7c3aed 0%,#a855f7 100%) !important;
+  border-color:#8b5cf6 !important;color:#fff !important;
+  box-shadow:0 5px 16px -7px rgba(124,58,237,.65);
+}
+.btn-cyan:hover,.btn-green:hover,.btn-blue:hover,.btn-primary:hover,.dep-go:hover,.top-cta:hover,
+#authBtn:hover,.modal button[type="submit"]:hover,.auth-modal button:hover,
+.order-modal button[type="submit"]:hover,#orderModal button[type="submit"]:hover,
+#loginModal button[type="submit"]:hover,.zc-main button[type="submit"]:hover,
+button.submit:hover,button.primary:hover,.form-actions button:hover,.order-actions button:hover {
+  background:linear-gradient(135deg,#6d28d9 0%,#9333ea 100%) !important;
+  border-color:#7c3aed !important;box-shadow:0 7px 22px -7px rgba(124,58,237,.8);
+}
+/* Các trang đặt đơn, đăng nhập và biểu mẫu */
+.auth-tabs button.active,.tab-btn.active,.order-tab.active,
+.zc-nav-link.active,.zc-nav-item.active>.zc-nav-link {color:#8b5cf6 !important;border-color:#8b5cf6 !important}
+.auth-modal input:focus,.modal input:focus,.modal select:focus,.modal textarea:focus,
+.order-modal input:focus,.order-modal select:focus,.order-modal textarea:focus,
+.zc-main input:focus,.zc-main select:focus,.zc-main textarea:focus {
+  border-color:#8b5cf6 !important;box-shadow:0 0 0 3px rgba(139,92,246,.16) !important;outline:none;
+}
+.zc-head-tile{--c:#8b5cf6 !important}
+.zc-main a:not(.btn):hover,.modal a:hover{color:#8b5cf6}
+
+</style>
+
+<style id="purple-order-pages-fix">
+/* Đồng bộ tím cho toàn bộ quy trình đặt đơn và chi tiết đơn hàng */
+:root { --order-purple:#7c3aed; --order-purple-dark:#6d28d9; --order-purple-light:#a855f7; }
+.sv-step, .sv-step header, .sv-step .sv-body { border-color:rgba(124,58,237,.28) !important; }
+.sv-step > header h2, .sv-step header h2 { color:var(--order-purple-dark) !important; }
+.sv-num { background:linear-gradient(135deg,var(--order-purple-dark),var(--order-purple-light)) !important; color:#fff !important; border-color:var(--order-purple) !important; }
+.sv-dd-btn, .sv-dd-panel, .sv-dd-panel .input, .sv-dd-list, .sv-dd-list li { border-color:rgba(124,58,237,.42) !important; }
+.sv-dd-btn:focus, .sv-dd-btn:hover, .sv-dd-panel .input:focus-within, .sv-dd-panel input:focus { border-color:var(--order-purple) !important; box-shadow:0 0 0 3px rgba(124,58,237,.13) !important; }
+.sv-dd-btn .lb, .sv-dd-btn .lb b, .sv-dd-list button, .sv-dd-list [role="option"] { color:var(--order-purple-dark) !important; }
+.sv-dd-list button:hover, .sv-dd-list [role="option"]:hover, .sv-dd-list .active, .sv-dd-list [aria-selected="true"] { background:rgba(124,58,237,.10) !important; color:var(--order-purple-dark) !important; }
+.sv-step label, .sv-hint, .sv-rows b, .sv-rows .big b { color:var(--order-purple-dark) !important; }
+.sv-step input:not([type="checkbox"]), .sv-step textarea, .sv-step select, #orderNote, .note-input { border-color:rgba(124,58,237,.35) !important; accent-color:var(--order-purple) !important; }
+.sv-step input:focus, .sv-step textarea:focus, .sv-step select:focus, #orderNote:focus, .note-input:focus { border-color:var(--order-purple) !important; outline-color:var(--order-purple) !important; box-shadow:0 0 0 3px rgba(124,58,237,.12) !important; }
+.sv-go, .sv-step .btn-cyan, .sv-step .btn-green, .sv-step button[type="submit"], #checkoutModal button[type="submit"] { background:linear-gradient(135deg,var(--order-purple-dark),var(--order-purple-light)) !important; border-color:var(--order-purple) !important; color:#fff !important; }
+.sv-go:hover, .sv-step .btn-cyan:hover, .sv-step .btn-green:hover, .sv-step button[type="submit"]:hover { background:linear-gradient(135deg,#5b21b6,#9333ea) !important; box-shadow:0 7px 20px -8px rgba(124,58,237,.75) !important; }
+.sv-sum, .sv-rows, .sv-rows > div { border-color:rgba(124,58,237,.28) !important; }
+.don-card, .don-card h2, .don-card .don-row, .don-st, .don-back { border-color:rgba(124,58,237,.28) !important; }
+.don-card h2, .don-card h2 .c1, .don-card h2 .c2, .don-card .don-row b, .don-card .don-row strong { color:var(--order-purple-dark) !important; }
+.don-back .zc-btn, .don-back .zc-btn-cyan, .zc-btn-cyan, .btn-cyan { background:linear-gradient(135deg,var(--order-purple-dark),var(--order-purple-light)) !important; border-color:var(--order-purple) !important; color:#fff !important; }
+.don-card input:focus, .don-card textarea:focus { border-color:var(--order-purple) !important; box-shadow:0 0 0 3px rgba(124,58,237,.12) !important; }
+/* Các modal đặt đơn / thông tin tài khoản / ghi chú và xác nhận */
+#checkoutModal h1, #checkoutModal h2, #checkoutModal h3, #checkoutModal label, #checkoutModal .step-title, .order-modal h2, .order-modal h3 { color:var(--order-purple-dark) !important; }
+#checkoutModal input:focus, #checkoutModal textarea:focus, #checkoutModal select:focus, .order-modal input:focus, .order-modal textarea:focus, .order-modal select:focus { border-color:var(--order-purple) !important; box-shadow:0 0 0 3px rgba(124,58,237,.12) !important; }
 </style>
 </head>
 <body>
