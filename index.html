@@ -201,6 +201,9 @@ body.zc-page :focus-visible{outline:2px solid var(--zc-cyan);outline-offset:2px}
 @media(max-width:480px){.zc-brand>span:last-child{display:none}.zc-actions{gap:7px}.zc-icon-btn,.zc-avatar{width:42px;height:42px}.zc-btn{padding:0 14px}}
 
 .zc-view[hidden]{display:none!important}
+.top{transition:transform .28s ease;will-change:transform}
+.top.top-hidden{transform:translateY(-100%)}
+@media(prefers-reduced-motion:reduce){.top{transition:none}}
 @media(max-width:1020px){.zc-nav.open .zc-nav-list{max-height:calc(100vh - 210px);max-height:calc(100dvh - 210px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:10px}.zc-nav-list{flex-wrap:nowrap}.zc-nav-list>li{flex-shrink:0}}
 body.zc-nav-lock{overflow:hidden}
 .zc-view:not([data-view="home"]){padding:30px 0 40px}
@@ -1065,6 +1068,7 @@ ZC.onReady(async u=>{
 })(zcMake('dieu-khoan'));
 zcRoute();
 if(window.zcPendingReady)zcProfileReady();
+(function(){const h=document.querySelector('header.top');if(!h)return;let last=window.scrollY,ticking=false;function upd(){const y=Math.max(0,window.scrollY);const d=y-last;const busy=document.body.classList.contains('zc-nav-lock')||document.getElementById('userMenu')?.classList.contains('show')||h.contains(document.activeElement)&&document.activeElement.tagName==='INPUT';if(busy||y<h.offsetHeight){h.classList.remove('top-hidden')}else if(d>8){h.classList.add('top-hidden');document.querySelectorAll('#zcNav .zc-nav-item.open').forEach(x=>x.classList.remove('open'))}else if(d<-8){h.classList.remove('top-hidden')}if(Math.abs(d)>8||y<h.offsetHeight)last=y;ticking=false}window.addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(upd)}},{passive:true});h.addEventListener('focusin',()=>h.classList.remove('top-hidden'))})();
 </script>
 <script src="vng-to-international.js"></script>
 <script src="price-sync.js"></script>
