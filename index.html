@@ -717,6 +717,18 @@ body{background-color:var(--bg);background-image:repeating-linear-gradient(135de
 .dep-sel select,.dep-in{background:var(--bg2)}
 .tag{color:#ddd6fe}
 .sc-cart{background:var(--bg2);color:#c4b5fd}
+
+.uchip{display:flex;align-items:center;gap:12px;height:56px;padding:0 14px 0 6px;border-radius:16px;border:1px solid var(--line2);background:var(--panel);color:var(--text);cursor:pointer;box-shadow:0 6px 18px -12px rgba(124,58,237,.6);transition:border-color .15s,box-shadow .15s}
+.uchip:hover{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(139,92,246,.15),0 8px 22px -12px rgba(124,58,237,.7)}
+.uc-ring{flex:none;width:44px;height:44px;border-radius:50%;padding:2px;background:linear-gradient(135deg,#c4b5fd,#7c3aed);box-shadow:0 0 0 3px rgba(139,92,246,.18)}
+.uc-av{display:block;width:100%;height:100%;border-radius:50%}
+.uc-txt{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15;min-width:0;max-width:130px}
+.uc-txt b{font-family:var(--display);font-size:17px;font-weight:700;color:var(--text);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.uc-txt span{font-family:var(--display);font-size:15px;font-weight:700;color:#a78bfa}
+.uc-car{width:18px;height:18px;flex:none;color:var(--muted);transition:transform .2s}
+.menu.show~*,.user:has(.menu.show) .uc-car{transform:rotate(180deg)}
+@media(min-width:641px){.top .uchip{height:48px}.top .uc-ring{width:38px;height:38px}}
+@media(max-width:640px){.uchip{height:42px;padding:0 4px;gap:0;border-radius:50%;width:42px;justify-content:center}.uc-txt,.uc-car{display:none}.uc-ring{width:36px;height:36px}}
 </style>
 </head>
 <body>
@@ -754,9 +766,9 @@ body{background-color:var(--bg);background-image:repeating-linear-gradient(135de
 <button class="btn btn-green act-nap" onclick="openDepositArea()"><svg><use href="#i-plus"/></svg><span>Nạp tiền</span></button>
 <a class="icon-btn act-hist" href="lich-su-nap.html" title="Lịch sử nạp"><svg><use href="#i-hist"/></svg></a>
 <button class="icon-btn" onclick="openCart()" title="Giỏ hàng" aria-label="Giỏ hàng"><svg><use href="#i-cart"/></svg><span class="badge" id="cartCount"></span></button>
-<button id="authBtn" class="btn btn-cyan" onclick="openAuth('login')">Đăng nhập</button>
-<div class="user" id="userBox" style="display:none">
-<button class="avatar" id="avatarBtn" onclick="toggleMenu(event)" aria-label="Tài khoản">?</button>
+<button id="authBtn" class="btn btn-cyan" style="display:none" onclick="openAuth('login')">Đăng nhập</button>
+<div class="user" id="userBox">
+<button class="uchip" id="avatarBtn" type="button" onclick="toggleMenu(event)" aria-label="Tài khoản"><span class="uc-ring"><svg class="uc-av" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="32" fill="#fff"/><path d="M9 64c1.5-12 10.5-19 23-19s21.5 7 23 19Z" fill="#111"/><path d="M27 41h10v6l-5 4-5-4Z" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M26.5 45.5 32 51l5.5-5.5" fill="none" stroke="#fff" stroke-width="1.6"/><ellipse cx="32" cy="29" rx="12" ry="13" fill="#fff" stroke="#111" stroke-width="2"/><path d="M19.5 26c-1.5-9 4.5-15 12.5-15s14 5.5 12.6 15c-2.2-3.5-5.2-5.3-8.6-5.6 1 1.7 1.2 3 .9 4.2-2.4-2.6-6.4-4-10.5-3.4.6 1.2.7 2.3.3 3.3-2.4-.7-5.2.1-7.2 1.5Z" fill="#111"/><circle cx="27" cy="30" r="3.6" fill="none" stroke="#111" stroke-width="2"/><circle cx="37" cy="30" r="3.6" fill="none" stroke="#111" stroke-width="2"/><path d="M30.6 30h2.8M23.4 29.4l-3-.8M40.6 29.4l3-.8" stroke="#111" stroke-width="1.8" stroke-linecap="round"/><path d="M29 36.5q3 2 6 0" fill="none" stroke="#111" stroke-width="1.8" stroke-linecap="round"/></svg></span><span class="uc-txt"><b id="ucName">Khách</b><span id="ucBal">0 đ</span></span><svg class="uc-car" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg></button>
 <div class="menu" id="userMenu">
 <div class="menu-head"><b id="who">Chưa đăng nhập</b><span>Số dư: <strong id="menuBalance">0 đ</strong></span></div>
 <a class="menu-item" href="#ho-so" title="Hồ sơ" onclick="closeMenu()"><svg><use href="#i-user"/></svg>Hồ sơ</a>
@@ -1005,11 +1017,11 @@ function closeOrders(){document.getElementById('ordersModal').classList.remove('
 
 async function usernameAuth(body){const r=await fetch(AUTH_URL,{method:'POST',headers:{apikey:SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'Đăng nhập thất bại');return d}
 async function loadProfile(){if(!accessToken){updateUI();return}try{const r=await fetch(AUTH_URL,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},body:JSON.stringify({action:'me'})});const d=await r.json();if(!r.ok||!d.user)throw Error();currentUser=d.user;updateUI()}catch(e){accessToken='';currentUser=null;localStorage.removeItem('shopzicl_username_token');updateUI()}}
-function updateUI(){const on=!!currentUser;document.getElementById('walletBox').style.display=on?'flex':'none';document.getElementById('userBox').style.display=on?'':'none';document.getElementById('authBtn').style.display=on?'none':'';document.getElementById('balance').textContent=money(currentUser?.balance||0);document.getElementById('menuBalance').textContent=money(currentUser?.balance||0);document.getElementById('who').textContent=currentUser?.username||'Chưa đăng nhập';const mel=document.getElementById('menuEmailLabel');if(mel)mel.textContent=currentUser?.contact_email?'Email: '+currentUser.contact_email:'Thêm email đăng nhập';document.getElementById('avatarBtn').textContent=(currentUser?.username||'?').charAt(0).toUpperCase();if(typeof zcUserChanged==='function')zcUserChanged();if(typeof svSummary==='function')svSummary();if(document.getElementById('checkoutModal').classList.contains('show')&&!orderBusy)renderCheckout()}
+function updateUI(){const on=!!currentUser;document.getElementById('walletBox').style.display='none';document.getElementById('userBox').style.display='';document.getElementById('authBtn').style.display='none';document.getElementById('balance').textContent=money(currentUser?.balance||0);document.getElementById('menuBalance').textContent=money(currentUser?.balance||0);document.getElementById('who').textContent=currentUser?.username||'Chưa đăng nhập';const mel=document.getElementById('menuEmailLabel');if(mel)mel.textContent=currentUser?.contact_email?'Email: '+currentUser.contact_email:'Thêm email đăng nhập';document.getElementById('ucName').textContent=currentUser?.username||'Khách';document.getElementById('ucBal').textContent=money(currentUser?.balance||0);if(typeof zcUserChanged==='function')zcUserChanged();if(typeof svSummary==='function')svSummary();if(document.getElementById('checkoutModal').classList.contains('show')&&!orderBusy)renderCheckout()}
 function openEmailModal(){if(!currentUser)return openAuth('login');const cur=currentUser.contact_email||'';document.getElementById('contactEmail').value=cur;document.getElementById('emailModalSub').textContent=cur?'Email hiện tại: '+cur+'. Đổi email khác hoặc xoá trống rồi lưu để gỡ.':'Thêm email để đăng nhập bằng email thay cho tên tài khoản. Mật khẩu vẫn giữ nguyên.';document.getElementById('emailMsg').innerHTML='';document.getElementById('emailModal').classList.add('show');setTimeout(()=>document.getElementById('contactEmail').focus(),50)}
 function closeEmailModal(){document.getElementById('emailModal').classList.remove('show')}
 async function saveContactEmail(){const em=document.getElementById('contactEmail').value.trim(),msg=document.getElementById('emailMsg'),btn=document.getElementById('emailSaveBtn');if(em&&!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){msg.innerHTML='<div class="msg danger">Email không hợp lệ.</div>';return}btn.disabled=true;try{const r=await fetch(AUTH_URL,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},body:JSON.stringify({action:'set_email',email:em})});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'Không lưu được email');await loadProfile();closeEmailModal();toast(em?'Đã lưu email đăng nhập':'Đã gỡ email đăng nhập')}catch(e){msg.innerHTML='<div class="msg danger">'+esc(e.message)+'</div>'}finally{btn.disabled=false}}
-function toggleMenu(e){e.stopPropagation();document.getElementById('userMenu').classList.toggle('show')}
+function toggleMenu(e){e.stopPropagation();if(!currentUser){openAuth('login');return}document.getElementById('userMenu').classList.toggle('show')}
 function closeMenu(){document.getElementById('userMenu').classList.remove('show')}
 async function logout(){closeMenu();accessToken='';currentUser=null;localStorage.removeItem('shopzicl_username_token');updateUI()}
 function openAuth(mode){setAuthMode(mode==='register'?'register':'login');document.getElementById('authMsg').innerHTML='';document.getElementById('authModal').classList.add('show');setTimeout(()=>document.getElementById('username').focus(),50)}
@@ -1295,5 +1307,4 @@ zcRoute();
 if(window.zcPendingReady)zcProfileReady();
 (function(){const h=document.querySelector('header.top');if(!h)return;let last=window.scrollY,ticking=false;function upd(){const y=Math.max(0,window.scrollY);const d=y-last;const busy=document.body.classList.contains('zc-nav-lock')||document.getElementById('userMenu')?.classList.contains('show')||h.contains(document.activeElement)&&document.activeElement.tagName==='INPUT';if(busy||y<h.offsetHeight){h.classList.remove('top-hidden')}else if(d>8){h.classList.add('top-hidden');document.querySelectorAll('#zcNav .zc-nav-item.open').forEach(x=>x.classList.remove('open'))}else if(d<-8){h.classList.remove('top-hidden')}if(Math.abs(d)>8||y<h.offsetHeight)last=y;ticking=false}window.addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(upd)}},{passive:true});h.addEventListener('focusin',()=>h.classList.remove('top-hidden'))})();
 </script>
-<script src="price-sync.js"></script>
 </body></html>
