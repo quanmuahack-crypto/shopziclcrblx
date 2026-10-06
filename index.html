@@ -693,11 +693,15 @@ body{background-color:var(--bg);background-image:repeating-linear-gradient(135de
 .wl-title{color:var(--text)}
 .terms-num{-webkit-text-stroke-color:var(--cyan)}
 @property --zc-ang{syntax:'<angle>';initial-value:0deg;inherits:false}
-.card{position:relative;border:2px solid transparent;background:linear-gradient(var(--panel),var(--panel)) padding-box,conic-gradient(from var(--zc-ang),#2a1f40 0deg,#2a1f40 230deg,#c4b5fd 275deg,#a78bfa 300deg,#7c3aed 320deg,#2a1f40 360deg) border-box;animation:zcCardLight 3.6s ease-in-out infinite alternate;box-shadow:0 1px 2px rgba(0,0,0,.04),0 10px 26px -18px rgba(124,58,237,.45)}
-.card:nth-child(4n+2){animation-delay:-.9s}.card:nth-child(4n+3){animation-delay:-1.8s}.card:nth-child(4n+4){animation-delay:-2.7s}
-.card:hover{border-color:transparent;box-shadow:0 0 0 1px rgba(139,92,246,.35),0 16px 40px -16px rgba(124,58,237,.55)}
-@keyframes zcCardLight{to{--zc-ang:360deg}}
-@media(prefers-reduced-motion:reduce){.card{animation:none;background:linear-gradient(var(--panel),var(--panel)) padding-box,linear-gradient(135deg,#a78bfa,#2a1f40 60%) border-box}}
+.card.sc{position:relative;isolation:isolate;overflow:hidden;border:0;padding:2px;background:#2a1f40;box-shadow:0 1px 2px rgba(0,0,0,.04),0 10px 26px -18px rgba(124,58,237,.45)}
+.card.sc:before{content:'';position:absolute;z-index:-2;left:50%;top:50%;width:160%;aspect-ratio:1;translate:-50% -50%;background:conic-gradient(#2a1f40 0deg,#2a1f40 230deg,#c4b5fd 275deg,#a78bfa 300deg,#7c3aed 320deg,#2a1f40 360deg);animation:zcSpin 3.6s ease-in-out infinite alternate;animation-delay:var(--sd,0s);will-change:transform;pointer-events:none}
+.card.sc:after{content:'';position:absolute;z-index:-1;inset:2px;border-radius:16px;background:var(--panel);pointer-events:none}
+.card.sc .sc-media{border-radius:16px 16px 0 0}
+@keyframes zcSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+.card.sc:hover{box-shadow:0 0 0 1px rgba(139,92,246,.35),0 16px 40px -16px rgba(124,58,237,.55)}
+
+@media(prefers-reduced-motion:reduce){.card.sc:before{animation:none;background:linear-gradient(135deg,#a78bfa,#2a1f40 60%)}}
 @media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr)!important;gap:12px!important}.card.sc .sc-body{padding:12px 10px 12px}.card.sc .sc-body h3{font-size:15px}.card.sc .sc-st{font-size:13.5px;margin-bottom:10px}.sc-act{gap:6px}.sc-go{height:40px;padding:0 6px;font-size:12.5px;gap:4px;letter-spacing:.2px;border-radius:10px;white-space:nowrap}.sc-go span{font-size:13px}.sc-cart{width:40px;height:40px;font-size:16px;border-radius:10px}}
 @media(max-width:430px){.sc-go span{display:none}}
 
@@ -997,10 +1001,11 @@ async function loadAccStock(){try{const r=await fetch(SUPABASE_URL+'/rest/v1/acc
 function refreshAccStockUI(){renderServices();if(document.getElementById('detailModal').classList.contains('show'))renderDetail()}
 function inStock(name){return !isAccService(name)||ACC_STOCK[name]>0}
 
+function zcSyncSpin(root){const t=performance.now()/1000;(root||document).querySelectorAll('.card.sc').forEach((c,k)=>{c.style.setProperty('--sd',(-((t+k%4*0.9)%7.2)).toFixed(3)+'s')})}
 function renderChips(){activeGroup='all';if(!document.getElementById('chips'))return;document.getElementById('chips').innerHTML='<button class="chip on" onclick="setGroup(\'all\')">'+svgIcon('i-pad')+'Tất cả <em>'+Object.keys(catalog).length+'</em></button>'}
 function setGroup(id){activeGroup=id;renderServices();document.getElementById('services').scrollIntoView({behavior:'smooth',block:'start'})}
 function minPrice(name){return Math.min(...(catalog[name]||[]).map(x=>Number(x[1])))}
-function renderServices(){const grid=document.getElementById('serviceGrid');if(!grid)return;renderChips();const q=norm(document.getElementById('search').value.trim());const list=Object.keys(catalog).filter(k=>(activeGroup==='all'||groupOf(k)[0]===activeGroup)&&(!q||norm(k).includes(q)||catalog[k].some(p=>norm(p[0]).includes(q))));document.getElementById('resultCount').innerHTML='Tìm thấy <b>'+list.length+'</b> dịch vụ phù hợp';if(!list.length){grid.innerHTML='<div class="empty"><b>Không có gói nào khớp</b>Thử từ khoá khác hoặc chọn "Tất cả" ở thanh danh mục.</div>';return}if(typeof svRefresh==='function')svRefresh();grid.innerHTML=list.map(k=>{const ok=inStock(k),attr=esc(k);const st=isAccService(k)?(ok?'Còn '+ACC_STOCK[k]+' acc':'Hết acc'):'Sẵn sàng';return '<article class="card sc"><a class="sc-media" href="#dv/'+norm(k).replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')+'" title="'+attr+'"><img src="'+imgOf(k)+'" alt="'+attr+'" loading="lazy"></a><div class="sc-body"><h3>'+esc(k)+'</h3><p class="sc-st'+(ok?'':' out')+'">'+st+'</p><div class="sc-act"><button class="sc-go" type="button" data-service="'+attr+'" onclick="openDetail(this.dataset.service)">XEM TẤT CẢ <span aria-hidden="true">→</span></button><button class="sc-cart" type="button" data-service="'+attr+'" onclick="quickAdd(this.dataset.service)" title="Thêm vào giỏ" aria-label="Thêm vào giỏ"'+(ok?'':' disabled')+'>'+svgIcon('i-cart')+'</button></div></div></article>'}).join('')}
+function renderServices(){const grid=document.getElementById('serviceGrid');if(!grid)return;renderChips();const q=norm(document.getElementById('search').value.trim());const list=Object.keys(catalog).filter(k=>(activeGroup==='all'||groupOf(k)[0]===activeGroup)&&(!q||norm(k).includes(q)||catalog[k].some(p=>norm(p[0]).includes(q))));document.getElementById('resultCount').innerHTML='Tìm thấy <b>'+list.length+'</b> dịch vụ phù hợp';if(!list.length){grid._sig=null;grid.innerHTML='<div class="empty"><b>Không có gói nào khớp</b>Thử từ khoá khác hoặc chọn "Tất cả" ở thanh danh mục.</div>';return}if(typeof svRefresh==='function')svRefresh();const html=list.map(k=>{const ok=inStock(k),attr=esc(k);const st=isAccService(k)?(ok?'Còn '+ACC_STOCK[k]+' acc':'Hết acc'):'Sẵn sàng';return '<article class="card sc"><a class="sc-media" href="#dv/'+norm(k).replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')+'" title="'+attr+'"><img src="'+imgOf(k)+'" alt="'+attr+'" loading="lazy"></a><div class="sc-body"><h3>'+esc(k)+'</h3><p class="sc-st'+(ok?'':' out')+'">'+st+'</p><div class="sc-act"><button class="sc-go" type="button" data-service="'+attr+'" onclick="openDetail(this.dataset.service)">XEM TẤT CẢ <span aria-hidden="true">→</span></button><button class="sc-cart" type="button" data-service="'+attr+'" onclick="quickAdd(this.dataset.service)" title="Thêm vào giỏ" aria-label="Thêm vào giỏ"'+(ok?'':' disabled')+'>'+svgIcon('i-cart')+'</button></div></div></article>'}).join('');if(grid._sig===html)return;grid._sig=html;grid.innerHTML=html;zcSyncSpin(grid)}
 
 function openDetail(name){location.hash='dv/'+svSlug(name)}
 function closeDetail(){document.getElementById('detailModal').classList.remove('show')}
@@ -1344,5 +1349,4 @@ zcRoute();
 if(window.zcPendingReady)zcProfileReady();
 (function(){const h=document.querySelector('header.top');if(!h)return;let last=window.scrollY,ticking=false;function upd(){const y=Math.max(0,window.scrollY);const d=y-last;const busy=document.body.classList.contains('zc-nav-lock')||document.getElementById('userMenu')?.classList.contains('show')||h.contains(document.activeElement)&&document.activeElement.tagName==='INPUT';if(busy||y<h.offsetHeight){h.classList.remove('top-hidden')}else if(d>8){h.classList.add('top-hidden');document.querySelectorAll('#zcNav .zc-nav-item.open').forEach(x=>x.classList.remove('open'))}else if(d<-8){h.classList.remove('top-hidden')}if(Math.abs(d)>8||y<h.offsetHeight)last=y;ticking=false}window.addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(upd)}},{passive:true});h.addEventListener('focusin',()=>h.classList.remove('top-hidden'))})();
 </script>
-<script src="price-sync.js"></script>
 </body></html>
