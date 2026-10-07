@@ -1364,4 +1364,5 @@ zcRoute();
 if(window.zcPendingReady)zcProfileReady();
 (function(){const h=document.querySelector('header.top');if(!h)return;let last=window.scrollY,ticking=false;function upd(){const y=Math.max(0,window.scrollY);const d=y-last;const busy=document.body.classList.contains('zc-nav-lock')||document.getElementById('userMenu')?.classList.contains('show')||h.contains(document.activeElement)&&document.activeElement.tagName==='INPUT';if(busy||y<h.offsetHeight){h.classList.remove('top-hidden')}else if(d>8){h.classList.add('top-hidden');document.querySelectorAll('#zcNav .zc-nav-item.open').forEach(x=>x.classList.remove('open'))}else if(d<-8){h.classList.remove('top-hidden')}if(Math.abs(d)>8||y<h.offsetHeight)last=y;ticking=false}window.addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(upd)}},{passive:true});h.addEventListener('focusin',()=>h.classList.remove('top-hidden'))})();
 </script>
+<script src="price-sync.js"></script>
 </body></html>
