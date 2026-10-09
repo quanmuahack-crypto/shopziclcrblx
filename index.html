@@ -920,6 +920,78 @@ html.th-anim,html.th-anim *{transition:background-color .3s,border-color .3s,col
 .mu-btn.off .mu-off{display:block}
 .mu-btn.off{color:var(--muted)}
 .mu-btn.on{color:var(--cyan-2)}
+
+.lsn-hero{position:relative;overflow:hidden;display:grid;grid-template-columns:1.25fr 1fr;gap:24px;padding:28px;border-radius:22px;background:radial-gradient(120% 140% at 0% 0%,rgba(139,92,246,.35),transparent 55%),linear-gradient(135deg,#1c1033,#120d1c 60%);border:1px solid rgba(139,92,246,.45);box-shadow:0 0 50px -20px rgba(124,58,237,.7);margin:0 0 18px}
+.lsn-hero:after{content:'';position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.35),transparent 70%);pointer-events:none}
+.lsn-k{margin:0 0 6px;color:#c4b5fd;font-size:13.5px;font-weight:700;letter-spacing:.3px}
+.lsn-big{margin:0;font-family:var(--display);font-size:46px;line-height:1.05;color:#fff;letter-spacing:.5px;text-shadow:0 0 30px rgba(167,139,250,.55)}
+.lsn-big small{font-size:22px;color:#c4b5fd;margin-left:4px}
+.lsn-rate{margin:18px 0 0}
+.lsn-rate-top{display:flex;justify-content:space-between;font-size:13px;color:#d6cdea;margin:0 0 7px}
+.lsn-rate-top b{color:#fff}
+.lsn-bar{height:8px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;display:flex}
+.lsn-bar i{display:block;height:100%}
+.lsn-bar .ok{background:linear-gradient(90deg,#22c55e,#4ade80)}
+.lsn-bar .wait{background:#a78bfa}
+.lsn-bar .bad{background:#f87171}
+.lsn-mini{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-self:center}
+.lsn-mini div{padding:14px 12px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);text-align:center}
+.lsn-mini b{display:block;font-family:var(--display);font-size:26px;line-height:1.1;color:#fff}
+.lsn-mini span{display:block;margin-top:4px;font-size:12.5px;font-weight:600;color:#d6cdea}
+.lsn-mini .ok b{color:#4ade80}.lsn-mini .wait b{color:#c4b5fd}.lsn-mini .bad b{color:#f87171}
+.lsn-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 16px}
+.lsn-seg{display:flex;gap:4px;padding:4px;border-radius:12px;background:var(--panel);border:1px solid var(--line2)}
+.lsn-seg button{height:36px;padding:0 14px;border:0;border-radius:9px;background:none;color:var(--muted);font-weight:700;font-size:13.5px;white-space:nowrap}
+.lsn-seg button em{font-style:normal;margin-left:6px;padding:1px 7px;border-radius:99px;background:rgba(255,255,255,.08);font-size:11.5px}
+html[data-theme="light"] .lsn-seg button em{background:#ede9f6}
+html[data-theme="light"] .lsn-seg button.on em{background:rgba(255,255,255,.25)}
+.lsn-seg button.on{background:var(--cyan);color:#fff}
+.lsn-seg button.on em{background:rgba(255,255,255,.2)}
+.lsn-search{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;height:44px;padding:0 14px;border-radius:12px;background:var(--panel);border:1px solid var(--line2);color:var(--muted)}
+.lsn-search:focus-within{border-color:var(--cyan)}
+.lsn-search input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--text);font-size:14.5px}
+.lsn-day{margin:18px 2px 8px;color:var(--muted);font-size:12.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase}
+.lsn-list{display:flex;flex-direction:column;gap:8px}
+.lsn-row{display:grid;grid-template-columns:46px 1fr auto;gap:14px;align-items:center;padding:14px 16px;border-radius:16px;background:var(--panel);border:1px solid var(--line);transition:border-color .15s}
+.lsn-row:hover{border-color:var(--line2)}
+.lsn-tel{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;color:#fff;font-family:var(--display);font-size:15px;letter-spacing:.3px;background:var(--c);box-shadow:0 8px 18px -10px var(--c)}
+.lsn-t b{display:block;font-size:15.5px;color:var(--text)}
+.lsn-t span{display:block;margin-top:2px;color:var(--muted);font-size:13px}
+.lsn-t span code{font-family:Consolas,Menlo,monospace;font-size:12.5px}
+.lsn-why{grid-column:2/-1;margin-top:-4px;padding:8px 11px;border-radius:10px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.28);color:#fca5a5;font-size:13px;line-height:1.5}
+.lsn-r{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.lsn-amt{font-family:var(--display);font-size:19px;white-space:nowrap}
+.lsn-amt.ok{color:#4ade80}.lsn-amt.bad{color:var(--muted);text-decoration:line-through}.lsn-amt.wait{color:var(--text)}
+.lsn-pill{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:99px;font-size:12px;font-weight:700;white-space:nowrap}
+.lsn-pill.ok{background:rgba(34,197,94,.14);color:#4ade80}
+.lsn-pill.bad{background:rgba(248,113,113,.14);color:#f87171}
+.lsn-pill.wait{background:rgba(139,92,246,.16);color:#c4b5fd}
+.lsn-pill.wait:before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor;animation:lsnPulse 1.2s ease-in-out infinite}
+@keyframes lsnPulse{50%{opacity:.25}}
+.lsn-real{font-size:12px;color:var(--muted)}
+.lsn-real b{color:#4ade80}
+.lsn-more{display:block;margin:16px auto 0;height:42px;padding:0 22px;border-radius:11px;border:1px solid var(--line2);background:var(--panel);color:var(--text);font-weight:700}
+.lsn-more:hover{border-color:var(--cyan);color:var(--cyan-2)}
+.lsn-empty{padding:50px 20px;text-align:center;border-radius:18px;background:var(--panel);border:1px dashed var(--line2);color:var(--muted)}
+.lsn-empty b{display:block;margin:0 0 6px;color:var(--text);font-size:17px}
+.lsn-empty .zc-btn{margin-top:16px}
+html[data-theme="light"] .lsn-hero{background:radial-gradient(120% 140% at 0% 0%,rgba(167,139,250,.35),transparent 55%),linear-gradient(135deg,#f5f0ff,#ffffff 60%);border-color:rgba(139,92,246,.35);box-shadow:0 14px 40px -24px rgba(124,58,237,.5)}
+html[data-theme="light"] .lsn-k{color:#7c3aed}
+html[data-theme="light"] .lsn-big{color:#1e1033;text-shadow:none}
+html[data-theme="light"] .lsn-big small{color:#7c3aed}
+html[data-theme="light"] .lsn-rate-top{color:#475569}
+html[data-theme="light"] .lsn-rate-top b{color:#0f172a}
+html[data-theme="light"] .lsn-bar{background:#ede9f6}
+html[data-theme="light"] .lsn-mini div{background:#fff;border-color:#e9e3f3}
+html[data-theme="light"] .lsn-mini b{color:#0f172a}
+html[data-theme="light"] .lsn-mini span{color:#64748b}
+html[data-theme="light"] .lsn-mini .ok b,html[data-theme="light"] .lsn-amt.ok,html[data-theme="light"] .lsn-pill.ok,html[data-theme="light"] .lsn-real b{color:#16a34a}
+html[data-theme="light"] .lsn-mini .wait b,html[data-theme="light"] .lsn-pill.wait{color:#7c3aed}
+html[data-theme="light"] .lsn-mini .bad b,html[data-theme="light"] .lsn-pill.bad{color:#dc2626}
+html[data-theme="light"] .lsn-why{color:#b91c1c}
+@media(max-width:760px){.lsn-hero{grid-template-columns:1fr;padding:22px}.lsn-big{font-size:36px}.lsn-seg{width:100%;overflow-x:auto}.lsn-search{min-width:0;width:100%}}
+@media(max-width:520px){.lsn-row{grid-template-columns:40px 1fr;gap:12px;padding:12px}.lsn-tel{width:40px;height:40px;font-size:13px}.lsn-r{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px dashed var(--line)}.lsn-why{grid-column:1/-1;margin-top:0}.lsn-mini b{font-size:21px}.lsn-seg{display:grid;grid-template-columns:repeat(4,1fr);overflow:visible}.lsn-seg button{padding:0 4px;font-size:12px;height:auto;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;line-height:1.2}.lsn-seg button em{margin:0}}
+@media(prefers-reduced-motion:reduce){.lsn-pill.wait:before{animation:none}}
 </style>
 </head>
 <body>
@@ -960,7 +1032,7 @@ html.th-anim,html.th-anim *{transition:background-color .3s,border-color .3s,col
 <div class="actions">
 <button class="wallet" id="walletBox" style="display:none" onclick="openDepositArea()" title="Nạp thêm tiền"><span class="wallet-ico"><svg><use href="#i-wallet"/></svg></span><span><small>Số dư ví</small><b id="balance">0 đ</b></span></button>
 <button class="btn btn-green act-nap" onclick="openDepositArea()"><svg><use href="#i-plus"/></svg><span>Nạp tiền</span></button>
-<a class="icon-btn act-hist" href="lich-su-nap.html" title="Lịch sử nạp"><svg><use href="#i-hist"/></svg></a>
+<a class="icon-btn act-hist" href="#lich-su-nap" title="Lịch sử nạp"><svg><use href="#i-hist"/></svg></a>
 <button class="th-btn mu-btn" id="muBtn" type="button" onclick="muToggle()" title="Tắt / bật nhạc nền" aria-label="Tắt / bật nhạc nền" aria-pressed="false"><svg class="mu-on"><use href="#i-vol"/></svg><svg class="mu-off"><use href="#i-mute"/></svg></button>
 <button class="th-btn" id="thBtn" type="button" onclick="thToggle()" title="Đổi giao diện sáng / tối" aria-label="Đổi giao diện sáng / tối"><svg class="th-moon"><use href="#i-moon"/></svg><svg class="th-sun"><use href="#i-sun"/></svg></button>
 <button class="icon-btn nt-bell" id="ntBell" type="button" onclick="ntOpen()" title="Tin nhắn từ admin" aria-label="Tin nhắn từ admin" style="display:none"><svg><use href="#i-bell"/></svg><span class="badge" id="ntCount"></span></button>
@@ -976,7 +1048,7 @@ html.th-anim,html.th-anim *{transition:background-color .3s,border-color .3s,col
 <button class="menu-item" onclick="closeMenu();openCart()"><svg><use href="#i-cart"/></svg>Giỏ hàng</button>
 <button class="menu-item" onclick="closeMenu();openDepositArea()"><svg><use href="#i-wallet"/></svg>Nạp tiền</button>
 <button class="menu-item" onclick="closeMenu();openEmailModal()"><svg><use href="#i-chat"/></svg><span id="menuEmailLabel">Thêm email đăng nhập</span></button>
-<a class="menu-item" href="lich-su-nap.html" title="Lịch sử nạp"><svg><use href="#i-hist"/></svg>Lịch sử nạp</a>
+<a class="menu-item" href="#lich-su-nap" title="Lịch sử nạp"><svg><use href="#i-hist"/></svg>Lịch sử nạp</a>
 <a class="menu-item" href="chat-admin.html" title="Chat Admin"><svg><use href="#i-chat"/></svg>Chat với admin<span class="nt-pill" id="ntMenuCount"></span></a>
 <button class="menu-item danger" onclick="logout()"><svg><use href="#i-out"/></svg>Đăng xuất</button>
 </div>
@@ -1048,7 +1120,11 @@ html.th-anim,html.th-anim *{transition:background-color .3s,border-color .3s,col
 </div>
 <div class="zc-view" data-view="nap-the" hidden>
 <div class="zc-head"><span class="zc-head-tile" style="--c:#ef4444" id="nap-the-icon" data-i="wallet"></span><div><h1>Nạp thẻ cào</h1><p>Nạp tiền vào ví bằng thẻ cào điện thoại và thẻ game.</p></div></div>
-<div class="zc-grid2"><div class="zc-card"><h2>Nạp thẻ cào</h2><div class="zc-field"><label>Nhà mạng</label><div class="zc-pick" id="ctPick"></div></div><div class="zc-field"><label for="cSerial">Seri thẻ</label><div class="zc-input" id="icSerial"><input id="cSerial" autocomplete="off" inputmode="numeric" placeholder="Nhập seri in trên thẻ"></div><p class="dep-err" id="cErrSerial"></p></div><div class="zc-field"><label for="cCode">Mã thẻ</label><div class="zc-input" id="icCode"><input id="cCode" autocomplete="off" inputmode="numeric" placeholder="Nhập mã cào"></div><p class="dep-err" id="cErrCode"></p></div><div class="zc-field"><label>Mệnh giá</label><div class="zc-pick amt" id="amPick"></div></div><div class="zc-msg note" style="margin:0 0 14px">Chọn đúng mệnh giá in trên thẻ. Cố tình nạp sai thẻ 2 lần sẽ bị cấm tài khoản vĩnh viễn.</div><button class="zc-btn zc-btn-cyan zc-full" id="cBtn" type="button">Gửi thẻ nạp</button><div id="cMsg"></div></div><div class="zc-card"><h2>Thẻ nạp gần đây</h2><div id="depBox"><div class="zc-skel"></div></div><a class="zc-btn zc-btn-ghost zc-full" href="lich-su-nap.html" title="Lịch sử nạp" style="margin-top:14px">Xem toàn bộ lịch sử nạp</a></div></div>
+<div class="zc-grid2"><div class="zc-card"><h2>Nạp thẻ cào</h2><div class="zc-field"><label>Nhà mạng</label><div class="zc-pick" id="ctPick"></div></div><div class="zc-field"><label for="cSerial">Seri thẻ</label><div class="zc-input" id="icSerial"><input id="cSerial" autocomplete="off" inputmode="numeric" placeholder="Nhập seri in trên thẻ"></div><p class="dep-err" id="cErrSerial"></p></div><div class="zc-field"><label for="cCode">Mã thẻ</label><div class="zc-input" id="icCode"><input id="cCode" autocomplete="off" inputmode="numeric" placeholder="Nhập mã cào"></div><p class="dep-err" id="cErrCode"></p></div><div class="zc-field"><label>Mệnh giá</label><div class="zc-pick amt" id="amPick"></div></div><div class="zc-msg note" style="margin:0 0 14px">Chọn đúng mệnh giá in trên thẻ. Cố tình nạp sai thẻ 2 lần sẽ bị cấm tài khoản vĩnh viễn.</div><button class="zc-btn zc-btn-cyan zc-full" id="cBtn" type="button">Gửi thẻ nạp</button><div id="cMsg"></div></div><div class="zc-card"><h2>Thẻ nạp gần đây</h2><div id="depBox"><div class="zc-skel"></div></div><a class="zc-btn zc-btn-ghost zc-full" href="#lich-su-nap" title="Lịch sử nạp" style="margin-top:14px">Xem toàn bộ lịch sử nạp</a></div></div>
+</div>
+<div class="zc-view" data-view="lich-su-nap" hidden>
+<div class="zc-head"><span class="zc-head-tile" style="--c:#ef4444" id="lsn-icon"></span><div><h1>Lịch sử nạp</h1><p>Tất cả thẻ cào bạn đã nạp vào shop và kết quả xử lý.</p></div></div>
+<div id="lsnBox"></div>
 </div>
 <div class="zc-view" data-view="dong-tien" hidden>
 <div class="zc-head"><span class="zc-head-tile" style="--c:#64748b" id="dong-tien-icon" data-i="dollar"></span><div><h1>Dòng tiền</h1><p>Số dư, tiền đã nạp và tiền đã tiêu tại shop.</p></div></div>
@@ -1319,7 +1395,7 @@ const NAV=[
 {id:'mua',label:'Lịch sử mua',c:'#22c55e',i:'pad',sub:[{id:'lich-su-mua',label:'Tài khoản đã mua',href:'#lich-su-mua'}]},
 {id:'khac',label:'Dịch vụ khác',c:'#f97316',i:'layers',sub:[{id:'don-cay-thue',label:'Đơn cày thuê',href:'#don-cay-thue'},{id:'don-vat-pham',label:'Đơn vật phẩm',href:'#don-vat-pham'},{id:'rut-thuong',label:'Rút thưởng',href:'#rut-thuong'}]},
 {id:'ho-so',label:'Hồ sơ',href:'#ho-so',c:'#c026d3',i:'user'},
-{id:'nap',label:'Nạp tiền',c:'#ef4444',i:'wallet',sub:[{id:'nap-the',label:'Nạp thẻ cào',href:'#nap-the'}]},
+{id:'nap',label:'Nạp tiền',c:'#ef4444',i:'wallet',sub:[{id:'nap-the',label:'Nạp thẻ cào',href:'#nap-the'},{id:'lich-su-nap',label:'Lịch sử nạp',href:'#lich-su-nap'}]},
 {id:'dong-tien',label:'Dòng tiền',href:'#dong-tien',c:'#64748b',i:'dollar'},
 {id:'bo-sung',label:'Bổ sung',c:'#475569',i:'info',sub:[{id:'chinh-sach',label:'Chính sách',href:'#chinh-sach'},{id:'dieu-khoan',label:'Điều khoản',href:'#dieu-khoan'}]}
 ];
@@ -1335,8 +1411,8 @@ async function fetchOrders(){if(!currentUser)return [];const base='orders?select
 async function fetchDeposits(){if(!currentUser)return [];return api('deposits?select=card_type,amount,status,created_at&user_id=eq.'+encodeURIComponent(currentUser.id)+'&order=created_at.desc')}
 
 let zcView='home',zcReady=false,zcUid=null,serviceTypes=null;
-const ZC_VIEWS=['lich-su-mua','don-cay-thue','don-vat-pham','rut-thuong','ho-so','nap-the','dong-tien','chinh-sach','dieu-khoan'];
-const ZC_TITLES={"lich-su-mua": "Tài khoản đã mua", "don-cay-thue": "Đơn cày thuê", "don-vat-pham": "Đơn vật phẩm", "rut-thuong": "Rút thưởng", "ho-so": "Hồ sơ", "nap-the": "Nạp thẻ cào", "dong-tien": "Dòng tiền", "chinh-sach": "Chính sách", "dieu-khoan": "Điều khoản"};
+const ZC_VIEWS=['lich-su-nap','lich-su-mua','don-cay-thue','don-vat-pham','rut-thuong','ho-so','nap-the','dong-tien','chinh-sach','dieu-khoan'];
+const ZC_TITLES={"lich-su-nap": "Lịch sử nạp", "lich-su-mua": "Tài khoản đã mua", "don-cay-thue": "Đơn cày thuê", "don-vat-pham": "Đơn vật phẩm", "rut-thuong": "Rút thưởng", "ho-so": "Hồ sơ", "nap-the": "Nạp thẻ cào", "dong-tien": "Dòng tiền", "chinh-sach": "Chính sách", "dieu-khoan": "Điều khoản"};
 const ZC_CBS={};
 const ZC_BASE={SUPABASE_URL,SUPABASE_KEY,AUTH_URL,DISCORD:'https://discord.gg/KmfvE9X6g',ic,esc,money,fmtDate,norm,api,
  rpc:(fn,body)=>api('rpc/'+fn,{method:'POST',body:JSON.stringify(body||{})}),
@@ -1539,9 +1615,32 @@ async function ntPoll(){if(ntBusy||!currentUser||document.visibilityState!=='vis
 let ntUid=undefined;
 function ntStart(){const id=currentUser?currentUser.id:null;if(id===ntUid)return;ntUid=id;ntPaint(0);if(!id){clearInterval(ntTimer);ntTimer=null;ntHide();return}ntPoll();if(!ntTimer)ntTimer=setInterval(ntPoll,15000)}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')ntPoll()});
+(function(ZC){
+const TEL={viettel:['VT','#e11d48'],mobifone:['MB','#2563eb'],vinaphone:['VN','#0ea5e9'],vietnamobile:['VM','#f97316'],zing:['ZG','#16a34a'],garena:['GR','#ea580c'],vcoin:['VC','#ca8a04'],scoin:['SC','#0d9488'],gate:['GT','#7c3aed']};
+const el=document.getElementById('lsnBox');document.getElementById('lsn-icon').innerHTML=ZC.ic('wallet');
+let rows=[],filter='all',q='',shown=20,timer=null;
+const kind=s=>{s=String(s||'').toLowerCase();return s==='approved'?'ok':s==='rejected'?'bad':'wait'};
+const vnd=n=>Number(n||0).toLocaleString('vi-VN');
+function dayLabel(d){const x=new Date(d),t=new Date();const a=new Date(x.getFullYear(),x.getMonth(),x.getDate()),b=new Date(t.getFullYear(),t.getMonth(),t.getDate());const diff=Math.round((b-a)/864e5);if(diff===0)return 'Hôm nay';if(diff===1)return 'Hôm qua';return x.toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'})}
+async function load(){const base='deposits?select=id,card_type,amount,serial,status,rejection_reason,created_at';const tail='&user_id=eq.'+encodeURIComponent(ZC.user.id)+'&order=created_at.desc&limit=500';try{return await ZC.api(base+',api_credit'+tail)}catch(e){if(/api_credit|column|42703/i.test(String(e.message)))return ZC.api(base+tail);throw e}}
+function hero(){const ok=rows.filter(r=>kind(r.status)==='ok'),w=rows.filter(r=>kind(r.status)==='wait'),b=rows.filter(r=>kind(r.status)==='bad');const sum=ok.reduce((a,r)=>a+Number(r.api_credit||r.amount||0),0);const n=rows.length||1;const rate=rows.length?Math.round(ok.length*100/rows.length):0;
+ return '<section class="lsn-hero"><div style="position:relative;z-index:1"><p class="lsn-k">Tổng tiền nạp thành công</p><p class="lsn-big">'+vnd(sum)+'<small>đ</small></p><div class="lsn-rate"><div class="lsn-rate-top"><span>Tỉ lệ thẻ thành công</span><b>'+rate+'%</b></div><div class="lsn-bar"><i class="ok" style="width:'+(ok.length*100/n)+'%"></i><i class="wait" style="width:'+(w.length*100/n)+'%"></i><i class="bad" style="width:'+(b.length*100/n)+'%"></i></div></div></div><div class="lsn-mini"><div class="ok"><b>'+ok.length+'</b><span>Thành công</span></div><div class="wait"><b>'+w.length+'</b><span>Đang xử lý</span></div><div class="bad"><b>'+b.length+'</b><span>Thất bại</span></div></div></section>'}
+function tools(){const c=k=>k==='all'?rows.length:rows.filter(r=>kind(r.status)===k).length;const btn=(k,l)=>'<button type="button" data-f="'+k+'" class="'+(filter===k?'on':'')+'">'+l+'<em>'+c(k)+'</em></button>';return '<div class="lsn-tools"><div class="lsn-seg" role="tablist">'+btn('all','Tất cả')+btn('ok','Thành công')+btn('wait','Đang xử lý')+btn('bad','Thất bại')+'</div><label class="lsn-search">'+ZC.ic('card')+'<input id="lsnQ" placeholder="Tìm theo số serial hoặc loại thẻ" value="'+ZC.esc(q)+'"></label></div>'}
+function row(r){const k=kind(r.status);const t=TEL[String(r.card_type||'').toLowerCase()]||[String(r.card_type||'?').slice(0,2).toUpperCase(),'#7c3aed'];const ser=String(r.serial||'');const masked=ser.length>4?'••••'+ser.slice(-4):ser;const time=new Date(r.created_at).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+ const pill=k==='ok'?'<span class="lsn-pill ok">✓ Thành công</span>':k==='bad'?'<span class="lsn-pill bad">✕ Thất bại</span>':'<span class="lsn-pill wait">Đang xử lý</span>';
+ const amt='<span class="lsn-amt '+k+'">'+(k==='ok'?'+':'')+vnd(r.amount)+'đ</span>';
+ const real=k==='ok'&&r.api_credit&&Number(r.api_credit)!==Number(r.amount)?'<span class="lsn-real">Thực nhận <b>'+vnd(r.api_credit)+'đ</b></span>':'';
+ return '<div class="lsn-row"><span class="lsn-tel" style="--c:'+t[1]+'">'+ZC.esc(t[0])+'</span><div class="lsn-t"><b>Thẻ '+ZC.esc(r.card_type)+' '+vnd(r.amount)+'đ</b><span>Seri <code>'+ZC.esc(masked)+'</code> · '+time+'</span></div><div class="lsn-r">'+amt+pill+real+'</div>'+(k==='bad'&&r.rejection_reason?'<div class="lsn-why">'+ZC.esc(r.rejection_reason)+'</div>':'')+'</div>'}
+function list(){const qq=q.trim().toLowerCase();let L=rows.filter(r=>(filter==='all'||kind(r.status)===filter)&&(!qq||String(r.serial||'').toLowerCase().includes(qq)||String(r.card_type||'').toLowerCase().includes(qq)));if(!L.length)return '<div class="lsn-empty"><b>Không có thẻ nào khớp</b>Thử bộ lọc khác hoặc xoá ô tìm kiếm.</div>';const total=L.length;L=L.slice(0,shown);let out='',last='';L.forEach(r=>{const d=dayLabel(r.created_at);if(d!==last){if(last)out+='</div>';out+='<p class="lsn-day">'+ZC.esc(d)+'</p><div class="lsn-list">';last=d}out+=row(r)});out+='</div>';if(total>shown)out+='<button type="button" class="lsn-more" id="lsnMore">Xem thêm '+Math.min(20,total-shown)+' thẻ</button>';return out}
+function paint(){if(!rows.length){el.innerHTML='<div class="lsn-empty"><b>Bạn chưa nạp thẻ nào</b>Nạp thẻ cào để có số dư mua dịch vụ trong shop.<br><a class="zc-btn zc-btn-cyan" href="#nap-the" title="Nạp thẻ cào">Nạp thẻ ngay</a></div>';return}el.innerHTML=hero()+tools()+'<div id="lsnList">'+list()+'</div>';bind()}
+function paintList(){document.getElementById('lsnList').innerHTML=list();document.querySelectorAll('.lsn-seg button').forEach(b=>b.classList.toggle('on',b.dataset.f===filter));bindMore()}
+function bindMore(){const m=document.getElementById('lsnMore');if(m)m.onclick=()=>{shown+=20;paintList()}}
+function bind(){el.querySelectorAll('.lsn-seg button').forEach(b=>b.onclick=()=>{filter=b.dataset.f;shown=20;paintList()});const i=document.getElementById('lsnQ');i.oninput=()=>{q=i.value;shown=20;paintList()};bindMore()}
+async function refresh(first){if(!ZC.user)return;try{const r=await load();const sig=JSON.stringify(r);if(!first&&sig===JSON.stringify(rows))return;rows=r;if(first||!document.getElementById('lsnList'))paint();else{const old=el.querySelector('.lsn-hero');if(old)old.outerHTML=hero();const t=el.querySelector('.lsn-tools');if(t){t.outerHTML=tools();bind()}paintList()}}catch(e){if(first)el.innerHTML='<div class="msg danger">Không tải được lịch sử nạp: '+ZC.esc(e.message)+'</div>'}}
+ZC.onReady(async u=>{clearInterval(timer);if(!u){ZC.loginPrompt(el,'Đăng nhập để xem lịch sử nạp thẻ của bạn.');return}el.innerHTML='<div class="zc-skel" style="height:170px;margin-bottom:16px"></div><div class="zc-skel"></div><div class="zc-skel" style="margin-top:8px"></div>';filter='all';q='';shown=20;await refresh(true);timer=setInterval(()=>{if(zcView!=='lich-su-nap'){clearInterval(timer);return}if(rows.some(r=>kind(r.status)==='wait'))refresh(false)},10000)});
+})(zcMake('lich-su-nap'));
 zcRoute();
 if(window.zcPendingReady)zcProfileReady();
 (function(){const h=document.querySelector('header.top');if(!h)return;let last=window.scrollY,ticking=false;function upd(){const y=Math.max(0,window.scrollY);const d=y-last;const busy=document.body.classList.contains('zc-nav-lock')||document.getElementById('userMenu')?.classList.contains('show')||h.contains(document.activeElement)&&document.activeElement.tagName==='INPUT';if(busy||y<h.offsetHeight){h.classList.remove('top-hidden')}else if(d>8){h.classList.add('top-hidden');document.querySelectorAll('#zcNav .zc-nav-item.open').forEach(x=>x.classList.remove('open'))}else if(d<-8){h.classList.remove('top-hidden')}if(Math.abs(d)>8||y<h.offsetHeight)last=y;ticking=false}window.addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(upd)}},{passive:true});h.addEventListener('focusin',()=>h.classList.remove('top-hidden'))})();
 </script>
-<script src="price-sync.js"></script>
 </body></html>
