@@ -914,6 +914,12 @@ html[data-theme="light"] .th-btn .th-moon{display:none}
 @media(max-width:640px){.th-btn{width:38px;height:38px;font-size:17px}}
 html.th-anim,html.th-anim *{transition:background-color .3s,border-color .3s,color .3s!important}
 
+
+.mu-btn .mu-off{display:none}
+.mu-btn.off .mu-on{display:none}
+.mu-btn.off .mu-off{display:block}
+.mu-btn.off{color:var(--muted)}
+.mu-btn.on{color:var(--cyan-2)}
 </style>
 </head>
 <body>
@@ -935,6 +941,8 @@ html.th-anim,html.th-anim *{transition:background-color .3s,border-color .3s,col
 <symbol id="i-bell" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a6 6 0 0 0-6 6v3.6L4.3 15A1 1 0 0 0 5.2 16.5h13.6a1 1 0 0 0 .9-1.5L18 11.6V8a6 6 0 0 0-6-6Zm0 20a3 3 0 0 0 2.8-2h-5.6A3 3 0 0 0 12 22Z"/></symbol>
 <symbol id="i-sun" viewBox="0 0 24 24"><path fill="currentColor" d="M12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0-6 1.5 3h-3L12 1Zm0 22-1.5-3h3L12 23ZM1 12l3-1.5v3L1 12Zm22 0-3 1.5v-3l3 1.5ZM4.2 4.2l3.2 1.1-2.1 2.1-1.1-3.2Zm15.6 15.6-3.2-1.1 2.1-2.1 1.1 3.2ZM4.2 19.8l1.1-3.2 2.1 2.1-3.2 1.1ZM19.8 4.2l-1.1 3.2-2.1-2.1 3.2-1.1Z"/></symbol>
 <symbol id="i-moon" viewBox="0 0 24 24"><path fill="currentColor" d="M21 14.5A9 9 0 0 1 9.5 3a7.5 7.5 0 1 0 11.5 11.5Z"/></symbol>
+<symbol id="i-vol" viewBox="0 0 24 24"><path fill="currentColor" d="M3 9h4l5-4v14l-5-4H3V9Zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4ZM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6Z"/></symbol>
+<symbol id="i-mute" viewBox="0 0 24 24"><path fill="currentColor" d="M3 9h4l5-4v14l-5-4H3V9Zm13.6.2 1.4-1.4 2.1 2.1 2.1-2.1 1.4 1.4-2.1 2.1 2.1 2.1-1.4 1.4-2.1-2.1-2.1 2.1-1.4-1.4 2.1-2.1-2.1-2.1Z"/></symbol>
 <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="m5 12 5 5 9-10"/></symbol>
 <symbol id="i-x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
 <symbol id="i-out" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M15 4h4v16h-4M10 8l-4 4 4 4m-4-4h11"/></symbol>
@@ -953,6 +961,7 @@ html.th-anim,html.th-anim *{transition:background-color .3s,border-color .3s,col
 <button class="wallet" id="walletBox" style="display:none" onclick="openDepositArea()" title="Nạp thêm tiền"><span class="wallet-ico"><svg><use href="#i-wallet"/></svg></span><span><small>Số dư ví</small><b id="balance">0 đ</b></span></button>
 <button class="btn btn-green act-nap" onclick="openDepositArea()"><svg><use href="#i-plus"/></svg><span>Nạp tiền</span></button>
 <a class="icon-btn act-hist" href="lich-su-nap.html" title="Lịch sử nạp"><svg><use href="#i-hist"/></svg></a>
+<button class="th-btn mu-btn" id="muBtn" type="button" onclick="muToggle()" title="Tắt / bật nhạc nền" aria-label="Tắt / bật nhạc nền" aria-pressed="false"><svg class="mu-on"><use href="#i-vol"/></svg><svg class="mu-off"><use href="#i-mute"/></svg></button>
 <button class="th-btn" id="thBtn" type="button" onclick="thToggle()" title="Đổi giao diện sáng / tối" aria-label="Đổi giao diện sáng / tối"><svg class="th-moon"><use href="#i-moon"/></svg><svg class="th-sun"><use href="#i-sun"/></svg></button>
 <button class="icon-btn nt-bell" id="ntBell" type="button" onclick="ntOpen()" title="Tin nhắn từ admin" aria-label="Tin nhắn từ admin" style="display:none"><svg><use href="#i-bell"/></svg><span class="badge" id="ntCount"></span></button>
 <button class="icon-btn" onclick="openCart()" title="Giỏ hàng" aria-label="Giỏ hàng"><svg><use href="#i-cart"/></svg><span class="badge" id="cartCount"></span></button>
@@ -1066,7 +1075,7 @@ html.th-anim,html.th-anim *{transition:background-color .3s,border-color .3s,col
 <div class="zc-view" data-view="dv" hidden><div id="svPage"></div></div>
 <div class="zc-view" data-view="don" hidden><div id="donPage"></div></div>
 </main>
-<footer>© ShopZiCiCRBLX · Giờ làm việc 17:00 – 24:00 · <a href="#chinh-sach" title="Chính sách" class="foot-link">Chính sách</a> · <a href="#dieu-khoan" title="Điều khoản dịch vụ" class="foot-link">Điều khoản dịch vụ</a></footer>
+<footer>© ShopZiCiCRBLX · Giờ làm việc 17:00 – 24:00 · Nhạc nền: Lukrembo – Bread (<a href="https://freetouse.com" target="_blank" rel="noopener noreferrer" title="Nhạc miễn phí từ freetouse.com" class="foot-link">freetouse.com</a>) · <a href="#chinh-sach" title="Chính sách" class="foot-link">Chính sách</a> · <a href="#dieu-khoan" title="Điều khoản dịch vụ" class="foot-link">Điều khoản dịch vụ</a></footer>
 
 <div id="authModal" class="modal" onclick="if(event.target===this)closeAuth()"><div class="box"><button class="close" onclick="closeAuth()" aria-label="Đóng"><svg><use href="#i-x"/></svg></button><div class="box-pad">
 <div class="auth-logo"><span class="brand-ico"><svg><use href="#i-pad"/></svg></span><div><h2 id="authTitle">Đăng nhập</h2><p class="sub" style="margin:0">Vào tài khoản để nạp tiền và đặt đơn.</p></div></div>
@@ -1260,7 +1269,17 @@ async function loadTopDeposits(){const el=document.getElementById('top5');if(!el
 try{Object.defineProperty(window,'loadTopDeposits',{writable:false})}catch(e){}
 async function checkIpBan(){const call=tok=>fetch(SUPABASE_URL+'/rest/v1/rpc/shop_ip_status',{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:'{}'});try{let r=await call(accessToken||SUPABASE_KEY);if(!r.ok&&accessToken)r=await call(SUPABASE_KEY);if(!r.ok)return;const d=await r.json();if(d&&d.banned)showIpBlock(d)}catch(e){console.warn('Không kiểm tra được IP:',e)}}
 function showIpBlock(d){const w=document.getElementById('welcomeModal');w.classList.remove('show','hide');document.getElementById('ipBlockReason').textContent=d.reason||'Vi phạm quy định của shop';document.getElementById('ipBlockUntil').textContent=d.until?new Date(d.until).toLocaleString('vi-VN'):'Vĩnh viễn';document.getElementById('ipBlockIp').textContent=d.ip||'—';document.getElementById('ipBlock').classList.add('show');document.body.classList.add('wl-lock');clearInterval(tpTimer)}
-function closeWelcome(){const w=document.getElementById('welcomeModal');if(!w.classList.contains('show')||w.classList.contains('hide'))return;const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;w.classList.add('hide');setTimeout(()=>{w.classList.remove('show','hide');document.body.classList.remove('wl-lock')},reduce?0:300)}
+const MU_SRC=encodeURI('Lukrembo - Bread (freetouse.com).mp3');let muAudio=null,muOn=true,muStarted=false,muFailed=false;
+try{muOn=localStorage.getItem('shop_music')!=='off'}catch(e){}
+function muPaint(){const b=document.getElementById('muBtn');if(!b)return;const playing=muOn&&muStarted&&!muFailed;b.classList.toggle('on',playing);b.classList.toggle('off',!playing);b.setAttribute('aria-pressed',playing?'true':'false');b.title=playing?'Tắt nhạc nền':'Bật nhạc nền'}
+function muGet(){if(!muAudio){muAudio=new Audio(MU_SRC);muAudio.loop=true;muAudio.volume=0.4;muAudio.preload='auto';muAudio.addEventListener('error',()=>{muFailed=true;muPaint()})}return muAudio}
+function muPlay(){const a=muGet();const p=a.play();muStarted=true;if(p&&p.catch)p.catch(()=>{muStarted=false;muPaint()});muPaint()}
+function muStart(){if(muOn&&!muStarted)muPlay()}
+function muToggle(){muOn=!(muOn&&muStarted);try{localStorage.setItem('shop_music',muOn?'on':'off')}catch(e){}if(muOn){muFailed=false;muPlay()}else{if(muAudio)muAudio.pause();muStarted=false;muPaint()}}
+document.addEventListener('pointerdown',e=>{if(e.target.closest('#muBtn'))return;muStart()},{once:true,capture:true});
+document.addEventListener('visibilitychange',()=>{if(!muAudio)return;if(document.hidden)muAudio.pause();else if(muOn&&muStarted)muAudio.play().catch(()=>{})});
+muPaint();
+function closeWelcome(){muStart();const w=document.getElementById('welcomeModal');if(!w.classList.contains('show')||w.classList.contains('hide'))return;const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;w.classList.add('hide');setTimeout(()=>{w.classList.remove('show','hide');document.body.classList.remove('wl-lock')},reduce?0:300)}
 function openWelcome(){const w=document.getElementById('welcomeModal');const img=document.getElementById('wlImg');if(typeof BANNER_IMG!=='undefined'&&BANNER_IMG)img.src=BANNER_IMG;else w.querySelector('.wl-media').style.display='none';document.body.classList.add('wl-lock');setTimeout(()=>document.getElementById('wlOk').focus(),60)}
 document.addEventListener('click',e=>{if(!e.target.closest('#userBox'))closeMenu()});
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;closeMenu();closeAuth();closeDetail();closeCart();closeCheckout();closeOrders();closePay();closeEmailModal();closeWelcome()});
@@ -1524,5 +1543,4 @@ zcRoute();
 if(window.zcPendingReady)zcProfileReady();
 (function(){const h=document.querySelector('header.top');if(!h)return;let last=window.scrollY,ticking=false;function upd(){const y=Math.max(0,window.scrollY);const d=y-last;const busy=document.body.classList.contains('zc-nav-lock')||document.getElementById('userMenu')?.classList.contains('show')||h.contains(document.activeElement)&&document.activeElement.tagName==='INPUT';if(busy||y<h.offsetHeight){h.classList.remove('top-hidden')}else if(d>8){h.classList.add('top-hidden');document.querySelectorAll('#zcNav .zc-nav-item.open').forEach(x=>x.classList.remove('open'))}else if(d<-8){h.classList.remove('top-hidden')}if(Math.abs(d)>8||y<h.offsetHeight)last=y;ticking=false}window.addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(upd)}},{passive:true});h.addEventListener('focusin',()=>h.classList.remove('top-hidden'))})();
 </script>
-<script src="price-sync.js"></script>
 </body></html>
