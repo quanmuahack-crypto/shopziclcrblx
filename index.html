@@ -1108,6 +1108,39 @@ html[data-theme="light"] .rt-pill.rejected,html[data-theme="light"] .rt-err,html
 @media(prefers-reduced-motion:reduce){.vq-bulb,.vq-spin:before{animation:none}}
 .vq-sc .sc-media{position:relative}.vq-sc .sc-go{text-decoration:none}.vq-sc-tag{position:absolute;left:10px;top:10px;padding:4px 10px;border-radius:99px;font-size:11.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,#7c3aed,#c026d3);box-shadow:0 6px 16px -6px #a855f7}
 .svc-block+.svc-block{margin-top:34px}.svc-block[hidden]{display:none}
+
+.orr{margin:34px 0 10px;padding:28px;border-radius:24px;background:radial-gradient(70% 90% at 50% 0,rgba(239,68,68,.12),transparent 70%),var(--zc-panel);border:1px solid rgba(239,68,68,.35);box-shadow:0 20px 60px -40px rgba(239,68,68,.6)}
+.orr-head{display:flex;align-items:center;justify-content:center;gap:14px;margin:0 0 22px;text-align:center}
+.orr-head h2{margin:0;font-family:var(--display);font-size:26px;letter-spacing:.6px;text-transform:uppercase;background:linear-gradient(90deg,#fbbf24,#f87171 55%,#f0abfc);-webkit-background-clip:text;background-clip:text;color:transparent}
+.orr-dia{color:#fbbf24;font-size:18px;text-shadow:0 0 12px rgba(251,191,36,.7)}
+.orr-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+.orr-card{padding:18px 20px;border-radius:18px;background:var(--zc-bg2);border:1px solid var(--zc-line)}
+.orr-card h3{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-family:var(--display);font-size:17px;letter-spacing:.5px;text-transform:uppercase;color:var(--zc-text)}
+.orr-card h3 span{width:30px;height:30px;flex:none;border-radius:9px;display:grid;place-items:center;font-size:15px;color:#fff;background:linear-gradient(135deg,#ef4444,#f97316);box-shadow:0 6px 16px -6px #ef4444}
+.orr-card ul{margin:0;padding:0;list-style:none;display:grid;gap:9px}
+.orr-card ul>li{position:relative;padding-left:20px;font-size:14px;line-height:1.6;color:var(--zc-muted)}
+.orr-card ul>li:before{content:'';position:absolute;left:3px;top:8px;width:8px;height:8px;border-radius:50%;background:var(--zc-cyan)}
+.orr-card ul>li.must:before{background:#fbbf24;box-shadow:0 0 8px #fbbf24}
+.orr-card ul>li.warn:before{background:#ef4444;box-shadow:0 0 8px #ef4444}
+.orr-card li b{color:var(--zc-text)}
+.orr-card li.must>b:first-child{color:#fbbf24}
+.orr-card li.warn>b:first-child,.orr-card .red{color:#f87171}
+.orr-card ol{margin:8px 0 2px;padding:10px 12px;list-style:none;display:grid;gap:6px;border-radius:12px;background:rgba(0,0,0,.18);border:1px dashed var(--zc-line2)}
+.orr-card ol li{position:relative;padding-left:22px;font-size:13.5px;line-height:1.55;color:var(--zc-text)}
+.orr-card ol li:before{content:'➜';position:absolute;left:0;top:0;color:#f97316;font-weight:700}
+.orr-card ol li.bad{color:#fca5a5;font-weight:600}
+.orr-card .st{display:inline-block;padding:1px 9px;border-radius:99px;font-size:12.5px}
+.orr-card .st.wait{background:rgba(251,191,36,.15);color:#fbbf24}
+.orr-card .st.work{background:rgba(56,189,248,.15);color:#38bdf8}
+.orr-card .st.done{background:rgba(34,197,94,.15);color:#4ade80}
+.orr-card a{color:var(--zc-cyan2);font-weight:600}
+html[data-theme="light"] .orr-card ol{background:#fff}
+html[data-theme="light"] .orr-card ol li.bad,html[data-theme="light"] .orr-card li.warn>b:first-child,html[data-theme="light"] .orr-card .red{color:#dc2626}
+html[data-theme="light"] .orr-card li.must>b:first-child{color:#b45309}
+html[data-theme="light"] .orr-card .st.wait{color:#b45309}
+html[data-theme="light"] .orr-card .st.work{color:#0369a1}
+html[data-theme="light"] .orr-card .st.done{color:#15803d}
+@media(max-width:860px){.orr{padding:18px 14px}.orr-grid{grid-template-columns:1fr}.orr-head h2{font-size:20px}}
 </style>
 </head>
 <body>
@@ -1216,6 +1249,42 @@ html[data-theme="light"] .rt-pill.rejected,html[data-theme="light"] .rt-err,html
 </ol>
 <p class="terms-foot">Bằng việc tiếp tục sử dụng dịch vụ, quý khách xác nhận đã đọc và đồng ý với toàn bộ điều khoản trên. Cần giải đáp, vui lòng liên hệ admin qua <a href="chat-admin.html" title="Chat Admin">Chat Admin</a> hoặc <a href="https://discord.gg/KmfvE9X6g" target="_blank" rel="noopener noreferrer" title="Discord của shop">Discord</a>.</p>
 </div></section>
+<section id="order-rules" class="orr" aria-labelledby="orrTitle">
+<header class="orr-head"><span class="orr-dia">◆</span><h2 id="orrTitle">Lưu ý quan trọng khi đặt đơn trên shop</h2><span class="orr-dia">◆</span></header>
+<div class="orr-grid">
+<article class="orr-card"><h3><span>1</span>Trước khi đặt đơn</h3><ul>
+<li class="must"><b>BẮT BUỘC:</b> Tạo Mã Dự Phòng trước khi đặt hàng, sau đó gửi mã vào phần "Ghi Chú [Cookie / 2FA]".</li>
+<li class="warn"><b>CẢNH BÁO:</b> Nếu bị hủy đến lần thứ 3 do sai mã, mã đã dùng, sai tài khoản hoặc sai mật khẩu:<ol><li>Lần 1: Trừ 50% tổng số tiền 3 đơn hàng bị hủy.</li><li>Lần 2: Trừ 30% số dư hiện tại.</li><li class="bad">Lần 3: XÓA TÀI KHOẢN VĨNH VIỄN &amp; không hoàn số dư.</li></ol></li>
+<li>Kiểm tra kỹ tài khoản / mật khẩu / mã dự phòng trước khi đặt hàng.</li>
+<li>Nếu acc bị ban từ Roblox, Shop không chịu trách nhiệm. Vui lòng cân nhắc kỹ trước khi đặt.</li>
+</ul></article>
+<article class="orr-card"><h3><span>2</span>Khi đơn đang xử lý</h3><ul>
+<li><b class="st wait">Chờ Xử Lý:</b> Đơn vẫn đang chờ để được duyệt.</li>
+<li><b class="st work">Đang Xử Lý:</b> Shop đang cày. <b class="red">NGHIÊM CẤM VÀO ACC DƯỚI MỌI HÌNH THỨC!</b></li>
+<li><b class="st done">Hoàn Thành:</b> Đơn đã làm xong, bạn có thể vào acc.<ol><li class="bad">Vào acc quá 3 lần khi đơn đang xử lý = HỦY &amp; KHÔNG HOÀN TIỀN.</li><li class="bad">Đơn Cày Levi / Cuộn Enchant: Vào acc 1 lần = HỦY LẬP TỨC &amp; KHÔNG HOÀN TIỀN.</li><li class="bad">Đổi mật khẩu / mail / xác minh khi đơn đang xử lý = HỦY &amp; KHÔNG HOÀN TIỀN.</li></ol></li>
+<li>Xem trạng thái đơn tại: <a href="#don-cay-thue" title="Lịch sử cày thuê">Dịch Vụ Khác ➜ Lịch Sử Cày Thuê</a> ➜ Chọn đơn cần xem.</li>
+</ul></article>
+<article class="orr-card"><h3><span>3</span>Thời gian hoàn thành</h3><ul>
+<li><b>Đơn thường:</b> 24h ➜ 48h. Đơn lớn có thể lâu hơn.</li>
+<li><b>Đơn Leviathan:</b> 1 ➜ 4 ngày do Shop phải gom đơn.</li>
+<li>Nếu quá 4 ngày đơn chưa xong, vui lòng nhắn Shop qua <a href="https://discord.gg/KmfvE9X6g" target="_blank" rel="noopener noreferrer" title="Discord của shop">Discord</a> để được hỗ trợ.</li>
+</ul></article>
+<article class="orr-card"><h3><span>4</span>Sau khi hoàn thành</h3><ul>
+<li class="must">Khi đơn ở trạng thái "Hoàn Thành", vui lòng vào acc và <b>ĐỔI MẬT KHẨU NGAY</b> để tránh rủi ro.</li>
+<li class="warn">Tiền đã nạp vào Shop <b>KHÔNG THỂ HOÀN TRẢ</b> dưới mọi hình thức.</li>
+</ul></article>
+<article class="orr-card"><h3><span>5</span>Giải quyết đơn bị hủy</h3><ul>
+<li>Khi đơn ở trạng thái "Đã Hủy / Hoàn", lý do hủy sẽ nằm ở mục "Admin Cập Nhật".<ol><li><b>Vào acc khi Shop đang duyệt:</b> Hủy không hoàn tiền.</li><li><b>Acc bị 2-Step:</b> Cần gửi mã dự phòng. Tắt 2FA vẫn có thể bị dính xác minh.</li><li><b>Acc không đủ yêu cầu:</b> Level hoặc vật phẩm không đủ để làm nhiệm vụ.</li><li><b>Dính xác minh thiết bị:</b> Bắt buộc cài mail, xác minh mail và gửi kèm mã dự phòng.</li></ol></li>
+<li>Nếu bị trường hợp 2, 3 hoặc 4, vui lòng xem lại yêu cầu đơn hàng và cách tạo mã dự phòng trên Shop.</li>
+<li class="must">Riêng đơn Kéo Tim Levi: bắt buộc ghi đúng tài khoản + mật khẩu + mã dự phòng.</li>
+<li>Đơn bị hủy đặt lại phải chờ theo thứ tự, không ưu tiên làm trước.</li>
+</ul></article>
+<article class="orr-card"><h3><span>6</span>Mua Robux - Gamepass</h3><ul>
+<li class="must">Khi mua Robux hoặc Gamepass, bắt buộc ghi <b>ĐÚNG tên đăng nhập Roblox</b>.</li>
+<li class="warn">Ghi sai username = <b>MẤT TIỀN</b>, Shop không chịu trách nhiệm.</li>
+</ul></article>
+</div>
+</section>
 </div>
 <div class="zc-view" data-view="lich-su-mua" hidden>
 <div class="zc-head"><span class="zc-head-tile" style="--c:#22c55e" id="lich-su-mua-icon" data-i="pad"></span><div><h1>Tài khoản đã mua <span id="lich-su-mua-orderCount" style="font-size:15px;color:var(--zc-muted);text-transform:none"></span></h1><p>Các acc Blox Fruits bạn đã mua tại shop.</p></div></div>
@@ -1839,5 +1908,4 @@ zcRoute();
 if(window.zcPendingReady)zcProfileReady();
 (function(){const h=document.querySelector('header.top');if(!h)return;let last=window.scrollY,ticking=false;function upd(){const y=Math.max(0,window.scrollY);const d=y-last;const busy=document.body.classList.contains('zc-nav-lock')||document.getElementById('userMenu')?.classList.contains('show')||h.contains(document.activeElement)&&document.activeElement.tagName==='INPUT';if(busy||y<h.offsetHeight){h.classList.remove('top-hidden')}else if(d>8){h.classList.add('top-hidden');document.querySelectorAll('#zcNav .zc-nav-item.open').forEach(x=>x.classList.remove('open'))}else if(d<-8){h.classList.remove('top-hidden')}if(Math.abs(d)>8||y<h.offsetHeight)last=y;ticking=false}window.addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(upd)}},{passive:true});h.addEventListener('focusin',()=>h.classList.remove('top-hidden'))})();
 </script>
-<script src="price-sync.js"></script>
 </body></html>
