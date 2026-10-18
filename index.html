@@ -1141,6 +1141,15 @@ html[data-theme="light"] .orr-card .st.wait{color:#b45309}
 html[data-theme="light"] .orr-card .st.work{color:#0369a1}
 html[data-theme="light"] .orr-card .st.done{color:#15803d}
 @media(max-width:860px){.orr{padding:18px 14px}.orr-grid{grid-template-columns:1fr}.orr-head h2{font-size:20px}}
+
+.rv-on .rv:not(.rv-in){opacity:0}
+.rv-in{animation:rvUp .75s cubic-bezier(.2,.75,.2,1) backwards;animation-delay:var(--rvd,0ms)}
+.rv-in.rv-skip{animation:none}.rv-in.rv-t{animation-name:rvLine;animation-duration:.6s}
+.rv-in.rv-c{animation-name:rvCard;animation-duration:.8s}
+@keyframes rvUp{from{opacity:0;transform:translateY(28px)}}
+@keyframes rvLine{from{opacity:0;transform:translateX(-18px);filter:blur(4px)}}
+@keyframes rvCard{from{opacity:0;transform:translateY(40px) scale(.96)}}
+@media(prefers-reduced-motion:reduce){.rv-on .rv:not(.rv-in){opacity:1}.rv-in{animation:none}}
 </style>
 </head>
 <body>
@@ -1906,6 +1915,11 @@ ZC.onReady(async u=>{clearInterval(timer);if(!u){ZC.loginPrompt(el,'Đăng nhậ
 zcRoute();
 if(window.zcPendingReady)zcProfileReady();
 (function(){const h=document.querySelector('header.top');if(!h)return;let last=window.scrollY,ticking=false;function upd(){const y=Math.max(0,window.scrollY);const d=y-last;const busy=document.body.classList.contains('zc-nav-lock')||document.getElementById('userMenu')?.classList.contains('show')||h.contains(document.activeElement)&&document.activeElement.tagName==='INPUT';if(busy||y<h.offsetHeight){h.classList.remove('top-hidden')}else if(d>8){h.classList.add('top-hidden');document.querySelectorAll('#zcNav .zc-nav-item.open').forEach(x=>x.classList.remove('open'))}else if(d<-8){h.classList.remove('top-hidden')}if(Math.abs(d)>8||y<h.offsetHeight)last=y;ticking=false}window.addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(upd)}},{passive:true});h.addEventListener('focusin',()=>h.classList.remove('top-hidden'))})();
+
+(function(){if(!('IntersectionObserver' in window)||matchMedia('(prefers-reduced-motion: reduce)').matches)return;const root=document.querySelector('.zc-view[data-view="home"]');if(!root)return;document.documentElement.classList.add('rv-on');
+const GROUPS=[['.top-banner,.hero-row>*,.sec-head,.section>h2,.words-title,.terms-head>*,.terms-alert-title,.orr-head,.orr-card,.terms-foot',''],['#serviceGrid>.card,#itemGrid>.card,#spinGrid>.card,.terms-item','rv-c'],['.section>p,.section>div,.words p,.words li,.terms-alert li,.terms-item p,.orr-card h3,.orr-card ul>li,.orr-card ol>li','rv-t']];
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(!e.isIntersecting)return;const el=e.target;io.unobserve(el);const sib=el.parentElement?[...el.parentElement.children].filter(x=>x.classList.contains('rv')):[el];let i=sib.indexOf(el);if(el.classList.contains('rv-c')){const cols=Math.max(1,Math.round(el.parentElement.clientWidth/Math.max(1,el.offsetWidth)));i=i%cols}el.style.setProperty('--rvd',Math.min(i,8)*(el.classList.contains('rv-t')?80:90)+'ms');el.classList.add('rv-in');if(el.parentElement)el.parentElement.dataset.rvSeen='1'})},{rootMargin:'0px 0px -8% 0px',threshold:.08});
+function scan(){GROUPS.forEach(([sel,cls])=>root.querySelectorAll(sel).forEach(el=>{if(el.classList.contains('rv'))return;el.classList.add('rv');if(cls)el.classList.add(cls);const r=el.getBoundingClientRect();if(r.bottom<0||(cls==='rv-c'&&el.parentElement&&el.parentElement.dataset.rvSeen)){el.classList.add('rv-in','rv-skip');return}io.observe(el)}))}
+function start(){scan();let q=0;new MutationObserver(()=>{if(q)return;q=requestAnimationFrame(()=>{q=0;scan()})}).observe(root,{childList:true,subtree:true})}if(document.body.classList.contains('wl-lock')){const mo=new MutationObserver(()=>{if(!document.body.classList.contains('wl-lock')){mo.disconnect();start()}});mo.observe(document.body,{attributes:true,attributeFilter:['class']})}else start()})();
 </script>
-<script src="price-sync.js"></script>
 </body></html>
