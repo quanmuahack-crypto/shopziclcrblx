@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Lịch sử nạp · ShopZiCiCRBLX</title>
-<script>try{if(localStorage.getItem('shop_theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}</script>
+<script>document.documentElement.setAttribute('data-theme','light')</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -114,7 +114,7 @@ html[data-theme="light"] .lsn-why{color:#b91c1c}
 </style>
 </head>
 <body>
-<header class="top"><div class="top-in"><a class="logo" href="index.html" title="ShopZiCiCRBLX"><i><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4M8 10v4M15 11h.01M18 13h.01"/></svg></i><b>SHOPZICICRBLX</b></a><button class="ib" id="thBtn" type="button" aria-label="Đổi giao diện"></button><a class="back" href="index.html" title="Về shop"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Về shop</a></div></header>
+<header class="top"><div class="top-in"><a class="logo" href="index.html" title="ShopZiCiCRBLX"><i><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4M8 10v4M15 11h.01M18 13h.01"/></svg></i><b>SHOPZICICRBLX</b></a><a class="back" href="index.html" title="Về shop"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Về shop</a></div></header>
 <main class="wrap">
 <div class="head"><span class="tile"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v2"/><path d="M3 7v10a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M16 12h5v4h-5a2 2 0 0 1 0-4z"/></svg></span><div><h1>Lịch sử nạp</h1><p id="who">Tất cả thẻ cào bạn đã nạp vào shop và kết quả xử lý.</p></div></div>
 <div id="lsnBox"><div class="skel" style="height:170px;margin-bottom:16px"></div><div class="skel"></div><div class="skel"></div></div>
@@ -133,9 +133,6 @@ let rows=[],filter='all',q='',shown=20,uid='';
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 const vnd=n=>Number(n||0).toLocaleString('vi-VN');
 const kind=s=>{s=String(s||'').toLowerCase();return s==='approved'?'ok':s==='rejected'?'bad':'wait'};
-function thPaint(){document.getElementById('thBtn').innerHTML=document.documentElement.getAttribute('data-theme')==='light'?SUN:MOON}
-document.getElementById('thBtn').onclick=()=>{const l=document.documentElement.getAttribute('data-theme')!=='light';if(l)document.documentElement.setAttribute('data-theme','light');else document.documentElement.removeAttribute('data-theme');try{localStorage.setItem('shop_theme',l?'light':'dark')}catch(e){}thPaint()};
-thPaint();
 async function api(path){const r=await fetch(SUPABASE_URL+path,{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+token}});const t=await r.text();let d=null;try{d=t?JSON.parse(t):null}catch(e){throw Error('Máy chủ trả về dữ liệu không hợp lệ. Vui lòng tải lại trang.')}if(!r.ok){const e=Error(d&&(d.message||d.error_description||d.msg)||'Không thể tải dữ liệu');e.status=r.status;throw e}return d}
 async function load(){const base='/rest/v1/deposits?select=id,card_type,amount,serial,status,rejection_reason,created_at';const tail='&user_id=eq.'+encodeURIComponent(uid)+'&order=created_at.desc&limit=500';try{return await api(base+',api_credit'+tail)}catch(e){if(/api_credit|column|42703/i.test(String(e.message)))return api(base+tail);throw e}}
 function dayLabel(d){const x=new Date(d),t=new Date();const a=new Date(x.getFullYear(),x.getMonth(),x.getDate()),b=new Date(t.getFullYear(),t.getMonth(),t.getDate());const diff=Math.round((b-a)/864e5);if(diff===0)return 'Hôm nay';if(diff===1)return 'Hôm qua';return x.toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'})}
