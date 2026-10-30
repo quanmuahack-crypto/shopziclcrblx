@@ -1351,9 +1351,10 @@ html:not([data-theme="light"]) #zcNav .zc-nav-link{color:#f1efff}
 html:not([data-theme="light"]) #zcNav .zc-nav-link:hover{background:rgba(139,92,246,.16)}
 }
 
-@media(min-width:1021px){#zcNav .zc-nav-list{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}#zcNav .zc-nav-list::-webkit-scrollbar{display:none}#zcNav .zc-nav-item{flex:none}}
+@media(min-width:1021px){#zcNav .zc-nav-list{flex-wrap:nowrap;overflow:visible}#zcNav .zc-nav-item{flex:none}}
 @media(min-width:1021px) and (max-width:1599px){#zcNav .zc-nav-link{gap:7px;padding:0 8px 0 5px;font-size:12px;letter-spacing:.1px}#zcNav .zc-nav-tile{width:28px;height:28px;font-size:14px}}
 @media(min-width:1021px) and (max-width:1250px){#zcNav .zc-nav-link{gap:5px;padding:0 5px 0 3px;font-size:11.5px}#zcNav .zc-nav-tile{width:24px;height:24px;font-size:13px}#zcNav .zc-nav-caret{display:none}}
+@media(min-width:1021px){#zcNav .zc-nav-item:nth-last-child(-n+2)>.zc-sub{left:auto;right:0}}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Signika:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
