@@ -1344,9 +1344,11 @@ html:not([data-theme="light"]) .svc-block+.svc-block:not([hidden]){border-top-co
 @media(min-width:1021px){
 #zcNav .zc-nav-list{justify-content:space-between;gap:2px}
 #zcNav .zc-nav-link{gap:10px;height:44px;padding:0 14px 0 8px;font-size:13px;font-weight:700;letter-spacing:.3px;border-radius:14px}
-#zcNav .zc-nav-tile{width:32px;height:32px;border-radius:10px;font-size:16px;box-shadow:none;filter:saturate(.5) brightness(.92);opacity:.95}
-#zcNav .zc-nav-item.active>.zc-nav-link .zc-nav-tile{box-shadow:0 0 0 2px var(--bg2),0 0 0 3.5px var(--c);filter:saturate(.7)}
-#zcNav .zc-nav-link:hover .zc-nav-tile{filter:saturate(.75)}
+#zcNav .zc-nav-tile{width:32px;height:32px;border-radius:10px;font-size:16px;box-shadow:none;filter:saturate(.85) brightness(1.12);opacity:1}
+#zcNav .zc-nav-item.active>.zc-nav-link .zc-nav-tile{box-shadow:0 0 0 2px var(--bg2),0 0 0 3.5px var(--c);filter:saturate(1) brightness(1.15)}
+#zcNav .zc-nav-link:hover .zc-nav-tile{filter:saturate(1) brightness(1.2)}
+html:not([data-theme="light"]) #zcNav .zc-nav-link{color:#f1efff}
+html:not([data-theme="light"]) #zcNav .zc-nav-link:hover{background:rgba(139,92,246,.16)}
 }
 
 @media(min-width:1021px){#zcNav .zc-nav-list{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}#zcNav .zc-nav-list::-webkit-scrollbar{display:none}#zcNav .zc-nav-item{flex:none}}
