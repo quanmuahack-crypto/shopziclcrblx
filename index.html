@@ -1371,6 +1371,32 @@ html:not([data-theme="light"]) #zcNav .zc-nav-link:hover{background:rgba(139,92,
 @media(min-width:1021px) and (max-width:1699px){#zcNav .zc-nav-caret{display:none}}
 @media(min-width:1021px) and (max-width:1699px){.top .uc-txt,.top .uc-car{display:none}.top .uchip{padding-right:6px}}
 @media(min-width:1021px) and (max-width:1179px){#zcNav .zc-nav-link{font-size:0!important}#zcNav .zc-nav-link .zc-nav-tile{font-size:15px!important}}
+
+/* ==== Trang đăng nhập (view #dang-nhap) ==== */
+.lg-card{box-sizing:border-box;width:min(100%,560px);margin:28px auto 40px;background:var(--panel);border:1px solid var(--line2);border-radius:30px;padding:44px 40px 36px;box-shadow:0 30px 80px -30px rgba(0,0,0,.45);text-align:center}
+.lg-card h1{margin:0 0 8px;font-size:34px;font-weight:800;letter-spacing:-.3px;color:var(--text);background:none;-webkit-text-fill-color:currentColor}
+.lg-sub{margin:0 0 30px;color:var(--muted);font-size:15px;font-weight:600}
+#lgForm{text-align:left}
+.lg-l{display:block;margin:0 0 8px;font-weight:700;font-size:15px;color:var(--text)}
+.lg-opt{color:var(--muted);font-weight:600}
+.lg-f{position:relative;margin-bottom:22px}
+.lg-ic{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.lg-f input{box-sizing:border-box;width:100%;height:54px;padding:0 48px;border-radius:14px;border:1.5px solid var(--line2);background:var(--bg2);color:var(--text);font:inherit;font-size:16px;font-weight:600;outline:none;transition:border-color .15s,box-shadow .15s}
+.lg-f input::placeholder{color:var(--muted);opacity:.8;font-weight:500}
+.lg-f input:focus{border-color:var(--cyan);box-shadow:0 0 0 4px rgba(139,92,246,.22)}
+.lg-eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;background:none;color:var(--muted);cursor:pointer;display:grid;place-items:center;border-radius:10px}
+.lg-eye svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lg-eye:hover{color:var(--text)}
+.lg-rem{display:flex;align-items:center;gap:10px;margin:0 0 22px;font-weight:600;font-size:15px;cursor:pointer;user-select:none;color:var(--text)}
+.lg-rem input{width:22px;height:22px;accent-color:#8b5cf6;margin:0}
+#lgCf{display:flex;justify-content:center;margin:0 0 16px}
+.lg-go{width:100%;height:56px;border:0;border-radius:14px;background:linear-gradient(100deg,#7c3aed,#9333ea);color:#fff;font:inherit;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 14px 28px -14px rgba(124,58,237,.9);transition:filter .15s,transform .1s}
+.lg-go:hover{filter:brightness(1.1)}.lg-go:active{transform:translateY(1px)}.lg-go:disabled{opacity:.6;cursor:wait}
+.lg-msg{min-height:22px;margin:16px 0 0;text-align:center;font-weight:700;font-size:14.5px}
+.lg-msg.err{color:var(--red)}.lg-msg.ok{color:var(--green)}
+.lg-sw{margin:18px 0 0;text-align:center;color:var(--muted);font-weight:600;font-size:15px}
+.lg-sw a{color:var(--cyan-2);font-weight:800;text-decoration:none;cursor:pointer}
+@media(max-width:600px){.lg-card{padding:32px 20px 28px;border-radius:24px;margin-top:16px}.lg-card h1{font-size:28px}}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Signika:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -1415,7 +1441,7 @@ html:not([data-theme="light"]) #zcNav .zc-nav-link:hover{background:rgba(139,92,
 <a class="icon-btn act-hist" href="#lich-su-nap" title="Lịch sử nạp"><svg><use href="#i-hist"/></svg></a>
 <button class="th-btn mu-btn" id="muBtn" type="button" onclick="muToggle()" title="Tắt / bật nhạc nền" aria-label="Tắt / bật nhạc nền" aria-pressed="false"><svg class="mu-on"><use href="#i-vol"/></svg><svg class="mu-off"><use href="#i-mute"/></svg></button>
 <button class="icon-btn nt-bell" id="ntBell" type="button" onclick="ntOpen()" title="Tin nhắn từ admin" aria-label="Tin nhắn từ admin" style="display:none"><svg><use href="#i-bell"/></svg><span class="badge" id="ntCount"></span></button>
-<button id="authBtn" class="btn btn-cyan" style="display:none" onclick="location.href='login.html'">Đăng nhập</button>
+<button id="authBtn" class="btn btn-cyan" style="display:none" onclick="openAuth('login')">Đăng nhập</button>
 <div class="user" id="userBox">
 <button class="uchip" id="avatarBtn" type="button" onclick="toggleMenu(event)" aria-label="Tài khoản"><span class="uc-ring"><svg class="uc-av" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="32" fill="#fff"/><path d="M9 64c1.5-12 10.5-19 23-19s21.5 7 23 19Z" fill="#111"/><path d="M27 41h10v6l-5 4-5-4Z" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M26.5 45.5 32 51l5.5-5.5" fill="none" stroke="#fff" stroke-width="1.6"/><ellipse cx="32" cy="29" rx="12" ry="13" fill="#fff" stroke="#111" stroke-width="2"/><path d="M19.5 26c-1.5-9 4.5-15 12.5-15s14 5.5 12.6 15c-2.2-3.5-5.2-5.3-8.6-5.6 1 1.7 1.2 3 .9 4.2-2.4-2.6-6.4-4-10.5-3.4.6 1.2.7 2.3.3 3.3-2.4-.7-5.2.1-7.2 1.5Z" fill="#111"/><circle cx="27" cy="30" r="3.6" fill="none" stroke="#111" stroke-width="2"/><circle cx="37" cy="30" r="3.6" fill="none" stroke="#111" stroke-width="2"/><path d="M30.6 30h2.8M23.4 29.4l-3-.8M40.6 29.4l3-.8" stroke="#111" stroke-width="1.8" stroke-linecap="round"/><path d="M29 36.5q3 2 6 0" fill="none" stroke="#111" stroke-width="1.8" stroke-linecap="round"/></svg></span><span class="uc-txt"><b id="ucName">Khách</b><span id="ucBal">0 đ</span></span><svg class="uc-car" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg></button>
 <div class="menu" id="userMenu">
@@ -1625,6 +1651,24 @@ html:not([data-theme="light"]) #zcNav .zc-nav-link:hover{background:rgba(139,92,
 <p class="terms-foot">Bằng việc tiếp tục sử dụng dịch vụ, quý khách xác nhận đã đọc và đồng ý với toàn bộ điều khoản trên. Cần giải đáp, vui lòng liên hệ admin qua <a href="chat-admin.html" title="Chat Admin">Chat Admin</a> hoặc <a href="https://discord.gg/KmfvE9X6g" target="_blank" rel="noopener noreferrer" title="Discord của shop">Discord</a>.</p>
 </div></section>
 </div>
+<div class="zc-view" data-view="dang-nhap" hidden>
+<div class="lg-card">
+<h1 id="lgTtl">Đăng Nhập</h1>
+<p class="lg-sub" id="lgSub">Đăng nhập để tiếp tục trải nghiệm của bạn</p>
+<form id="lgForm" novalidate onsubmit="return lgSubmit(event)">
+<label class="lg-l" for="lgU" id="lgUl">Tài khoản</label>
+<div class="lg-f"><svg class="lg-ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg><input id="lgU" name="username" autocomplete="username" maxlength="120" placeholder="Nhập tên tài khoản"></div>
+<div id="lgEmW" style="display:none"><label class="lg-l" for="lgEm">Email <span class="lg-opt">(không bắt buộc)</span></label><div class="lg-f"><input id="lgEm" type="email" autocomplete="email" maxlength="120" placeholder="Để đăng nhập bằng email sau này" style="padding-left:16px"></div></div>
+<label class="lg-l" for="lgP">Mật khẩu</label>
+<div class="lg-f"><svg class="lg-ic" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="lgP" name="password" type="password" autocomplete="current-password" placeholder="Nhập mật khẩu của bạn"><button class="lg-eye" type="button" onclick="const i=document.getElementById('lgP');i.type=i.type==='password'?'text':'password'" aria-label="Hiện / ẩn mật khẩu"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+<label class="lg-rem" id="lgRemW"><input type="checkbox" id="lgRem"> Ghi nhớ đăng nhập</label>
+<div id="lgCf"></div>
+<button class="lg-go" id="lgGo" type="submit">Đăng nhập</button>
+<div class="lg-msg" id="lgMsg" role="status" aria-live="polite"></div>
+</form>
+<p class="lg-sw" id="lgSw">Chưa có tài khoản? <a href="javascript:void 0" onclick="lgSetMode('register')">Đăng ký ngay</a></p>
+</div>
+</div>
 <div class="zc-view" data-view="dv" hidden><div id="svPage"></div></div>
 <div class="zc-view" data-view="don" hidden><div id="donPage"></div></div>
 </main>
@@ -1829,7 +1873,28 @@ if(!window.turnstile){if(!document.getElementById('cfScript')){const sc=document
 cfWid=turnstile.render(box,{sitekey:CF_SITEKEY,theme:'auto',language:'vi'})}
 function cfToken(){try{return cfWid!==null?turnstile.getResponse(cfWid)||'':''}catch(e){return ''}}
 function cfReset(){try{if(cfWid!==null)turnstile.reset(cfWid)}catch(e){}}
-function openAuth(mode){cfRender();setAuthMode(mode==='register'?'register':'login');document.getElementById('authMsg').innerHTML='';document.getElementById('authModal').classList.add('show');setTimeout(()=>document.getElementById('username').focus(),50)}
+/* ==== Trang đăng nhập (gộp vào index) ==== */
+let lgMode='login',lgBack='',lgWid=null;
+function lgMsg(t,c){const m=document.getElementById('lgMsg');if(m){m.textContent=t||'';m.className='lg-msg'+(c?' '+c:'')}}
+function lgSetMode(m){lgMode=m;const lg=m==='login',$=id=>document.getElementById(id);$('lgTtl').textContent=lg?'Đăng Nhập':'Tạo Tài Khoản';$('lgSub').textContent=lg?'Đăng nhập để tiếp tục trải nghiệm của bạn':'Tạo tài khoản để nạp tiền và đặt đơn';$('lgUl').textContent=lg?'Tài khoản':'Tên tài khoản';$('lgU').placeholder=lg?'Nhập tên tài khoản':'Chữ không dấu, số, dấu _ (3–32 ký tự)';$('lgU').maxLength=lg?120:32;$('lgEmW').style.display=lg?'none':'';$('lgRemW').style.display=lg?'':'none';$('lgP').autocomplete=lg?'current-password':'new-password';$('lgGo').textContent=lg?'Đăng nhập':'Tạo tài khoản';$('lgSw').innerHTML=lg?'Chưa có tài khoản? <a href="javascript:void 0" onclick="lgSetMode(\'register\')">Đăng ký ngay</a>':'Đã có tài khoản? <a href="javascript:void 0" onclick="lgSetMode(\'login\')">Đăng nhập</a>';lgMsg('')}
+function lgCf(){if(!CF_SITEKEY)return;if(!window.turnstile){if(!document.getElementById('cfScript')){const sc=document.createElement('script');sc.id='cfScript';sc.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';sc.async=true;sc.defer=true;sc.onload=lgCf;document.head.appendChild(sc)}return}if(lgWid!==null){try{turnstile.reset(lgWid)}catch(e){}return}lgWid=turnstile.render('#lgCf',{sitekey:CF_SITEKEY,theme:'auto',language:'vi'})}
+function lgDone(){const b=lgBack;lgBack='';location.hash=(b&&b!=='dang-nhap')?b:''}
+function openAuth(mode){lgSetMode(mode==='register'?'register':'login');const h=location.hash.slice(1);if(h&&h!=='dang-nhap')lgBack=h;lgCf();if(h==='dang-nhap'){zcRun('dang-nhap')}else location.hash='dang-nhap'}
+async function lgSubmit(ev){if(ev)ev.preventDefault();const $=id=>document.getElementById(id),username=$('lgU').value.trim(),password=$('lgP').value,email=lgMode==='register'?$('lgEm').value.trim():'';
+if(!username||!password){lgMsg(lgMode==='login'?'Nhập đủ tài khoản và mật khẩu.':'Nhập đủ tên tài khoản và mật khẩu.','err');return false}
+if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){lgMsg('Email không hợp lệ.','err');return false}
+let cf='';try{cf=lgWid!==null?turnstile.getResponse(lgWid)||'':''}catch(e){}
+if(CF_SITEKEY&&!cf){lgMsg('Vui lòng xác minh bạn không phải robot.','err');return false}
+const btn=$('lgGo');btn.disabled=true;lgMsg('Đang xử lý...');
+try{const d=await usernameAuth({action:lgMode,username,password,email,cf_token:cf});
+if(!d.access_token){if(lgMode==='register'){lgSetMode('login');$('lgU').value=username;$('lgP').value='';lgMsg('Tạo tài khoản thành công. Hãy đăng nhập.','ok');return false}throw Error('Đăng nhập thất bại')}
+accessToken=d.access_token;try{localStorage.setItem('shopzicl_username_token',accessToken);if($('lgRem').checked&&lgMode==='login')localStorage.removeItem('shopzicl_tmp');else localStorage.setItem('shopzicl_tmp','1');sessionStorage.setItem('shopzicl_alive','1')}catch(x){}
+await loadProfile();checkIpBan();lgMsg('');$('lgP').value='';
+if(lgMode==='login')showLoginResult(true,'Chào mừng trở lại, '+(currentUser?.username||username)+'!','Đăng nhập thành công.');else{showLoginResult(true,'Tạo tài khoản thành công!','Chào '+username+', bạn đã đăng nhập.'+(email&&d.email_saved===false?' Email chưa lưu được, bạn thêm lại trong menu tài khoản.':''));$('lgEm').value=''}
+setTimeout(()=>document.getElementById('loginResultOverlay').classList.remove('show'),3000);lgDone();resumeTopup()
+}catch(e){lgMsg(e.message||'Đăng nhập thất bại, thử lại.','err');$('lgP').value=''}finally{btn.disabled=false;try{if(lgWid!==null)turnstile.reset(lgWid)}catch(x){}}
+return false}
+function openAuthModal(mode){cfRender();setAuthMode(mode==='register'?'register':'login');document.getElementById('authMsg').innerHTML='';document.getElementById('authModal').classList.add('show');setTimeout(()=>document.getElementById('username').focus(),50)}
 function closeAuth(){document.getElementById('authModal').classList.remove('show')}
 function setAuthMode(m){authMode=m;const login=m==='login';document.getElementById('authTitle').textContent=login?'Đăng nhập':'Tạo tài khoản';document.getElementById('authSubmit').textContent=login?'Đăng nhập':'Tạo tài khoản';document.getElementById('tabLogin').classList.toggle('on',login);document.getElementById('tabRegister').classList.toggle('on',!login);document.getElementById('password').autocomplete=login?'current-password':'new-password';document.getElementById('usernameLabel').textContent=login?'Tên tài khoản hoặc email':'Tên tài khoản';document.getElementById('username').placeholder=login?'Tên tài khoản hoặc email':'Chữ không dấu, số, dấu _ (3–32 ký tự)';document.getElementById('username').maxLength=login?120:32;document.getElementById('regEmailField').style.display=login?'none':'';document.getElementById('authMsg').innerHTML=''}
 function toggleAuth(){setAuthMode(authMode==='login'?'register':'login')}
@@ -1946,9 +2011,9 @@ async function fetchOrders(){if(!currentUser)return [];const base='orders?select
 async function fetchDeposits(){if(!currentUser)return [];return api('deposits?select=card_type,amount,status,created_at&user_id=eq.'+encodeURIComponent(currentUser.id)+'&order=created_at.desc')}
 
 let zcView='home',zcReady=false,zcUid=null,serviceTypes=null;
-const ZC_VIEWS=['nap-robux','lich-su-nap','lich-su-mua','don-cay-thue','don-vat-pham','rut-thuong','ho-so','nap-the','dong-tien','tin-tuc','giftcode','gioi-thieu','luu-y','chinh-sach','dieu-khoan'];
-const ZC_TITLES={"nap-robux": "Nạp Robux", "vong-quay": "Vòng quay Robux", "lich-su-nap": "Lịch sử nạp", "lich-su-mua": "Tài khoản đã mua", "don-cay-thue": "Đơn cày thuê", "don-vat-pham": "Đơn vật phẩm", "rut-thuong": "Rút thưởng", "ho-so": "Hồ sơ", "nap-the": "Nạp thẻ cào", "dong-tien": "Dòng tiền", "tin-tuc": "Tin tức", "giftcode": "Nhập giftcode", "gioi-thieu": "Giới thiệu bạn bè", "luu-y": "Lưu ý đặt đơn", "chinh-sach": "Chính sách", "dieu-khoan": "Điều khoản"};
-const ZC_CBS={};
+const ZC_VIEWS=['dang-nhap','nap-robux','lich-su-nap','lich-su-mua','don-cay-thue','don-vat-pham','rut-thuong','ho-so','nap-the','dong-tien','tin-tuc','giftcode','gioi-thieu','luu-y','chinh-sach','dieu-khoan'];
+const ZC_TITLES={"dang-nhap": "Đăng nhập", "nap-robux": "Nạp Robux", "vong-quay": "Vòng quay Robux", "lich-su-nap": "Lịch sử nạp", "lich-su-mua": "Tài khoản đã mua", "don-cay-thue": "Đơn cày thuê", "don-vat-pham": "Đơn vật phẩm", "rut-thuong": "Rút thưởng", "ho-so": "Hồ sơ", "nap-the": "Nạp thẻ cào", "dong-tien": "Dòng tiền", "tin-tuc": "Tin tức", "giftcode": "Nhập giftcode", "gioi-thieu": "Giới thiệu bạn bè", "luu-y": "Lưu ý đặt đơn", "chinh-sach": "Chính sách", "dieu-khoan": "Điều khoản"};
+const ZC_CBS={};ZC_CBS['dang-nhap']=[u=>{if(u){lgDone()}else setTimeout(()=>{const e=document.getElementById('lgU');if(e)e.focus()},60)}];
 const ZC_BASE={SUPABASE_URL,SUPABASE_KEY,AUTH_URL,DISCORD:'https://discord.gg/KmfvE9X6g',ic,esc,money,fmtDate,norm,api,
  rpc:(fn,body)=>api('rpc/'+fn,{method:'POST',body:JSON.stringify(body||{})}),
  authCall:async(body,withToken)=>{const h={apikey:SUPABASE_KEY,'Content-Type':'application/json'};if(withToken&&accessToken)h.Authorization='Bearer '+accessToken;const r=await fetch(AUTH_URL,{method:'POST',headers:h,body:JSON.stringify(body)});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'Có lỗi xảy ra, thử lại sau.');return d},
